@@ -1,24 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
  
 @layer base {
   :root {
-    --color-black: #000000;
-    --color-white: #FFFFFF;
-
-    /* Gray Shades */
-    --gold-50: #FFF9DB;  /* Very Light Gold */
-    --gold-100: #FFF1B8; /* Light Gold */
-    --gold-200: #FFE793;
-    --gold-300: #FFDD6E;
-    --tan: #CFB284;
-    --dark-vanilla: #DFCAA0;
-    --banana-mania: #F6E3BA;
-    --blanched-almond: #FFEFCB;
-    --cosmic-latte: #FFFDE7;
-    --conditioner: #FFFCC7;
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
 
@@ -80,7 +65,10 @@
     --ring: 216 12.2% 83.9%;
   }
 }
+body {
+  background-color: red
 
+}
 @layer base {
   * {
     @apply border-border;
@@ -88,21 +76,4 @@
   body {
     @apply bg-background text-foreground;
   }
-  .tan-bg {
-    background-color: var(--tan);
-}
-  .nav-link {
-    transition: color 0.3s ease;
-    font-size: 14px;
-  }
-
-  .nav-link:hover {
-    color: var(--gold-300); 
-  }
-
-  .nav-link.active {
-    font-weight: bold;
- 
-  }
-
 }
