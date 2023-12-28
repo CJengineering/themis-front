@@ -1,8 +1,13 @@
 export type Travel = {
     id: number;
+    status: string;
     name: string;
     userId: number;
     tripType: string;
+    requestedDepartureDate: Date;
+    requestedDepartureCity: string;
+    requestedArrivalCity: string;
+    requestedArrivalDate: Date;
     departureDateLeg1: Date;
     departureCityLeg1: string;
     arrivalCityLeg1: string;
