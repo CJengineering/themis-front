@@ -1,6 +1,7 @@
 import { cities } from '@/cities';
 import DatePicker from '@/components/date-picker';
 import { InputCustom } from '@/components/ui/InputCustom';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -58,39 +59,59 @@ export function TravelAdminForm() {
   return (
     <>
       <div className="grid gap-4 py-4">
-      <div className="grid grid-cols-4 items-center gap-4">
+        <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="departureCity" className="text-right">
             Traveller
           </Label>
-          <Input value='Nathanael ' id="departureCity" className="col-span-3" />
+          <Input value="Nathanael " id="departureCity" className="col-span-3" />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="departureCity" className="text-right">
             Trip
           </Label>
-          <Input value='Paris -Tunis ' id="departureCity" className="col-span-3" />
+          <Input
+            value="Paris <> Tunis "
+            id="departureCity"
+            className="col-span-3"
+          />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="departureCity" className="text-right">
+            Status
+          </Label>
+          <div className='w-50'>
+
+         <Badge variant="inProgress">In progress</Badge>
+          </div>
         </div>
         {/* Departure City */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="departureCity" className="text-right">
-            Dep. City
+            From
           </Label>
-          <InputCustom id="departureCity" initialText="Paris" className="col-span-3" />
+          <InputCustom
+            id="departureCity"
+            initialText="Paris"
+            className="col-span-3"
+          />
         </div>
 
         {/* Arrival City */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="arrivalCity" className="text-right">
-            Arr. City
+            To
           </Label>
-          <InputCustom id="departureCity" initialText="Tunis" className="col-span-3" />
-
+          <InputCustom
+            id="departureCity"
+            initialText="Tunis"
+            className="col-span-3"
+          />
         </div>
 
         {/* Departure Date */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="departureDate" className="text-right">
-            Dep. Date
+            Departing
           </Label>
           <Input id="departureDate" type="date" className="col-span-3" />
         </div>
@@ -98,17 +119,15 @@ export function TravelAdminForm() {
         {/* Return Date */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="returnDate" className="text-right">
-            Ret. Date
+            Returning
           </Label>
           <Input id="returnDate" type="date" className="col-span-3" />
         </div>
 
-        
-
         {/* Cost in USD */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="costUSD" className="text-right">
-            Cost GBP
+            Cost (GBP)
           </Label>
           <Input id="costUSD" type="number" className="col-span-3" />
         </div>
@@ -116,23 +135,28 @@ export function TravelAdminForm() {
         {/* Booking Reference Document */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="bookingReferenceDocument" className="text-right">
-            Booking Ref.
+            Reference
           </Label>
-          <Input id="picture" type="file"  className="col-span-3"/>
+          <Input id="picture" type="file" className="col-span-3" />
         </div>
 
         {/* Notes */}
-        <div className="grid grid-cols-4 items-center gap-4">
+        <div className="grid grid-cols-4  gap-4">
           <Label htmlFor="notes" className="text-right">
             Notes
           </Label>
-         <Textarea placeholder="Type your message here."  className="col-span-3"/>
+          <Textarea
+            placeholder="Type your message here."
+            className="col-span-3"
+          />
         </div>
       </div>
       <DialogFooter>
         <Button type="submit">Save changes</Button>
-   
-        <Button type="submit" style={{backgroundColor:'green'}}>Submit Changes</Button>
+
+        <Button type="submit" style={{ backgroundColor: 'green' }}>
+          Submit Changes
+        </Button>
       </DialogFooter>
     </>
   );

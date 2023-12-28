@@ -61,10 +61,10 @@ const baseColumns: ColumnDef<Travel>[] = [
 
   {
     accessorKey: 'tripType',
-    header: 'Round Trip',
+    header: 'Type',
     cell: (props) => {
       const tripType = props.getValue() as string;
-      return <span>{tripType ? 'Yes' : 'No'}</span>;
+      return <span>{tripType ? 'Round' : 'Oneway'}</span>;
     },
   },
   {
@@ -78,7 +78,7 @@ const baseColumns: ColumnDef<Travel>[] = [
 
   {
     accessorKey: 'departureDate',
-    header: 'Departing)',
+    header: 'Departing',
     cell: formatDateCell,
   },
   {
@@ -88,7 +88,7 @@ const baseColumns: ColumnDef<Travel>[] = [
   },
   {
     accessorKey: 'costOriginal',
-    header: 'Cost (GBP)',
+    header: 'Cost ',
     cell: (props) => {
       const value = props.getValue();
       return <>{value ? `£${value}` : ''}</>;
@@ -96,8 +96,10 @@ const baseColumns: ColumnDef<Travel>[] = [
   },
   {
     accessorKey: 'bookingReferenceDocument',
-    header: 'Reference',
-    cell: () => <Badge variant="outline">See ref</Badge>,
+    header: 'Booking',
+    cell: () => (
+      <span className="material-symbols-outlined cursor-pointer hover:text-gray-200">download</span>
+    ),
   },
 ];
 if (localStorage.getItem('user-id') === '1') {
@@ -124,7 +126,7 @@ if (localStorage.getItem('user-id') === '1') {
                   Update the fields below to finalise before requesting the
                   travellers validation
                 </DialogDescription>
-             
+
                 <TravelAdminForm />
               </DialogHeader>
             </DialogContent>
@@ -137,7 +139,16 @@ if (localStorage.getItem('user-id') === '1') {
       header: 'Final approval',
       cell: (props) => {
         const id = props.getValue() as string;
-        return <div className='flex gap-2 '><Button variant="secondary">validate </Button><Button variant="secondary" style={{backgroundColor:'red', color:'white'}}>decline</Button></div>
+        return (
+          <div className="flex gap-2 ">
+            <span className="material-symbols-outlined cursor-pointer hover:text-green-500">
+              check_circle
+            </span>
+            <span className="material-symbols-outlined cursor-pointer hover:text-red-500">
+              cancel
+            </span>
+          </div>
+        );
       },
     }
   );

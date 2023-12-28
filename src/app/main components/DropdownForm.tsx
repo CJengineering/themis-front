@@ -15,7 +15,7 @@ export default function DropdownForm() {
     <div className="relative mt-1">
       <div
         className={`flex items-center justify-center h-8 w-8 rounded-full cursor-pointer transition duration-300 ease-in-out text-white transform ${
-          isActive ? 'bg-red-500 rotate-45' : 'bg-blue-500'
+          isActive ? 'bg-gray-500 rotate-45' : 'bg-blue-500'
         }`}
         style={{ userSelect: 'none' }}
         onClick={toggleDropdown}
