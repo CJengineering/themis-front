@@ -61,9 +61,9 @@ export function TravelForm() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Travel</DialogTitle>
+          <DialogTitle>Add New Trip</DialogTitle>
           <DialogDescription>
-            Please fill all the fields below.
+          Complete the details below to submit your travel request
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

@@ -1,5 +1,6 @@
 import { cities } from '@/cities';
 import DatePicker from '@/components/date-picker';
+import { InputCustom } from '@/components/ui/InputCustom';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { is } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
@@ -52,115 +54,86 @@ export function TravelAdminForm() {
     transition: 'opacity 0.5s ease-in-out, max-height 1s ease-in-out',
     maxHeight: isRoundTrip ? '500px' : '0', // Adjust max height as needed
     opacity: isRoundTrip ? 1 : 0,
-    
   };
   return (
-   <>
-    <div className="grid gap-4 py-4">
-      {/* ...existing fields... */}
+    <>
+      <div className="grid gap-4 py-4">
+      <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="departureCity" className="text-right">
+            Traveller
+          </Label>
+          <Input value='Nathanael ' id="departureCity" className="col-span-3" />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="departureCity" className="text-right">
+            Trip
+          </Label>
+          <Input value='Paris -Tunis ' id="departureCity" className="col-span-3" />
+        </div>
+        {/* Departure City */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="departureCity" className="text-right">
+            Dep. City
+          </Label>
+          <InputCustom id="departureCity" initialText="Paris" className="col-span-3" />
+        </div>
 
-{/* Requested Departure Date */}
-
-{/* Departure Date Leg 1 */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="departureDateLeg1" className="text-right">
-    Dep. Date L1
-  </Label>
-  <Input id="departureDateLeg1" className="col-span-3" />
-</div>
-
-{/* Departure City Leg 1 */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="departureCityLeg1" className="text-right">
-    Dep. City L1
-  </Label>
-  <Input id="departureCityLeg1" className="col-span-3" />
-</div>
-
-{/* Arrival City Leg 1 */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="arrivalCityLeg1" className="text-right">
-    Arr. City L1
-  </Label>
-  <Input id="arrivalCityLeg1" className="col-span-3" />
-</div>
-
-{/* Arrival Date Leg 1 */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="arrivalDateLeg1" className="text-right">
-    Arr. Date L1
-  </Label>
-  <Input id="arrivalDateLeg1" className="col-span-3" />
-</div>
-
-{/* Return Departure Date Leg 2 */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="returnDepartureDateLeg2" className="text-right">
-    Ret. Dep. Date L2
-  </Label>
-  <Input id="returnDepartureDateLeg2" className="col-span-3" />
-</div>
-
-{/* Return Departure City Leg 2 */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="returnDepartureCityLeg2" className="text-right">
-    Ret. Dep. City L2
-  </Label>
-  <Input id="returnDepartureCityLeg2" className="col-span-3" />
-</div>
-
-{/* Return Arrival City Leg 2 */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="returnArrivalCityLeg2" className="text-right">
-    Ret. Arr. City L2
-  </Label>
-  <Input id="returnArrivalCityLeg2" className="col-span-3" />
-</div>
-
-{/* Cost Original */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="costOriginal" className="text-right">
-    Orig. Cost
-  </Label>
-  <Input id="costOriginal" type="number" className="col-span-3" />
-</div>
-
-{/* Original Currency */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="originalCurrency" className="text-right">
-    Orig. Currency
-  </Label>
-  <Input id="originalCurrency" className="col-span-3" />
-</div>
-
-{/* Cost in USD */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="costUSD" className="text-right">
-    Cost USD
-  </Label>
-  <Input id="costUSD" type="number" className="col-span-3" />
-</div>
-
-{/* Booking Reference Document */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="bookingReferenceDocument" className="text-right">
-    Booking Ref.
-  </Label>
-  <Input id="bookingReferenceDocument" className="col-span-3" />
-</div>
-
-{/* Notes */}
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="notes" className="text-right">
-    Notes
-  </Label>
-  <Input id="notes" className="col-span-3" />
-</div>
+        {/* Arrival City */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="arrivalCity" className="text-right">
+            Arr. City
+          </Label>
+          <InputCustom id="departureCity" initialText="Tunis" className="col-span-3" />
 
         </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
-   </>
+
+        {/* Departure Date */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="departureDate" className="text-right">
+            Dep. Date
+          </Label>
+          <Input id="departureDate" type="date" className="col-span-3" />
+        </div>
+
+        {/* Return Date */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="returnDate" className="text-right">
+            Ret. Date
+          </Label>
+          <Input id="returnDate" type="date" className="col-span-3" />
+        </div>
+
+        
+
+        {/* Cost in USD */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="costUSD" className="text-right">
+            Cost GBP
+          </Label>
+          <Input id="costUSD" type="number" className="col-span-3" />
+        </div>
+
+        {/* Booking Reference Document */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="bookingReferenceDocument" className="text-right">
+            Booking Ref.
+          </Label>
+          <Input id="picture" type="file"  className="col-span-3"/>
+        </div>
+
+        {/* Notes */}
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="notes" className="text-right">
+            Notes
+          </Label>
+         <Textarea placeholder="Type your message here."  className="col-span-3"/>
+        </div>
+      </div>
+      <DialogFooter>
+        <Button type="submit">Save changes</Button>
+   
+        <Button type="submit" style={{backgroundColor:'green'}}>Submit Changes</Button>
+      </DialogFooter>
+    </>
   );
 }

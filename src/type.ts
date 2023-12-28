@@ -3,23 +3,17 @@ export type Travel = {
     status: string;
     name: string;
     userId: number;
-    tripType: string;
-    requestedDepartureDate: Date;
-    requestedDepartureCity: string;
-    requestedArrivalCity: string;
-    requestedArrivalDate: Date;
-    departureDateLeg1: Date;
-    departureCityLeg1: string;
-    arrivalCityLeg1: string;
-    arrivalDateLeg1: Date;
-    returnDepartureDateLeg2: Date;
-    returnDepartureCityLeg2: string;
-    returnArrivalCityLeg2: string;
+    userFullName: string;
+    tripType: boolean;
+    departureCity: string;
+    arrivalCity: string;
+    departureDate: Date;
+    returnDate?: Date | null   ;
     costOriginal: number;
     originalCurrency: string;
     costUSD: number;
     bookingReferenceDocument: string;
-    notes?: string; // nullable
+    notes?: string|null ; // nullable
  
   };
   export type Accommodation = {

@@ -55,7 +55,7 @@ export function DataTable<TData, TValue>({
       case 'requestedArrivalDate':
       case 'requestedDepartureCity':
       case 'requestedArrivalCity':
-        return 'bg-green-300';
+        return '';
       case 'arrivalCityLeg1':
       case 'returnDateLeg1':
       case 'departureDateLeg1':
@@ -63,9 +63,9 @@ export function DataTable<TData, TValue>({
       case 'returnDepartureDateLeg2':
       case 'returnDepartureCityLeg2':
       case 'returnArrivalCityLeg2':
-        return 'bg-orange-300';
+        return '';
       default:
-        return 'bg-gray-300';
+        return '';
     }
   };
   return (
