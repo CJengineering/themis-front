@@ -119,5 +119,22 @@
     animation: fadeInScaleUp 2s ease-in-out forwards;
   }
   
+  input[type="date"].placeholder::before {
+    content: 'Pick a date';
+    color: #ccc;
+  }
+  
 
+  input[type="date"].placeholder:focus::before {
+    content: '';
+  }
+  .activeStatus {
+    background-color: #e6eef8; /* Example color - adjust as needed */
+    width: 100%;
+    padding: 4px ;
+    border-radius: 3px;
+    font-weight: bold;
+    /* Add other styles as needed to highlight the active link */
+  }
+  
 }

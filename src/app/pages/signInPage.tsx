@@ -22,7 +22,7 @@ const SignInPage = () => {
           </TypographyH1>
 
           <img
-            src="public/CJ_LOGO_ENGLISH_WHITE_PNG.png" // Replace with the path to your image
+            src="CJ_LOGO_ENGLISH_WHITE_PNG.png" // Replace with the path to your image
             alt="Descriptive text" // Replace with a descriptive alt text
             className="mt-20 w-20 h-auto " // This ensures the image is pushed to the bottom of the div
           />

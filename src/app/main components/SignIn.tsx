@@ -26,7 +26,7 @@ const formSchema = z.object({
 });
 
 export function SignIn() {
-  const { login } = useAuth();
+  const { login, authError } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
     const auth = localStorage.getItem('isAuthenticated');
@@ -42,11 +42,15 @@ export function SignIn() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit= async (values: z.infer<typeof formSchema>)=> {
     console.log(values);
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('user-id', '1')
-    navigate('/')
+    await login(values.email, values.password);
+    if (authError) {
+        // Handle display of the authentication error
+        console.error(authError);
+      } else {
+        navigate('/');
+      }
   }
   return (
     <Form {...form}>
