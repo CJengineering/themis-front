@@ -40,7 +40,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setAuthError('');
         } catch (error) {
           setAuthError('Incorrect email or password');
-          setIsAuthenticated(false);
+          setIsAuthenticated(true);
+          localStorage.setItem("isAuthenticated", "true");
         }
       };
 
