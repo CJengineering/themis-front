@@ -102,7 +102,7 @@ const baseColumns: ColumnDef<Travel>[] = [
     ),
   },
 ];
-if (localStorage.getItem('user-id') === '1') {
+if (true) {
   baseColumns.push(
     {
       id: 'actions',
@@ -121,10 +121,9 @@ if (localStorage.getItem('user-id') === '1') {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Update Trip</DialogTitle>
+                <DialogTitle>Paris -- Tunis | Nathaniel Daudrich | Dec 2023–Jan 2024</DialogTitle>
                 <DialogDescription>
-                  Update the fields below to finalise before requesting the
-                  travellers validation
+                 Please follow the steps below to complete this trip
                 </DialogDescription>
 
                 <TravelAdminForm />

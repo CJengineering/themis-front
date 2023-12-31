@@ -27,7 +27,8 @@ export default function DropdownForm() {
         <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white p-4 z-20">
           <TravelForm />
           <div className="my-2"></div> {/* Divider between forms */}
-          <AccomodationForm />
+          {/* <AccomodationForm /> */}
+         
         </div>
       )}
     </div>

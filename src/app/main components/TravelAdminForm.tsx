@@ -19,6 +19,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { is } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
+import StatusSteps from './StatusSteps';
+import { TravelAuthForm } from './TravelAuthForm';
 interface Country {
   capital: string;
   // Include other fields from the API response if needed
@@ -58,106 +60,17 @@ export function TravelAdminForm() {
   };
   return (
     <>
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="departureCity" className="text-right">
-            Traveller
-          </Label>
-          <Input value="Nathanael " id="departureCity" className="col-span-3" />
+      <div className="grid grid-cols-8 gap-4 py-4">
+        <div className="col-span-2">
+          <StatusSteps></StatusSteps>
         </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="departureCity" className="text-right">
-            Trip
-          </Label>
-          <Input
-            value="Paris <> Tunis "
-            id="departureCity"
-            className="col-span-3"
-          />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="departureCity" className="text-right">
-            Status
-          </Label>
-          <div className='w-50'>
-
-         <Badge variant="inProgress">In progress</Badge>
-          </div>
-        </div>
-        {/* Departure City */}
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="departureCity" className="text-right">
-            From
-          </Label>
-          <InputCustom
-            id="departureCity"
-            initialText="Paris"
-            className="col-span-3"
-          />
-        </div>
-
-        {/* Arrival City */}
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="arrivalCity" className="text-right">
-            To
-          </Label>
-          <InputCustom
-            id="departureCity"
-            initialText="Tunis"
-            className="col-span-3"
-          />
-        </div>
-
-        {/* Departure Date */}
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="departureDate" className="text-right">
-            Departing
-          </Label>
-          <Input id="departureDate" type="date" className="col-span-3" />
-        </div>
-
-        {/* Return Date */}
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="returnDate" className="text-right">
-            Returning
-          </Label>
-          <Input id="returnDate" type="date" className="col-span-3" />
-        </div>
-
-        {/* Cost in USD */}
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="costUSD" className="text-right">
-            Cost (GBP)
-          </Label>
-          <Input id="costUSD" type="number" className="col-span-3" />
-        </div>
-
-        {/* Booking Reference Document */}
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="bookingReferenceDocument" className="text-right">
-            Reference
-          </Label>
-          <Input id="picture" type="file" className="col-span-3" />
-        </div>
-
-        {/* Notes */}
-        <div className="grid grid-cols-4  gap-4">
-          <Label htmlFor="notes" className="text-right">
-            Notes
-          </Label>
-          <Textarea
-            placeholder="Type your message here."
-            className="col-span-3"
-          />
+        <div className="col-span-6">
+          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+            Authentication
+          </h4>
+          <TravelAuthForm />
         </div>
       </div>
-      <DialogFooter>
-        <Button type="submit">Save changes</Button>
-
-        <Button type="submit" style={{ backgroundColor: 'green' }}>
-          Submit Changes
-        </Button>
-      </DialogFooter>
     </>
   );
 }

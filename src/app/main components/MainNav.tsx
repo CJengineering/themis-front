@@ -7,7 +7,7 @@ const MainNav = () => {
   const navLinks = [
     { name: "Dashboard", icon: "dashboard", path: "/" },
     { name: "Travel", icon: "flight", path: "/travel" },
-    { name: "Accommodation", icon: "hotel", path: "/accommodation" },
+    //{ name: "Accommodation", icon: "hotel", path: "/accommodation" },
   ];
 
   return (
