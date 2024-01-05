@@ -93,7 +93,7 @@ export function TravelForm() {
   const onSubmit = async (data: TravelFormData) => {
     console.log('Form data:', data);
     try {
-      const response = await fetch('http://localhost:3000/travel', {
+      const response = await fetch('https://themis-e4f6j5kdsq-ew.a.run.app/travel', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

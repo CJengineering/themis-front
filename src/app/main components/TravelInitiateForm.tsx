@@ -107,7 +107,7 @@ export function TravelInitiateForm() {
       status: status,
     };
     try {
-      const response = await fetch('http://localhost:3000/travel', {
+      const response = await fetch('https://themis-e4f6j5kdsq-ew.a.run.app/travel', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ export function TravelInitiateForm() {
 
       // You can add more logic here for success case
       await dispatch<any>(
-        fetchTravels('http://localhost:3000/travel', { userId: `${userId}` })
+        fetchTravels('https://themis-e4f6j5kdsq-ew.a.run.app/travel', { userId: `${userId}` })
       );
       form.reset({
         // Provide the initial values or leave empty to reset to defaultValues

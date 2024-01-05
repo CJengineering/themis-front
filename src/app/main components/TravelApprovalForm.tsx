@@ -124,7 +124,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
     const fetchTravel = async () => {
       try {
         const response = await fetch(
-          'http://localhost:3000/travel/' + idTravel
+          'https://themis-e4f6j5kdsq-ew.a.run.app/travel/' + idTravel
         );
         const data: TravelItem = await response.json();
         setTravel(data);
@@ -173,7 +173,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       // Append the non-file data as a JSON string
       formData.append('data', JSON.stringify(nonFileData));
 
-      const response = await fetch(`http://localhost:3000/travel/${id.id}`, {
+      const response = await fetch(`https://themis-e4f6j5kdsq-ew.a.run.app/travel/${id.id}`, {
         method: 'PATCH',
         body: formData, // send formData with both file and non-file data
       });
@@ -185,7 +185,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
 
       // You can add more logic here for success case
       await dispatch<any>(
-        fetchTravels('http://localhost:3000/travel', { userId: '2' })
+        fetchTravels('https://themis-e4f6j5kdsq-ew.a.run.app/travel', { userId: '2' })
       );
     } catch (error) {
       console.error('Error updating travel item:', error);

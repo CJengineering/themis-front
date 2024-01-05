@@ -10,7 +10,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import DropdownForm from './DropdownForm';
+const handleLogout = () => {
+  localStorage.removeItem("user-data");
+  localStorage.removeItem("isAuthenticated");
+  window.location.reload();
 
+};
 type PageName = 'Dashboard' | 'Travel' | 'Accommodation';
 
 // Define the props for TopRightNav
@@ -23,6 +28,13 @@ const TopRightNav = ({ currentPage }: TopRightNavProps) => {
       <h1 className="text-xl font-bold mb-4">{currentPage}</h1>
       <div className="flex space-x-4">
     <DropdownForm></DropdownForm>
+    <button 
+      className="flex items-center bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+      onClick={handleLogout}
+    >
+      <span className="material-icons mr-2">logout</span>
+      Logout
+    </button>
         <Avatar>
           <AvatarImage src="https://github.com/example.png" />
           <AvatarFallback>CN</AvatarFallback>

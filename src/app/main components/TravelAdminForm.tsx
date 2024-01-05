@@ -39,7 +39,7 @@ export function TravelAdminForm(props: PropsTravelAuthForm) {
   useEffect(() => {
     const fetchTravel = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/travel/${id}`);
+        const response = await fetch(`https://themis-e4f6j5kdsq-ew.a.run.app/travel/${id}`);
         const data: TravelItem = await response.json();
         setTravel(data);
       } catch (error) {

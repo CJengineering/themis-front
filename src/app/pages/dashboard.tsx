@@ -19,7 +19,7 @@ const Dashboard = () => {
   const userRole = userData?.role
   useEffect(() => {
     const fetchDate = async () => {
-      await dispatch<any>(fetchTravels('http://localhost:3000/travel',{userRole:`${userRole}`,userId:`${userId}`}));
+      await dispatch<any>(fetchTravels('https://themis-e4f6j5kdsq-ew.a.run.app/travel',{userRole:`${userRole}`,userId:`${userId}`}));
     };
     fetchDate();
   }, []);
