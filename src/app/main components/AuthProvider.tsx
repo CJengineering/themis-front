@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const login = async (email: string, password: string) => {
         try {
-          const response = await fetch('http://localhost:3000/auth/login', {
+          const response = await fetch('https://themis-e4f6j5kdsq-ew.a.run.app/auth/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -40,8 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setAuthError('');
         } catch (error) {
           setAuthError('Incorrect email or password');
-          setIsAuthenticated(true);
-          localStorage.setItem("isAuthenticated", "true");
+    
         }
       };
 

@@ -30,6 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { TravelRows } from '../features/Presentations';
 
 const GreenCell = ({ children }: { children: React.ReactNode }) => (
   <div className="bg-green-100">{children}</div>
@@ -56,15 +57,19 @@ const baseColumns: ColumnDef<Travel>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: () => <Badge variant="confirmed">Confirmed</Badge>,
-  },
+    cell: (props) => (
+      <Badge variant={props.getValue() as "default" | "secondary" | "destructive" | "outline" | "confirmed" | "inProgress" | "waitingValidation" | "Request" | "Authentication" | "Validation" | "Approval" | "Finalisation"}>
+        {props.getValue() as string}
+      </Badge>
+    ),
+    },
 
   {
     accessorKey: 'tripType',
     header: 'Type',
     cell: (props) => {
       const tripType = props.getValue() as string;
-      return <span>{tripType ? 'Round' : 'Oneway'}</span>;
+      return <span>{tripType ? 'Round Trip ' : 'One way'}</span>;
     },
   },
   {
@@ -97,18 +102,26 @@ const baseColumns: ColumnDef<Travel>[] = [
   {
     accessorKey: 'bookingReferenceDocument',
     header: 'Booking',
-    cell: () => (
-      <span className="material-symbols-outlined cursor-pointer hover:text-gray-200">download</span>
-    ),
+    cell: ({ row }) => {
+      const bookingReference = row.getValue('bookingReferenceDocument');
+  
+      if (bookingReference) {
+        return (
+          <span className="material-symbols-outlined cursor-pointer hover:text-gray-200">download</span>
+        );
+      }
+      return null; // Or return a placeholder or empty content if needed
+    },
   },
 ];
 if (true) {
   baseColumns.push(
-    {
+    {accessorKey: 'id',
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => {
-        const payment = row.original;
+      cell: (props) => {
+    
+        const id = props.getValue() as string;
         return (
           <Dialog>
             <DialogTrigger>
@@ -121,35 +134,32 @@ if (true) {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Paris -- Tunis | Nathaniel Daudrich | Dec 2023–Jan 2024</DialogTitle>
-                <DialogDescription>
-                 Please follow the steps below to complete this trip
-                </DialogDescription>
+               
 
-                <TravelAdminForm />
+                <TravelAdminForm id={id} />
               </DialogHeader>
             </DialogContent>
           </Dialog>
         );
       },
     },
-    {
-      accessorKey: 'id',
-      header: 'Final approval',
-      cell: (props) => {
-        const id = props.getValue() as string;
-        return (
-          <div className="flex gap-2 ">
-            <span className="material-symbols-outlined cursor-pointer hover:text-green-500">
-              check_circle
-            </span>
-            <span className="material-symbols-outlined cursor-pointer hover:text-red-500">
-              cancel
-            </span>
-          </div>
-        );
-      },
-    }
+    // {
+    //   accessorKey: 'id',
+    //   header: 'Final approval',
+    //   cell: (props) => {
+    //     const id = props.getValue() as string;
+    //     return (
+    //       <div className="flex gap-2 ">
+    //         <span className="material-symbols-outlined cursor-pointer hover:text-green-500">
+    //           check_circle
+    //         </span>
+    //         <span className="material-symbols-outlined cursor-pointer hover:text-red-500">
+    //           cancel
+    //         </span>
+    //       </div>
+    //     );
+    //   },
+    // }
   );
 }
 

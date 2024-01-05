@@ -20,29 +20,33 @@ import { is } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import StatusSteps from './StatusSteps';
-import { TravelAuthForm } from './TravelAuthForm';
+import { TravelAuthForm, TravelItem } from './TravelAuthForm';
+import { TravelValidationForm } from './TravelValidationForm';
 interface Country {
   capital: string;
   // Include other fields from the API response if needed
 }
-export function TravelAdminForm() {
+interface PropsTravelAuthForm {
+  id: string;
+}
+export function TravelAdminForm(props: PropsTravelAuthForm) {
+  const [travel, setTravel] = useState<TravelItem>();
+  const userString = localStorage.getItem('user-data');
+  if (!userString) return null;
+  const user = JSON.parse(userString);
+  const { id } = props;
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   useEffect(() => {
-    const fetchCities = async () => {
+    const fetchTravel = async () => {
       try {
-        const response = await fetch('https://restcountries.com/v2/all');
-        const data: Country[] = await response.json();
-        const cityOptions = data.map((country) => ({
-          value: country.capital,
-          label: country.capital,
-        }));
-        setCities(cityOptions);
+        const response = await fetch(`http://localhost:3000/travel/${id}`);
+        const data: TravelItem = await response.json();
+        setTravel(data);
       } catch (error) {
-        console.error('Error fetching cities:', error);
+        console.error('Error fetching travel:', error);
       }
     };
-
-    fetchCities();
+    fetchTravel();
   }, []);
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const handleSwitchChange = () => {
@@ -60,15 +64,23 @@ export function TravelAdminForm() {
   };
   return (
     <>
-      <div className="grid grid-cols-8 gap-4 py-4">
+      <DialogTitle>
+        {travel?.name}
+      </DialogTitle>
+      <DialogDescription>
+        Please follow the steps below to complete this trip
+      </DialogDescription>
+      <div className="grid grid-cols-8 gap-8 py-4">
         <div className="col-span-2">
-          <StatusSteps></StatusSteps>
+          <StatusSteps statusTravel={travel?.status ? travel.status : "Request"}></StatusSteps>
         </div>
         <div className="col-span-6">
           <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-            Authentication
+          {travel?.status}
           </h4>
-          <TravelAuthForm />
+          {user.role ==='traveller'?   <TravelValidationForm id={id}/>:<TravelAuthForm id={id} /> }
+        
+          
         </div>
       </div>
     </>

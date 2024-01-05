@@ -1,8 +1,9 @@
-import { Travel } from "@/type";
+import { Travel, TravelData } from "@/type";
 import { RootState } from "./store";
+import { TransitionEventHandler } from "react";
 
 export type PresentationTravel = {
-    travels: Record<number, Travel>;
+    travels: Record<number, TravelData>;
     ids: number[];
   };
 export type TravelRows = {
@@ -23,49 +24,32 @@ export type TravelRows = {
     notes: string | null
 }
 
-export const createPrsentationTravel = (state: RootState): TravelRows[] => {
-    const presentationTravel: TravelRows[] = [];
+export const createPrsentationTravel = (state: RootState): Travel[] => {
+    const presentationTravel: Travel[] = [];
     const { ids, travels } = state.travel;
-
+  
     ids.forEach((id) => {
-        const travel = travels[id];
-        if (!travel) return; // If the travel data is not found, skip this iteration
-
-        const {
-            status,
-            name,
-            userId,
-            userFullName,
-            tripType,
-            departureCity,
-            arrivalCity,
-            departureDate,
-            returnDate,
-            costOriginal,
-            originalCurrency,
-            costUSD,
-            bookingReferenceDocument,
-            notes
-        } = travel;
-
-        presentationTravel.push({
-            id,
-            status,
-            name,
-            userId,
-            userFullName,
-            tripType,
-            departureCity,
-            arrivalCity,
-            departureDate,
-            returnDate: returnDate ?? null, 
-            costOriginal,
-            originalCurrency,
-            costUSD,
-            bookingReferenceDocument,
-            notes: notes ?? null, 
-        });
+      const travel = travels[id];
+      if (!travel) return;
+  
+      presentationTravel.push({
+        id: travel.id,
+        status: travel.status ?? '',
+        name: travel.name,
+        userId: travel.userId,
+        userFullName: `${travel.user.firstName} ${travel.user.lastName}`,
+        tripType: !!travel.returnDepartureDateLeg2, // Assuming Round Trip if return date is present
+        departureCity: travel.departureCityLeg1,
+        arrivalCity: travel.arrivalCityLeg1,
+        departureDate: new Date(travel.departureDateLeg1),
+        returnDate: travel.returnDepartureDateLeg2 ? new Date(travel.returnDepartureDateLeg2) : null,
+        costOriginal: travel.costOriginal ?? 0,
+        originalCurrency: travel.originalCurrency ?? '',
+        costUSD: travel.costUSD ?? 0,
+        bookingReferenceDocument: travel.bookingReferenceDocument ?? '',
+        notes: travel.notes ?? ''
+      });
     });
-
+  
     return presentationTravel;
-};
+  };

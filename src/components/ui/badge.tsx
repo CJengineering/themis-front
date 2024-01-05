@@ -20,7 +20,18 @@ const badgeVariants = cva(
         inProgress:
           'border-transparent bg-orange-500 text-white hover:bg-orange-600', // Orange for in progress
         waitingValidation:
-          'border-transparent bg-yellow-500 text-white hover:bg-yellow-600', // Yellow for waiting validation
+          'border-transparent bg-yellow-500 text-white hover:bg-yellow-600',
+          Request:
+          'border-transparent bg-gray-400 text-white hover:bg-brown-600', // Brown for request
+        Authentication:
+          'border-transparent bg-blue-500 text-white hover:bg-purple-600', // Purple for authentication
+        Validation:
+          'border-transparent bg-green-500 text-white hover:bg-indigo-600', // Indigo for validation
+        Approval:
+          'border-transparent bg-teal-500 text-white hover:bg-teal-600', // Teal for approval
+        Finalisation:
+          'border-transparent bg-green-500 text-white hover:bg-fuchsia-600', // Fuchsia for finalisation
+      
       },
     },
     defaultVariants: {

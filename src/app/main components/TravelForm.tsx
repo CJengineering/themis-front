@@ -122,7 +122,7 @@ export function TravelForm() {
         </DialogHeader>
         <div className="grid grid-cols-8 gap-4 py-4">
           <div className="col-span-2">
-            <StatusSteps></StatusSteps>
+            <StatusSteps statusTravel={"Request"}></StatusSteps>
           </div>
           <div className="col-span-6">
             <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">

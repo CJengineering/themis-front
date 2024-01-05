@@ -6,9 +6,9 @@ import { travelFetched } from "./travelSlice";
 
 type ThunkResult<D> = ThunkAction<void, AppState, D, UnknownAction>;
 
-    export  const fetchTravels = (url:string, id?:number): ThunkResult<{travelGateway:TravelGateway}>=>{
+    export  const fetchTravels = (url:string, options: { id?: number, userId?: string,userRole?:string }): ThunkResult<{travelGateway:TravelGateway}>=>{
         return async (dispatch:Dispatch<any>, getState, {travelGateway}) => {
-            const travels = await travelGateway.fetchTravels(url, id);
+            const travels = await travelGateway.fetchTravels(url,  options );
             dispatch(travelFetched(travels));
     }
     

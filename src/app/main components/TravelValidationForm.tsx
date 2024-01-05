@@ -40,7 +40,7 @@ import { useAppDispatch } from '../features/hooks';
 import { fetchTravels } from '../features/travel/fetchTravel';
 const formSchema = z.object({
   name: z.string().optional(),
-  costOriginal: z.number().nullable().optional(),
+  costOriginal: z.string().optional(),
   file: z.any().optional(),
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
@@ -70,7 +70,7 @@ export type TravelItem = {
   originalCurrency: string | null;
   costUSD: number | null;
   bookingReferenceDocument: string | null;
-  notes: string;
+  notes: string | null;
   pdfLink: string | null;
   createdAt: string;
   updatedAt: string;
@@ -88,16 +88,15 @@ export type TravelItem = {
 interface PropsTravelAuthForm {
   id: string;
 }
-export function TravelAuthForm(id: PropsTravelAuthForm) {
-  const dispatch = useAppDispatch();
-  const userString = localStorage.getItem('user-data');
-  if (!userString) return null;
-
-  const user = JSON.parse(userString);
-  const fileInputRef = useRef(null);
-  const [status, setStatus] = useState('');
+export function TravelValidationForm(id: PropsTravelAuthForm) {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
+  const dispatch = useAppDispatch();
+  const userString = localStorage.getItem('user-data');
+    if (!userString) return null;
+    const user = JSON.parse(userString);
+  const fileInputRef = useRef(null);
+  const [status, setStatus] = useState('');
   const idTravel = id.id;
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   const [travel, setTravel] = useState<TravelItem>();
@@ -134,7 +133,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
         setTravel(data);
         form.reset({
           name: `${data.user.firstName} ${data.user.lastName}`,
-          roundTrip: `${data.tripType}`,
+          roundTrip: data.tripType,
           departureCityLeg1: data.departureCityLeg1,
           arrivalCityLeg1: data.arrivalCityLeg1,
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
@@ -155,15 +154,11 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
   };
   async function onSubmit(
     values: z.infer<typeof formSchema>,
-    isValidation: string
+    isValidation: boolean
   ) {
-    if (isValidation === 'validation') {
-      values = { ...values, status: 'Authentication' };
-      console.log('when authentication');
-    }
-    if (isValidation === 'approval') {
-      values = { ...values, status: 'Approval' };
-      console.log('when approval');
+    if (isValidation) {
+      values = { status: 'Validation', notes: values.notes };
+      console.log('when true');
     }
     console.log(values);
 
@@ -189,42 +184,26 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
 
       const responseData = await response.json();
       console.log('Success:', responseData);
-      if (isValidation === 'approval') {
-        setMessage(
-          'Your changes have been saved. The travel request has been sent for approval.'
+        setMessage('Travel updated');
+        setMessageType('success');
+        await dispatch<any>(
+            fetchTravels('http://localhost:3000/travel', {
+              userId: `${user.id}`
+            })      
         );
-      } else if (isValidation === 'validation') {
-        setMessage(
-          'Your changes have been saved. The travel request has been sent for approval.'
-        );
-      } else {
-        setMessage('Your changes have been saved.');
-      }
-
-      setMessageType('success');
-
-      // You can add more logic here for success case
-      await dispatch<any>(
-        fetchTravels('http://localhost:3000/travel', {
-          userRole: `${user.role}`,
-        })
-      );
-    } catch (error) {
+    }catch (error) {
       console.error('Error updating travel item:', error);
     }
   }
 
   async function onSave() {
     const values = form.getValues();
-    await onSubmit(values, 'save');
+    await onSubmit(values, false);
   }
-  async function onSendForApproval() {
-    const values = form.getValues();
-    await onSubmit(values, 'approval');
-  }
+
   async function onSendForValidation() {
     const values = form.getValues();
-    await onSubmit(values, 'validation');
+    await onSubmit(values, true);
   }
   useEffect(() => {
     form.register('file');
@@ -244,15 +223,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
   };
   return (
     <Form {...form}>
-      {message && (
-        <div
-          className={
-            messageType === 'success' ? 'text-green-500' : 'text-red-500'
-          }
-        >
-          {message}
-        </div>
-      )}
+      travel validation
       <form className="space-y-2">
         <FormField
           control={form.control}
@@ -435,11 +406,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             <FormItem>
               <FormLabel>Cost (GBP)</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={field.value !== null ? String(field.value) : ''}
-                  type="number"
-                />
+                <Input placeholder="0" type="number" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -479,41 +446,16 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
           )}
         />
         <DialogFooter>
-          {travel?.status === 'Request' && (
-            <>
-              <Button
-                type="button"
-                onClick={onSave}
-                style={{ backgroundColor: 'blue', marginRight: '12px' }}
-              >
-                Save
-              </Button>
-              <Button
-                onClick={onSendForValidation}
-                type="button"
-                style={{ backgroundColor: 'green' }}
-              >
-                Send for validation
-              </Button>
-            </>
-          )}
-          {travel?.status === 'Validation' && (
-            <>
-              <Button
-                type="button"
-                onClick={onSave}
-                style={{ backgroundColor: 'blue', marginRight: '12px' }}
-              >
-                Save
-              </Button>
-              <Button
-                onClick={onSendForApproval}
-                type="button"
-                style={{ backgroundColor: 'green' }}
-              >
-                Send for approval
-              </Button>
-            </>
+          {travel?.status === 'Authentication' ? (
+            <Button
+              onClick={onSendForValidation}
+              type="button"
+              style={{ backgroundColor: 'green' }}
+            >
+              Send for approval
+            </Button>
+          ) : (
+            ''
           )}
         </DialogFooter>
       </form>
