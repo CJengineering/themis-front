@@ -22,6 +22,9 @@ import Select from 'react-select';
 import StatusSteps from './StatusSteps';
 import { TravelAuthForm, TravelItem } from './TravelAuthForm';
 import { TravelValidationForm } from './TravelValidationForm';
+import { createPresentationUrl } from '../features/Presentations';
+import { useAppSelector } from '../features/hooks';
+import { TravelApprovalForm } from './TravelApprovalForm';
 interface Country {
   capital: string;
   // Include other fields from the API response if needed
@@ -31,6 +34,7 @@ interface PropsTravelAuthForm {
 }
 export function TravelAdminForm(props: PropsTravelAuthForm) {
   const [travel, setTravel] = useState<TravelItem>();
+  const url = useAppSelector(createPresentationUrl);
   const userString = localStorage.getItem('user-data');
   if (!userString) return null;
   const user = JSON.parse(userString);
@@ -39,7 +43,7 @@ export function TravelAdminForm(props: PropsTravelAuthForm) {
   useEffect(() => {
     const fetchTravel = async () => {
       try {
-        const response = await fetch(`https://themis-e4f6j5kdsq-ew.a.run.app/travel/${id}`);
+        const response = await fetch(`${url}/travel/${id}`);
         const data: TravelItem = await response.json();
         setTravel(data);
       } catch (error) {
@@ -64,23 +68,27 @@ export function TravelAdminForm(props: PropsTravelAuthForm) {
   };
   return (
     <>
-      <DialogTitle>
-        {travel?.name}
-      </DialogTitle>
+      <DialogTitle>{travel?.name}</DialogTitle>
       <DialogDescription>
         Please follow the steps below to complete this trip
       </DialogDescription>
       <div className="grid grid-cols-8 gap-8 py-4">
         <div className="col-span-2">
-          <StatusSteps statusTravel={travel?.status ? travel.status : "Request"}></StatusSteps>
+          <StatusSteps
+            statusTravel={travel?.status ? travel.status : 'Request'}
+          ></StatusSteps>
         </div>
         <div className="col-span-6">
           <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-          {travel?.status}
+            {travel?.status}
           </h4>
-          {user.role ==='traveller'?   <TravelValidationForm id={id}/>:<TravelAuthForm id={id} /> }
-        
-          
+          {user.role === 'traveller' ? (
+            <TravelValidationForm id={id} />
+          ) : user.role === 'validator' ? (
+            <TravelApprovalForm id={id} />
+          ) : (
+            <TravelAuthForm id={id} />
+          )}
         </div>
       </div>
     </>

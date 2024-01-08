@@ -36,8 +36,11 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { DialogFooter } from '@/components/ui/dialog';
 import { da } from 'date-fns/locale';
-import { useAppDispatch } from '../features/hooks';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { fetchTravels } from '../features/travel/fetchTravel';
+import { createPresentationUrl } from '../features/Presentations';
+import { CityData } from '@/interfaces';
+import { Badge } from '@/components/ui/badge';
 const formSchema = z.object({
   name: z.string().optional(),
   costOriginal: z.string().optional(),
@@ -89,6 +92,11 @@ interface PropsTravelAuthForm {
   id: string;
 }
 export function TravelApprovalForm(id: PropsTravelAuthForm) {
+    const userString = localStorage.getItem('user-data');
+    if (!userString) return null;
+  
+    const user = JSON.parse(userString);
+  const url = useAppSelector(createPresentationUrl);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const dispatch = useAppDispatch();
@@ -110,11 +118,16 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch('https://restcountries.com/v2/all');
-        const data: Country[] = await response.json();
-        const cityOptions = data.map((country) => ({
-          value: country.capital,
-          label: country.capital,
+        // Replace with the URL of the Countries States Cities Database API
+        const url =
+          'https://countriesnow.space/api/v0.1/countries/population/cities';
+        const response = await fetch(url);
+        const data: { data: CityData[] } = await response.json();
+
+        // Adjust the mapping based on the actual response structure
+        const cityOptions = data.data.map((city) => ({
+          value: city.city,
+          label: city.city,
         }));
         setCities(cityOptions);
       } catch (error) {
@@ -123,9 +136,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
     };
     const fetchTravel = async () => {
       try {
-        const response = await fetch(
-          'https://themis-e4f6j5kdsq-ew.a.run.app/travel/' + idTravel
-        );
+        const response = await fetch(`${url}/travel/` + idTravel);
         const data: TravelItem = await response.json();
         setTravel(data);
         form.reset({
@@ -148,6 +159,24 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
   const handleSwitchChange = () => {
     setIsRoundTrip(!isRoundTrip);
   };
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${url}/travel/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      alert('Travel deleted successfully');
+      // Handle successful deletion here, like updating the UI
+    } catch (error) {
+      console.error('Failed to delete travel:', error);
+      alert('Failed to delete travel');
+    }
+  };
+
   async function onSubmit(
     values: z.infer<typeof formSchema>,
     isValidation: boolean
@@ -160,10 +189,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
 
     const formData = new FormData();
 
-    // Append file to FormData if it exists
-    if (values.file) {
-      formData.append('file', values.file);
-    }
+   
 
     try {
       // Create an object that includes all the non-file form data
@@ -173,19 +199,21 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       // Append the non-file data as a JSON string
       formData.append('data', JSON.stringify(nonFileData));
 
-      const response = await fetch(`https://themis-e4f6j5kdsq-ew.a.run.app/travel/${id.id}`, {
+      const response = await fetch(`${url}/travel/${id.id}`, {
         method: 'PATCH',
         body: formData, // send formData with both file and non-file data
       });
 
       const responseData = await response.json();
       console.log('Success:', responseData);
-      setMessage('Your Approval wa successfully sent.');
+      setMessage('You have approved the trip !');
       setMessageType('success');
 
       // You can add more logic here for success case
       await dispatch<any>(
-        fetchTravels('https://themis-e4f6j5kdsq-ew.a.run.app/travel', { userId: '2' })
+        fetchTravels(`${url}/travel`, {
+          userRole: `${user.role}`,
+        })
       );
     } catch (error) {
       console.error('Error updating travel item:', error);
@@ -197,7 +225,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
     await onSubmit(values, false);
   }
 
-  async function onSendForValidation() {
+  async function onSendForFinalisation() {
     const values = form.getValues();
     await onSubmit(values, true);
   }
@@ -219,15 +247,15 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
   };
   return (
     <Form {...form}>
-          {message && (
-          <div
-            className={
-              messageType === 'success' ? 'text-green-500' : 'text-red-500'
-            }
-          >
-            {message}
-          </div>
-        )}
+      {message && (
+        <div
+          className={
+            messageType === 'success' ? 'text-green-500' : 'text-red-500'
+          }
+        >
+          {message}
+        </div>
+      )}
       <form className="space-y-2">
         <FormField
           control={form.control}
@@ -265,6 +293,29 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
+        <div className="grid  gap-y-2">
+          <Label>Status</Label>
+          <Badge
+            variant={
+              travel?.status as
+                | 'default'
+                | 'secondary'
+                | 'destructive'
+                | 'outline'
+                | 'confirmed'
+                | 'inProgress'
+                | 'waitingValidation'
+                | 'Request'
+                | 'Authentication'
+                | 'Validation'
+                | 'Approval'
+                | 'Finalisation'
+            }
+            style={{ width: '50%' }}
+          >
+            {travel?.status}
+          </Badge>
+        </div>
         <FormField
           control={form.control}
           name="departureCityLeg1"
@@ -452,15 +503,17 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
         <DialogFooter>
           {travel?.status === 'Approval' ? (
             <Button
-              onClick={onSendForValidation}
+              onClick={onSendForFinalisation}
               type="button"
               style={{ backgroundColor: 'green' }}
             >
-              Send for approval
+              Send for Finalisation
             </Button>
           ) : (
             ''
           )}
+
+          <Button  style={{ backgroundColor: 'red' }} onClick={handleDelete}> Delete</Button>
         </DialogFooter>
       </form>
     </Form>

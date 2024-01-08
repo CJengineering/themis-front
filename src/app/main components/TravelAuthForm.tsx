@@ -36,8 +36,12 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { DialogFooter } from '@/components/ui/dialog';
 import { da } from 'date-fns/locale';
-import { useAppDispatch } from '../features/hooks';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { fetchTravels } from '../features/travel/fetchTravel';
+import { createPresentationUrl } from '../features/Presentations';
+import { url } from 'inspector';
+import { CityData } from '@/interfaces';
+import { Badge } from '@/components/ui/badge';
 const formSchema = z.object({
   name: z.string().optional(),
   costOriginal: z.number().nullable().optional(),
@@ -89,6 +93,7 @@ interface PropsTravelAuthForm {
   id: string;
 }
 export function TravelAuthForm(id: PropsTravelAuthForm) {
+  const url = useAppSelector(createPresentationUrl)
   const dispatch = useAppDispatch();
   const userString = localStorage.getItem('user-data');
   if (!userString) return null;
@@ -114,21 +119,26 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch('https://restcountries.com/v2/all');
-        const data: Country[] = await response.json();
-        const cityOptions = data.map((country) => ({
-          value: country.capital,
-          label: country.capital,
+        // Replace with the URL of the Countries States Cities Database API
+        const url = 'https://countriesnow.space/api/v0.1/countries/population/cities';
+        const response = await fetch(url);
+        const data: { data: CityData[] }  = await response.json();
+    
+        // Adjust the mapping based on the actual response structure
+        const cityOptions = data.data.map((city) => ({
+          value: city.city,
+          label: city.city,
         }));
         setCities(cityOptions);
       } catch (error) {
         console.error('Error fetching cities:', error);
       }
     };
+   
     const fetchTravel = async () => {
       try {
         const response = await fetch(
-          'https://themis-e4f6j5kdsq-ew.a.run.app/travel/' + idTravel
+          `${url}/travel/` + idTravel
         );
         const data: TravelItem = await response.json();
         setTravel(data);
@@ -182,7 +192,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
       // Append the non-file data as a JSON string
       formData.append('data', JSON.stringify(nonFileData));
 
-      const response = await fetch(`https://themis-e4f6j5kdsq-ew.a.run.app/travel/${id.id}`, {
+      const response = await fetch(`${url}/travel/${id.id}`, {
         method: 'PATCH',
         body: formData, // send formData with both file and non-file data
       });
@@ -205,7 +215,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
 
       // You can add more logic here for success case
       await dispatch<any>(
-        fetchTravels('https://themis-e4f6j5kdsq-ew.a.run.app/travel', {
+        fetchTravels(`${url}/travel`, {
           userRole: `${user.role}`,
         })
       );
@@ -290,6 +300,29 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
+           <div className="grid  gap-y-2">
+          <Label>Status</Label>
+          <Badge
+            variant={
+              travel?.status as
+                | 'default'
+                | 'secondary'
+                | 'destructive'
+                | 'outline'
+                | 'confirmed'
+                | 'inProgress'
+                | 'waitingValidation'
+                | 'Request'
+                | 'Authentication'
+                | 'Validation'
+                | 'Approval'
+                | 'Finalisation'
+            }
+            style={{ width: '50%' }}
+          >
+            {travel?.status}
+          </Badge>
+        </div>
         <FormField
           control={form.control}
           name="departureCityLeg1"

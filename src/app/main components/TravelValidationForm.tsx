@@ -36,15 +36,19 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { DialogFooter } from '@/components/ui/dialog';
 import { da } from 'date-fns/locale';
-import { useAppDispatch } from '../features/hooks';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { fetchTravels } from '../features/travel/fetchTravel';
+import { createPresentationUrl } from '../features/Presentations';
+import { CityData } from '@/interfaces';
+import { Badge } from '@/components/ui/badge';
+
 const formSchema = z.object({
   name: z.string().optional(),
-  costOriginal: z.string().optional(),
+  costOriginal: z.number().optional().nullable(),
   file: z.any().optional(),
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
-  roundTrip: z.string().optional(),
+  roundTrip: z.string().optional().nullable(),
   departureCityLeg1: z.string().optional(),
   arrivalCityLeg1: z.string().optional(),
   departureDateLeg1: z.date().optional(),
@@ -89,12 +93,13 @@ interface PropsTravelAuthForm {
   id: string;
 }
 export function TravelValidationForm(id: PropsTravelAuthForm) {
+  const url = useAppSelector(createPresentationUrl);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const dispatch = useAppDispatch();
   const userString = localStorage.getItem('user-data');
-    if (!userString) return null;
-    const user = JSON.parse(userString);
+  if (!userString) return null;
+  const user = JSON.parse(userString);
   const fileInputRef = useRef(null);
   const [status, setStatus] = useState('');
   const idTravel = id.id;
@@ -112,23 +117,25 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
   });
   useEffect(() => {
     const fetchCities = async () => {
-      try {
-        const response = await fetch('https://restcountries.com/v2/all');
-        const data: Country[] = await response.json();
-        const cityOptions = data.map((country) => ({
-          value: country.capital,
-          label: country.capital,
-        }));
-        setCities(cityOptions);
-      } catch (error) {
-        console.error('Error fetching cities:', error);
-      }
+        try {
+            // Replace with the URL of the Countries States Cities Database API
+            const url = 'https://countriesnow.space/api/v0.1/countries/population/cities';
+            const response = await fetch(url);
+            const data: { data: CityData[] }  = await response.json();
+        
+            // Adjust the mapping based on the actual response structure
+            const cityOptions = data.data.map((city) => ({
+              value: city.city,
+              label: city.city,
+            }));
+            setCities(cityOptions);
+          } catch (error) {
+            console.error('Error fetching cities:', error);
+          }
     };
     const fetchTravel = async () => {
       try {
-        const response = await fetch(
-          'https://themis-e4f6j5kdsq-ew.a.run.app/travel/' + idTravel
-        );
+        const response = await fetch(url + '/travel/' + idTravel);
         const data: TravelItem = await response.json();
         setTravel(data);
         form.reset({
@@ -137,8 +144,8 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
           departureCityLeg1: data.departureCityLeg1,
           arrivalCityLeg1: data.arrivalCityLeg1,
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
-          notes: data.notes,
-          costOriginal: data.costOriginal,
+          notes: data.notes || '',
+          costOriginal: data.costOriginal || null,
         });
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -177,21 +184,24 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
       // Append the non-file data as a JSON string
       formData.append('data', JSON.stringify(nonFileData));
 
-      const response = await fetch(`https://themis-e4f6j5kdsq-ew.a.run.app/travel/${id.id}`, {
-        method: 'PATCH',
-        body: formData, // send formData with both file and non-file data
-      });
+      const response = await fetch(
+        `${url}/travel/${id.id}`,
+        {
+          method: 'PATCH',
+          body: formData, // send formData with both file and non-file data
+        }
+      );
 
       const responseData = await response.json();
       console.log('Success:', responseData);
-        setMessage('Travel updated');
-        setMessageType('success');
-        await dispatch<any>(
-            fetchTravels('https://themis-e4f6j5kdsq-ew.a.run.app/travel', {
-              userId: `${user.id}`
-            })      
-        );
-    }catch (error) {
+      setMessage('Travel updated');
+      setMessageType('success');
+      await dispatch<any>(
+        fetchTravels(`${url}/travel`, {
+          userId: `${user.id}`,
+        })
+      );
+    } catch (error) {
       console.error('Error updating travel item:', error);
     }
   }
@@ -224,6 +234,15 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
   return (
     <Form {...form}>
       travel validation
+      {message && (
+          <div
+            className={
+              messageType === 'success' ? 'text-green-500' : 'text-red-500'
+            }
+          >
+            {message}
+          </div>
+        )}
       <form className="space-y-2">
         <FormField
           control={form.control}
@@ -239,6 +258,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
+ 
         <FormField
           control={form.control}
           name="roundTrip"
@@ -261,6 +281,29 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
+           <div className="grid  gap-y-2">
+          <Label>Status</Label>
+          <Badge
+            variant={
+              travel?.status as
+                | 'default'
+                | 'secondary'
+                | 'destructive'
+                | 'outline'
+                | 'confirmed'
+                | 'inProgress'
+                | 'waitingValidation'
+                | 'Request'
+                | 'Authentication'
+                | 'Validation'
+                | 'Approval'
+                | 'Finalisation'
+            }
+            style={{ width: '50%' }}
+          >
+            {travel?.status}
+          </Badge>
+        </div>
         <FormField
           control={form.control}
           name="departureCityLeg1"
@@ -406,7 +449,12 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             <FormItem>
               <FormLabel>Cost (GBP)</FormLabel>
               <FormControl>
-                <Input placeholder="0" type="number" {...field} />
+                <Input
+                  placeholder="0"
+                  type="number"
+                  {...field}
+                  value={field.value || ''} // Convert null to an empty string
+                />
               </FormControl>
 
               <FormMessage />

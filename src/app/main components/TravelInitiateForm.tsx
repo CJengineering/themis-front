@@ -36,9 +36,11 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { loadingMessageCSS } from 'react-select/dist/declarations/src/components/Menu';
 import { UserRoundIcon } from 'lucide-react';
-import { useAppDispatch } from '../features/hooks';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { fetchTravels } from '../features/travel/fetchTravel';
 import { DialogFooter } from '@/components/ui/dialog';
+import { createPresentationUrl } from '../features/Presentations';
+import { CityData } from '@/interfaces';
 const formSchema = z.object({
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
@@ -68,11 +70,15 @@ export function TravelInitiateForm() {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch('https://restcountries.com/v2/all');
-        const data: Country[] = await response.json();
-        const cityOptions = data.map((country) => ({
-          value: country.capital,
-          label: country.capital,
+        // Replace with the URL of the Countries States Cities Database API
+        const url = 'https://countriesnow.space/api/v0.1/countries/population/cities';
+        const response = await fetch(url);
+        const data: { data: CityData[] }  = await response.json();
+    
+        // Adjust the mapping based on the actual response structure
+        const cityOptions = data.data.map((city) => ({
+          value: city.city,
+          label: city.city,
         }));
         setCities(cityOptions);
       } catch (error) {
@@ -83,7 +89,7 @@ export function TravelInitiateForm() {
     fetchCities();
   }, []);
   const [isRoundTrip, setIsRoundTrip] = useState(false);
- 
+  const url = useAppSelector(createPresentationUrl)
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     let nametrip = '';
@@ -107,7 +113,7 @@ export function TravelInitiateForm() {
       status: status,
     };
     try {
-      const response = await fetch('https://themis-e4f6j5kdsq-ew.a.run.app/travel', {
+      const response = await fetch(`${url}/travel`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +136,7 @@ export function TravelInitiateForm() {
 
       // You can add more logic here for success case
       await dispatch<any>(
-        fetchTravels('https://themis-e4f6j5kdsq-ew.a.run.app/travel', { userId: `${userId}` })
+        fetchTravels(`${url}/travel`, { userId: `${userId}` })
       );
       form.reset({
         // Provide the initial values or leave empty to reset to defaultValues

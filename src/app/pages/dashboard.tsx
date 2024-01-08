@@ -2,7 +2,7 @@ import { fakeAccommodations, travels } from '@/fake-travel';
 import { travelColumns } from '../travel/columns';
 import { DataTable } from '../travel/data-table';
 import { accommodationColumns } from '../accomodation/columnAccomodation';
-import { createPrsentationTravel } from '../features/Presentations';
+import { createPresentationUrl, createPrsentationTravel } from '../features/Presentations';
 import { useAppDispatch, useAppSelector, useUserData } from '../features/hooks';
 import { useEffect } from 'react';
 import { fetchTravels } from '../features/travel/fetchTravel';
@@ -13,13 +13,13 @@ const Dashboard = () => {
   if (!userString) return null;
   const userData = JSON.parse(userString);
   const dispatch = useAppDispatch();
-
+  const url = useAppSelector(createPresentationUrl)
 
   const userId = userData?.id 
   const userRole = userData?.role
   useEffect(() => {
     const fetchDate = async () => {
-      await dispatch<any>(fetchTravels('https://themis-e4f6j5kdsq-ew.a.run.app/travel',{userRole:`${userRole}`,userId:`${userId}`}));
+      await dispatch<any>(fetchTravels(`${url}/travel`,{userRole:`${userRole}`,userId:`${userId}`}));
     };
     fetchDate();
   }, []);

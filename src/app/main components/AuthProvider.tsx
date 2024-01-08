@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
+import { createPresentationUrl } from '../features/Presentations';
 
 export interface AuthContextProps {
     isAuthenticated: boolean;
@@ -12,16 +14,19 @@ const AuthContext = createContext<AuthContextProps | null>(null);
 
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const dispatch = useAppDispatch();
+    const url = useAppSelector(createPresentationUrl)
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [authError, setAuthError] = useState('')
     useEffect(() => {
+      console.log('this is the url', url);
         const auth = localStorage.getItem("isAuthenticated");
         setIsAuthenticated(auth === "true");
     }, []);
 
     const login = async (email: string, password: string) => {
         try {
-          const response = await fetch('https://themis-e4f6j5kdsq-ew.a.run.app/auth/login', {
+          const response = await fetch(`${url}/auth/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
