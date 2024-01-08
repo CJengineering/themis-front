@@ -56,6 +56,17 @@ export function TravelInitiateForm() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const dispatch = useAppDispatch();
+  function getFirstThreeConsonants(cityName: string) {
+    let consonants = cityName.match(/[^aeiou]/gi) || [];
+
+    return consonants.length < 3
+      ? consonants.join('').toUpperCase()
+      : consonants.slice(0, 3).join('').toUpperCase();
+  }
+
+  function getMonthAbbreviation(date: Date): string {
+    return format(date, 'MMM').toUpperCase();
+  }
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,10 +82,11 @@ export function TravelInitiateForm() {
     const fetchCities = async () => {
       try {
         // Replace with the URL of the Countries States Cities Database API
-        const url = 'https://countriesnow.space/api/v0.1/countries/population/cities';
+        const url =
+          'https://countriesnow.space/api/v0.1/countries/population/cities';
         const response = await fetch(url);
-        const data: { data: CityData[] }  = await response.json();
-    
+        const data: { data: CityData[] } = await response.json();
+
         // Adjust the mapping based on the actual response structure
         const cityOptions = data.data.map((city) => ({
           value: city.city,
@@ -89,7 +101,7 @@ export function TravelInitiateForm() {
     fetchCities();
   }, []);
   const [isRoundTrip, setIsRoundTrip] = useState(false);
-  const url = useAppSelector(createPresentationUrl)
+  const url = useAppSelector(createPresentationUrl);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     let nametrip = '';
@@ -102,7 +114,12 @@ export function TravelInitiateForm() {
       const lastName = user.lastName;
       const email = user.email;
       userId = user.id;
-      nametrip = ` ${values.departureCityLeg1} ${values.arrivalCityLeg1} |${firstName} ${lastName} |`;
+      const monthAbbreviation = getMonthAbbreviation(values.departureDateLeg1);
+      const departureConsonants = getFirstThreeConsonants(
+        values.departureCityLeg1
+      );
+      const arrivalConsonants = getFirstThreeConsonants(values.arrivalCityLeg1);
+      nametrip = ` ${departureConsonants} <-> ${arrivalConsonants} | ${firstName[0]}. ${lastName} | ${monthAbbreviation}`;
     } else {
       console.log('User data not found in localStorage');
     }
@@ -174,7 +191,10 @@ export function TravelInitiateForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Type</FormLabel>
-              <Selectcdn onValueChange={field.onChange} defaultValue={field.value}>
+              <Selectcdn
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type trip" />
@@ -183,15 +203,13 @@ export function TravelInitiateForm() {
                 <SelectContent>
                   <SelectItem value="One Way">One Way</SelectItem>
                   <SelectItem value="Round Trip">Round Trip</SelectItem>
-                 
                 </SelectContent>
               </Selectcdn>
-            
+
               <FormMessage />
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="departureCityLeg1"
@@ -349,8 +367,7 @@ export function TravelInitiateForm() {
           )}
         />
         <DialogFooter>
-         
-        <Button type="submit">Submit Trip Request</Button>
+          <Button type="submit">Submit Trip Request</Button>
         </DialogFooter>
       </form>
     </Form>
