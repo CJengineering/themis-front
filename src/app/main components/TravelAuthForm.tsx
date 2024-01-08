@@ -93,7 +93,7 @@ interface PropsTravelAuthForm {
   id: string;
 }
 export function TravelAuthForm(id: PropsTravelAuthForm) {
-  const url = useAppSelector(createPresentationUrl)
+  const url = useAppSelector(createPresentationUrl);
   const dispatch = useAppDispatch();
   const userString = localStorage.getItem('user-data');
   if (!userString) return null;
@@ -120,10 +120,11 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
     const fetchCities = async () => {
       try {
         // Replace with the URL of the Countries States Cities Database API
-        const url = 'https://countriesnow.space/api/v0.1/countries/population/cities';
+        const url =
+          'https://countriesnow.space/api/v0.1/countries/population/cities';
         const response = await fetch(url);
-        const data: { data: CityData[] }  = await response.json();
-    
+        const data: { data: CityData[] } = await response.json();
+
         // Adjust the mapping based on the actual response structure
         const cityOptions = data.data.map((city) => ({
           value: city.city,
@@ -134,12 +135,10 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
         console.error('Error fetching cities:', error);
       }
     };
-   
+
     const fetchTravel = async () => {
       try {
-        const response = await fetch(
-          `${url}/travel/` + idTravel
-        );
+        const response = await fetch(`${url}/travel/` + idTravel);
         const data: TravelItem = await response.json();
         setTravel(data);
         form.reset({
@@ -236,6 +235,10 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
     const values = form.getValues();
     await onSubmit(values, 'validation');
   }
+  async function onSendForFinal() {
+    const values = form.getValues();
+    await onSubmit(values, 'finalisation');
+  }
   useEffect(() => {
     form.register('file');
 
@@ -300,7 +303,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
-           <div className="grid  gap-y-2">
+        <div className="grid  gap-y-2">
           <Label>Status</Label>
           <Badge
             variant={
@@ -461,6 +464,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
+      
         <FormField
           control={form.control}
           name="costOriginal"
@@ -493,6 +497,13 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
+          {travel?.bookingReferenceDocument && (
+          <Button style={{backgroundColor:'#006400'}}>
+            <a href={`${travel.bookingReferenceDocument}`} target="_blank">
+              Download 
+            </a>
+          </Button>
+        )}
         <FormField
           control={form.control}
           name="notes"
@@ -541,6 +552,24 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
               </Button>
               <Button
                 onClick={onSendForApproval}
+                type="button"
+                style={{ backgroundColor: 'green' }}
+              >
+                Send for approval
+              </Button>
+            </>
+          )}
+          {travel?.status === 'Finalisation' && (
+            <>
+              <Button
+                type="button"
+                onClick={onSave}
+                style={{ backgroundColor: 'blue', marginRight: '12px' }}
+              >
+                Save
+              </Button>
+              <Button
+                onClick={onSendForFinal}
                 type="button"
                 style={{ backgroundColor: 'green' }}
               >

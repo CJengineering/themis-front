@@ -475,6 +475,13 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
+           {travel?.bookingReferenceDocument && (
+          <Button style={{backgroundColor:'#006400'}}>
+            <a href={`${travel.bookingReferenceDocument}`} target="_blank">
+              Download 
+            </a>
+          </Button>
+        )}
         <FormField
           control={form.control}
           name="notes"

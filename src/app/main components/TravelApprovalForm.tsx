@@ -92,10 +92,10 @@ interface PropsTravelAuthForm {
   id: string;
 }
 export function TravelApprovalForm(id: PropsTravelAuthForm) {
-    const userString = localStorage.getItem('user-data');
-    if (!userString) return null;
-  
-    const user = JSON.parse(userString);
+  const userString = localStorage.getItem('user-data');
+  if (!userString) return null;
+
+  const user = JSON.parse(userString);
   const url = useAppSelector(createPresentationUrl);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
@@ -188,8 +188,6 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
     console.log(values);
 
     const formData = new FormData();
-
-   
 
     try {
       // Create an object that includes all the non-file form data
@@ -482,6 +480,13 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
+        {travel?.bookingReferenceDocument && (
+          <Button style={{ backgroundColor: '#006400' }}>
+            <a href={`${travel.bookingReferenceDocument}`} target="_blank">
+              Download
+            </a>
+          </Button>
+        )}
         <FormField
           control={form.control}
           name="notes"
@@ -507,13 +512,16 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
               type="button"
               style={{ backgroundColor: 'green' }}
             >
-              Send for Finalisation
+              Approve
             </Button>
           ) : (
             ''
           )}
 
-          <Button  style={{ backgroundColor: 'red' }} onClick={handleDelete}> Delete</Button>
+          <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
+            {' '}
+            Delete
+          </Button>
         </DialogFooter>
       </form>
     </Form>

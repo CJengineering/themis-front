@@ -104,10 +104,11 @@ const baseColumns: ColumnDef<Travel>[] = [
     header: 'Booking',
     cell: ({ row }) => {
       const bookingReference = row.getValue('bookingReferenceDocument');
-  
-      if (bookingReference) {
+      if (typeof bookingReference === 'string' && bookingReference) {
         return (
-          <span className="material-symbols-outlined cursor-pointer hover:text-gray-200">download</span>
+          <a href={bookingReference} target="_blank" rel="noopener noreferrer">
+            <span className="material-symbols-outlined cursor-pointer hover:text-gray-200">download</span>
+          </a>
         );
       }
       return null; // Or return a placeholder or empty content if needed
