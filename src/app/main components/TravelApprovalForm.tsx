@@ -185,6 +185,10 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       values = { status: 'Finalisation' };
       console.log('when true');
     }
+    if (!isValidation) {
+        values = { status: 'Request' };
+        console.log('when false');
+      }
     console.log(values);
 
     const formData = new FormData();
@@ -205,6 +209,11 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       const responseData = await response.json();
       console.log('Success:', responseData);
       setMessage('You have approved the trip !');
+      if(!isValidation){
+        setMessage('You have declined the trip !');
+      }
+
+    
       setMessageType('success');
 
       // You can add more logic here for success case
@@ -226,6 +235,10 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
   async function onSendForFinalisation() {
     const values = form.getValues();
     await onSubmit(values, true);
+  }
+  async function onSendForDecline() {
+    const values = form.getValues();
+    await onSubmit(values, false);
   }
   useEffect(() => {
     form.register('file');
@@ -507,6 +520,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
         />
         <DialogFooter>
           {travel?.status === 'Approval' ? (
+            <>
             <Button
               onClick={onSendForFinalisation}
               type="button"
@@ -514,6 +528,14 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
             >
               Approve
             </Button>
+            <Button
+              onClick={onSendForDecline}
+              type="button"
+              style={{ backgroundColor: 'brown' }}
+            >
+              Decline
+            </Button>
+            </>
           ) : (
             ''
           )}

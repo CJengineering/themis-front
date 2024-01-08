@@ -115,53 +115,8 @@ const baseColumns: ColumnDef<Travel>[] = [
     },
   },
 ];
-if (true) {
-  baseColumns.push(
-    {accessorKey: 'id',
-      id: 'actions',
-      header: 'Actions',
-      cell: (props) => {
-    
-        const id = props.getValue() as string;
-        return (
-          <Dialog>
-            <DialogTrigger>
-              <div
-                style={{ userSelect: 'none' }}
-                className="inline-flex  ml-2 items-center justify-center w-8 h-8 bg-blue-500 rounded-full text-white"
-              >
-                <span className="material-icons">add</span>
-              </div>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-               
 
-                <TravelAdminForm id={id} />
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        );
-      },
-    },
-    // {
-    //   accessorKey: 'id',
-    //   header: 'Final approval',
-    //   cell: (props) => {
-    //     const id = props.getValue() as string;
-    //     return (
-    //       <div className="flex gap-2 ">
-    //         <span className="material-symbols-outlined cursor-pointer hover:text-green-500">
-    //           check_circle
-    //         </span>
-    //         <span className="material-symbols-outlined cursor-pointer hover:text-red-500">
-    //           cancel
-    //         </span>
-    //       </div>
-    //     );
-    //   },
-    // }
-  );
-}
+
+
 
 export const travelColumns: ColumnDef<Travel>[] = baseColumns;

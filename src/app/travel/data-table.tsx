@@ -4,7 +4,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  Header
+  Header,
 } from '@tanstack/react-table';
 
 import {
@@ -16,9 +16,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Dialog } from '@radix-ui/react-dialog';
+import { DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import { TravelAdminForm } from '../main components/TravelAdminForm';
+import { useState } from 'react';
+import React from 'react';
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+interface DataTableProps<TData , TValue> {
+  columns: ColumnDef<TData , TValue>[];
   data: TData[];
 }
 
@@ -50,7 +54,7 @@ export function DataTable<TData, TValue>({
         return '';
     }
   };
-  const getCellClassNameHeader = (header: Header<TData,TValue>) => {
+  const getCellClassNameHeader = (header: Header<TData, TValue>) => {
     switch (header.column.id) {
       case 'requestedDepartureDate':
       case 'requestedArrivalDate':
@@ -69,6 +73,11 @@ export function DataTable<TData, TValue>({
         return '';
     }
   };
+  const [openDialogId, setOpenDialogId] = useState<string | null>(null);
+
+  const handleRowClick = (id: string) => {
+    setOpenDialogId(id);
+  };
   return (
     <div className="rounded-md border">
       <Table>
@@ -77,7 +86,12 @@ export function DataTable<TData, TValue>({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className={getCellClassNameHeader(header as Header<TData, TValue>)}>
+                  <TableHead
+                    key={header.id}
+                    className={getCellClassNameHeader(
+                      header as Header<TData, TValue>
+                    )}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -90,26 +104,80 @@ export function DataTable<TData, TValue>({
             </TableRow>
           ))}
         </TableHeader>
+        {/*}
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
+        
              
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                >
-                {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
+                  
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="whitespace-nowrap overflow-hidden overflow-ellipsis"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+         
+             
             ))
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>
+            </TableRow>
+          )}
+        </TableBody>*/}
+                    <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => {
+              const id = (row.original as any).id;
+
+
+              return (
+                <React.Fragment key={row.id}>
+                  <TableRow
+                    data-state={row.getIsSelected() && 'selected'}
+                    onClick={() => handleRowClick(id)}
+                    className="hover:cursor-pointer"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="whitespace-nowrap overflow-hidden overflow-ellipsis"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {openDialogId === id && (
+                    <Dialog open={true} onOpenChange={() => setOpenDialogId(null)}>
+                      <DialogContent>
+                        <DialogHeader>
+                          <TravelAdminForm id={id} />
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                </React.Fragment>
+              );
+            })
+          ) : (
+            <TableRow>
+              {/* ... No results handling */}
             </TableRow>
           )}
         </TableBody>
