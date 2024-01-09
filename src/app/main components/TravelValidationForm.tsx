@@ -117,21 +117,22 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
   });
   useEffect(() => {
     const fetchCities = async () => {
-        try {
-            // Replace with the URL of the Countries States Cities Database API
-            const url = 'https://countriesnow.space/api/v0.1/countries/population/cities';
-            const response = await fetch(url);
-            const data: { data: CityData[] }  = await response.json();
-        
-            // Adjust the mapping based on the actual response structure
-            const cityOptions = data.data.map((city) => ({
-              value: city.city,
-              label: city.city,
-            }));
-            setCities(cityOptions);
-          } catch (error) {
-            console.error('Error fetching cities:', error);
-          }
+      try {
+        // Replace with the URL of the Countries States Cities Database API
+        const url =
+          'https://countriesnow.space/api/v0.1/countries/population/cities';
+        const response = await fetch(url);
+        const data: { data: CityData[] } = await response.json();
+
+        // Adjust the mapping based on the actual response structure
+        const cityOptions = data.data.map((city) => ({
+          value: city.city,
+          label: city.city,
+        }));
+        setCities(cityOptions);
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      }
     };
     const fetchTravel = async () => {
       try {
@@ -184,17 +185,14 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
       // Append the non-file data as a JSON string
       formData.append('data', JSON.stringify(nonFileData));
 
-      const response = await fetch(
-        `${url}/travel/${id.id}`,
-        {
-          method: 'PATCH',
-          body: formData, // send formData with both file and non-file data
-        }
-      );
+      const response = await fetch(`${url}/travel/${id.id}`, {
+        method: 'PATCH',
+        body: formData, // send formData with both file and non-file data
+      });
 
       const responseData = await response.json();
       console.log('Success:', responseData);
-      setMessage('Travel updated');
+      setMessage('Sent for Approval');
       setMessageType('success');
       await dispatch<any>(
         fetchTravels(`${url}/travel`, {
@@ -222,7 +220,23 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
       form.unregister('file');
     };
   }, [form]);
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${url}/travel/${id}`, {
+        method: 'DELETE',
+      });
 
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      alert('Travel deleted successfully');
+      // Handle successful deletion here, like updating the UI
+    } catch (error) {
+      console.error('Failed to delete travel:', error);
+      alert('Failed to delete travel');
+    }
+  };
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const file = event.target.files[0];
@@ -235,14 +249,14 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
     <Form {...form}>
       travel validation
       {message && (
-          <div
-            className={
-              messageType === 'success' ? 'text-green-500' : 'text-red-500'
-            }
-          >
-            {message}
-          </div>
-        )}
+        <div
+          className={
+            messageType === 'success' ? 'text-green-500' : 'text-red-500'
+          }
+        >
+          {message}
+        </div>
+      )}
       <form className="space-y-2">
         <FormField
           control={form.control}
@@ -258,7 +272,6 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
- 
         <FormField
           control={form.control}
           name="roundTrip"
@@ -281,7 +294,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
-           <div className="grid  gap-y-2">
+        <div className="grid  gap-y-2">
           <Label>Status</Label>
           <Badge
             variant={
@@ -311,24 +324,9 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             <FormItem>
               <FormLabel>From</FormLabel>
               <FormControl>
-                <Controller
-                  name="departureCityLeg1"
-                  control={form.control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <Select<{ value: string; label: string }>
-                      options={cities}
-                      className="col-span-3"
-                      placeholder="Select a city"
-                      isSearchable
-                      onChange={(option) =>
-                        onChange(option ? option.value : '')
-                      }
-                      onBlur={onBlur}
-                      value={cities.find((c) => c.value === value)}
-                      ref={ref}
-                    />
-                  )}
-                />
+                <div className="col-span-3 p-2 bg-gray-100 rounded">
+                  {field.value || 'No city selected'}
+                </div>
               </FormControl>
 
               <FormMessage />
@@ -342,24 +340,9 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             <FormItem>
               <FormLabel>To</FormLabel>
               <FormControl>
-                <Controller
-                  name="arrivalCityLeg1"
-                  control={form.control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <Select<{ value: string; label: string }>
-                      options={cities}
-                      className="col-span-3"
-                      placeholder="Select a city"
-                      isSearchable
-                      onChange={(option) =>
-                        onChange(option ? option.value : '')
-                      }
-                      onBlur={onBlur}
-                      value={cities.find((c) => c.value === value)}
-                      ref={ref}
-                    />
-                  )}
-                />
+                <div className="col-span-3 p-2 bg-gray-100 rounded">
+                  {field.value || 'No city selected'}
+                </div>
               </FormControl>
 
               <FormMessage />
@@ -475,10 +458,10 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
-           {travel?.bookingReferenceDocument && (
-          <Button style={{backgroundColor:'#006400'}}>
+        {travel?.bookingReferenceDocument && (
+          <Button style={{ backgroundColor: '#006400' }}>
             <a href={`${travel.bookingReferenceDocument}`} target="_blank">
-              Download 
+              Download
             </a>
           </Button>
         )}
@@ -502,13 +485,18 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
         />
         <DialogFooter>
           {travel?.status === 'Authentication' ? (
-            <Button
-              onClick={onSendForValidation}
-              type="button"
-              style={{ backgroundColor: 'green' }}
-            >
-              Send for approval
-            </Button>
+            <>
+              <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
+                Delete
+              </Button>
+              <Button
+                onClick={onSendForValidation}
+                type="button"
+                style={{ backgroundColor: 'green' }}
+              >
+                Send for approval
+              </Button>
+            </>
           ) : (
             ''
           )}

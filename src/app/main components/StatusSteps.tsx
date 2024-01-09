@@ -1,10 +1,10 @@
 import React from 'react';
 interface StatusStepsProps {
-  statusTravel: string 
+  statusTravel: string;
 }
 
-const StatusSteps = ({ statusTravel }:StatusStepsProps) => {
-  if (!statusTravel){
+const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
+  if (!statusTravel) {
     statusTravel = 'Request';
   }
   const navLinks = [
@@ -14,13 +14,33 @@ const StatusSteps = ({ statusTravel }:StatusStepsProps) => {
     { name: 'Approval', icon: 'task_alt' },
     { name: 'Finalisation', icon: 'north_east' },
   ];
+  const getNextStepIndex = (currentStep: string) => {
+    const stepOrder = [
+      'Request',
+      'Authentication',
+      'Validation',
+      'Approval',
+      'Finalisation',
+    ];
+    const currentStepIndex = stepOrder.indexOf(currentStep);
+    return currentStepIndex < stepOrder.length - 1
+      ? currentStepIndex + 1
+      : currentStepIndex;
+  };
 
+  const activeStepIndex = getNextStepIndex(statusTravel);
   // Function to determine if the step is completed
-  const isStepCompleted = (stepName:string) => {
-    const stepOrder = ['Request', 'Authentication', 'Validation', 'Approval', 'Finalisation'];
+  const isStepCompleted = (stepName: string) => {
+    const stepOrder = [
+      'Request',
+      'Authentication',
+      'Validation',
+      'Approval',
+      'Finalisation',
+    ];
     const currentStepIndex = stepOrder.indexOf(statusTravel);
     const stepIndex = stepOrder.indexOf(stepName);
-    return stepIndex < currentStepIndex;
+    return stepIndex <= currentStepIndex;
   };
 
   return (
@@ -29,12 +49,14 @@ const StatusSteps = ({ statusTravel }:StatusStepsProps) => {
         PROGRESS
       </h6>
       <div className="w-full">
-        {navLinks.map((link) => (
+        {navLinks.map((link,index) => (
           <div
             key={link.name}
             className={`flex justify-between items-center text-sm mb-4 ${
-              statusTravel === link.name ? 'activeStatus' : ''
-            } ${isStepCompleted(link.name) ? 'text-bold' : 'text-muted-foreground'}`}
+              index === activeStepIndex ? 'activeStatus' : ''
+            } ${
+              isStepCompleted(link.name) ? 'text-bold' : 'text-muted-foreground'
+            }`}
           >
             <div className="flex items-center">
               <span

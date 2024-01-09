@@ -42,6 +42,7 @@ import { createPresentationUrl } from '../features/Presentations';
 import { url } from 'inspector';
 import { CityData } from '@/interfaces';
 import { Badge } from '@/components/ui/badge';
+import { StatusInput, mapStatusToOutput } from '../travel/columns';
 const formSchema = z.object({
   name: z.string().optional(),
   costOriginal: z.number().nullable().optional(),
@@ -174,8 +175,19 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
       values = { ...values, status: 'Approval' };
       console.log('when approval');
     }
+    if (isValidation === 'finalisation') {
+      values = { ...values, status: 'Finalisation' };
+      console.log('when approval');
+    }
     console.log(values);
+  
 
+      if(values.departureDateLeg1){
+        values = { ...values, departureDateLeg1: toUTCDate(values.departureDateLeg1) };
+      }
+      if(values.returnDepartureDateLeg2){
+        values = { ...values, returnDepartureDateLeg2: toUTCDate(values.returnDepartureDateLeg2) };
+      }
     const formData = new FormData();
 
     // Append file to FormData if it exists
@@ -187,6 +199,9 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
       // Create an object that includes all the non-file form data
       const nonFileData = { ...values };
       delete nonFileData.file;
+      delete nonFileData.name;
+      delete nonFileData.departureCityLeg1;
+      delete nonFileData.arrivalCityLeg1;
 
       // Append the non-file data as a JSON string
       formData.append('data', JSON.stringify(nonFileData));
@@ -200,7 +215,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
       console.log('Success:', responseData);
       if (isValidation === 'approval') {
         setMessage(
-          'Your changes have been saved. The travel request has been sent for approval.'
+          'Your changes have been saved. The travel request has been sent for finalised'
         );
       } else if (isValidation === 'validation') {
         setMessage(
@@ -222,7 +237,30 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
       console.error('Error updating travel item:', error);
     }
   }
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${url}/travel/${id}`, {
+        method: 'DELETE',
+      });
 
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      alert('Travel deleted successfully');
+      // Handle successful deletion here, like updating the UI
+    } catch (error) {
+      console.error('Failed to delete travel:', error);
+      alert('Failed to delete travel');
+    }
+  };
+  function toUTCDate(date: Date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+
+    return new Date(Date.UTC(year, month, day));
+  }
   async function onSave() {
     const values = form.getValues();
     await onSubmit(values, 'save');
@@ -323,7 +361,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             }
             style={{ width: '50%' }}
           >
-            {travel?.status}
+            {mapStatusToOutput(travel?.status as StatusInput)}
           </Badge>
         </div>
         <FormField
@@ -333,26 +371,10 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             <FormItem>
               <FormLabel>From</FormLabel>
               <FormControl>
-                <Controller
-                  name="departureCityLeg1"
-                  control={form.control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <Select<{ value: string; label: string }>
-                      options={cities}
-                      className="col-span-3"
-                      placeholder="Select a city"
-                      isSearchable
-                      onChange={(option) =>
-                        onChange(option ? option.value : '')
-                      }
-                      onBlur={onBlur}
-                      value={cities.find((c) => c.value === value)}
-                      ref={ref}
-                    />
-                  )}
-                />
+                <div className="col-span-3 p-2 bg-gray-100 rounded">
+                  {field.value || 'No city selected'}
+                </div>
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -364,24 +386,9 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             <FormItem>
               <FormLabel>To</FormLabel>
               <FormControl>
-                <Controller
-                  name="arrivalCityLeg1"
-                  control={form.control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <Select<{ value: string; label: string }>
-                      options={cities}
-                      className="col-span-3"
-                      placeholder="Select a city"
-                      isSearchable
-                      onChange={(option) =>
-                        onChange(option ? option.value : '')
-                      }
-                      onBlur={onBlur}
-                      value={cities.find((c) => c.value === value)}
-                      ref={ref}
-                    />
-                  )}
-                />
+                <div className="col-span-3 p-2 bg-gray-100 rounded">
+                  {field.value || 'No city selected'}
+                </div>
               </FormControl>
 
               <FormMessage />
@@ -464,7 +471,6 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
-      
         <FormField
           control={form.control}
           name="costOriginal"
@@ -497,10 +503,10 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
-          {travel?.bookingReferenceDocument && (
-          <Button style={{backgroundColor:'#006400'}}>
+        {travel?.bookingReferenceDocument && (
+          <Button style={{ backgroundColor: '#006400' }}>
             <a href={`${travel.bookingReferenceDocument}`} target="_blank">
-              Download 
+              Download
             </a>
           </Button>
         )}
@@ -526,6 +532,12 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
           {travel?.status === 'Request' && (
             <>
               <Button
+                style={{ backgroundColor: 'red', marginRight: '12px' }}
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+              <Button
                 type="button"
                 onClick={onSave}
                 style={{ backgroundColor: 'blue', marginRight: '12px' }}
@@ -543,6 +555,9 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
           )}
           {travel?.status === 'Validation' && (
             <>
+              {/* <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
+                Delete
+              </Button>
               <Button
                 type="button"
                 onClick={onSave}
@@ -556,11 +571,14 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                 style={{ backgroundColor: 'green' }}
               >
                 Send for approval
-              </Button>
+              </Button> */}
             </>
           )}
-          {travel?.status === 'Finalisation' && (
+          {travel?.status === 'Approval' && (
             <>
+              <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
+                Delete
+              </Button>
               <Button
                 type="button"
                 onClick={onSave}
@@ -573,7 +591,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                 type="button"
                 style={{ backgroundColor: 'green' }}
               >
-                Send for approval
+                Finalise the trip
               </Button>
             </>
           )}

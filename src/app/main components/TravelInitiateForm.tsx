@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+
 import {
   Form,
   FormControl,
@@ -19,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import Select from 'react-select';
@@ -63,9 +64,40 @@ export function TravelInitiateForm() {
       ? consonants.join('').toUpperCase()
       : consonants.slice(0, 3).join('').toUpperCase();
   }
+  const [searchTerm, setSearchTerm] = useState('');
 
+  const fetchCities2 = async (query:string) => {
+    try {
+      const url = `https://api.api-ninjas.com/v1/city?name=${query}&limit=30`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 
+          'X-Api-Key': 'Kh9wcmGqloUhMtGKrwf9Fg==3ehfaiVh85GDvwfd',
+          'Content-Type': 'application/json' 
+        },
+      });
+      const data = await response.json();
+
+      // Assuming the response is an array of cities
+      const cityOptions = data.map((city : any) => ({
+        value: city.name,
+        label: city.name,
+      }));
+      setCities(cityOptions);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+    }
+  };
   function getMonthAbbreviation(date: Date): string {
     return format(date, 'MMM').toUpperCase();
+  }
+  function debounce<F extends (...args: any[]) => void>(func: F, waitFor: number) {
+    let timeoutId: NodeJS.Timeout;
+  
+    return function(...args: Parameters<F>) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), waitFor);
+    } as F;
   }
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,6 +109,16 @@ export function TravelInitiateForm() {
       notes: '',
     },
   });
+  const debouncedFetchCities = useCallback(
+    debounce((query:string) => fetchCities2(query), 100),
+    []
+  );
+
+  useEffect(() => {
+    if (searchTerm) {
+      debouncedFetchCities(searchTerm);
+    }
+  }, [searchTerm, debouncedFetchCities]);
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   useEffect(() => {
     const fetchCities = async () => {
@@ -98,7 +140,7 @@ export function TravelInitiateForm() {
       }
     };
 
-    fetchCities();
+    //fetchCities();
   }, []);
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const url = useAppSelector(createPresentationUrl);
@@ -123,8 +165,11 @@ export function TravelInitiateForm() {
     } else {
       console.log('User data not found in localStorage');
     }
+   
     const submissionData = {
       ...values,
+      departureDateLeg1: values.departureDateLeg1 ? toUTCDate(values.departureDateLeg1).toISOString() : null,
+      returnDepartureDateLeg2: values.returnDepartureDateLeg2 ? toUTCDate(values.returnDepartureDateLeg2).toISOString() : null,
       userId: userId,
       name: nametrip,
       status: status,
@@ -173,6 +218,14 @@ export function TravelInitiateForm() {
     maxHeight: isRoundTrip ? '500px' : '0', // Adjust max height as needed
     opacity: isRoundTrip ? 1 : 0,
   };
+  function toUTCDate(date:Date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+  
+ 
+    return new Date(Date.UTC(year, month, day));
+  }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
@@ -226,6 +279,7 @@ export function TravelInitiateForm() {
                       className="col-span-3"
                       placeholder="Select a city"
                       isSearchable
+                      onInputChange={(inputValue) => setSearchTerm(inputValue)}
                       onChange={(option) =>
                         onChange(option ? option.value : '')
                       }
@@ -257,6 +311,7 @@ export function TravelInitiateForm() {
                       className="col-span-3"
                       placeholder="Select a city"
                       isSearchable
+                      onInputChange={(inputValue) => setSearchTerm(inputValue)}
                       onChange={(option) =>
                         onChange(option ? option.value : '')
                       }
@@ -367,7 +422,7 @@ export function TravelInitiateForm() {
           )}
         />
         <DialogFooter>
-          <Button type="submit">Submit Trip Request</Button>
+          <Button type="submit" style={{backgroundColor:'green'}}>Request Authentication</Button>
         </DialogFooter>
       </form>
     </Form>

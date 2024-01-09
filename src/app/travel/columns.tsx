@@ -31,11 +31,28 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { TravelRows } from '../features/Presentations';
+export type StatusInput = "Request" | "Authentication" | "Validation" | "Approval" | "Finalisation";
+
 
 const GreenCell = ({ children }: { children: React.ReactNode }) => (
   <div className="bg-green-100">{children}</div>
 );
-
+export function mapStatusToOutput(status: StatusInput): string {
+  switch (status) {
+    case "Request":
+      return "Requested";
+    case "Authentication":
+      return "Authenticated";
+    case "Validation":
+      return "Validated";
+    case "Approval":
+      return "Approved";
+    case "Finalisation":
+      return "Finalised";
+    default:
+      return "Unknown";
+  }
+}
 const formatDateCell = (props: any) => {
   const dateValue = props.getValue();
   return (
@@ -59,7 +76,7 @@ const baseColumns: ColumnDef<Travel>[] = [
     header: 'Status',
     cell: (props) => (
       <Badge variant={props.getValue() as "default" | "secondary" | "destructive" | "outline" | "confirmed" | "inProgress" | "waitingValidation" | "Request" | "Authentication" | "Validation" | "Approval" | "Finalisation"}>
-        {props.getValue() as string}
+        {mapStatusToOutput(props.getValue() as StatusInput)}
       </Badge>
     ),
     },

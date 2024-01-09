@@ -41,6 +41,7 @@ import { fetchTravels } from '../features/travel/fetchTravel';
 import { createPresentationUrl } from '../features/Presentations';
 import { CityData } from '@/interfaces';
 import { Badge } from '@/components/ui/badge';
+import { StatusInput, mapStatusToOutput } from '../travel/columns';
 const formSchema = z.object({
   name: z.string().optional(),
   costOriginal: z.string().optional(),
@@ -182,7 +183,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
     isValidation: boolean
   ) {
     if (isValidation) {
-      values = { status: 'Finalisation' };
+      values = { status: 'Approval' };
       console.log('when true');
     }
     if (!isValidation) {
@@ -304,7 +305,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
             </FormItem>
           )}
         />
-        <div className="grid  gap-y-2">
+       <div className="grid  gap-y-2">
           <Label>Status</Label>
           <Badge
             variant={
@@ -324,7 +325,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
             }
             style={{ width: '50%' }}
           >
-            {travel?.status}
+            {mapStatusToOutput(travel?.status as StatusInput)}
           </Badge>
         </div>
         <FormField
@@ -519,7 +520,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
           )}
         />
         <DialogFooter>
-          {travel?.status === 'Approval' ? (
+          {travel?.status === 'Validation' ? (
             <>
             <Button
               onClick={onSendForFinalisation}
@@ -541,7 +542,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
           )}
 
           <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
-            {' '}
+       
             Delete
           </Button>
         </DialogFooter>
