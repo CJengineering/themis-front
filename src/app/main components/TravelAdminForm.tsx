@@ -25,7 +25,7 @@ import { TravelValidationForm } from './TravelValidationForm';
 import { createPresentationUrl } from '../features/Presentations';
 import { useAppSelector } from '../features/hooks';
 import { TravelApprovalForm } from './TravelApprovalForm';
-import { StatusInput, mapStatusToOutput } from '../travel/columns';
+import { StatusInput, mapStatusToOutput, mapStatusToSteps } from '../travel/columns';
 interface Country {
   capital: string;
   // Include other fields from the API response if needed
@@ -81,7 +81,7 @@ export function TravelAdminForm(props: PropsTravelAuthForm) {
         </div>
         <div className="col-span-6">
           <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-          {mapStatusToOutput(travel?.status as StatusInput)}
+          {mapStatusToSteps(travel?.status as StatusInput)}
           </h4>
           {user.role === 'traveller' ? (
             <TravelValidationForm id={id} />

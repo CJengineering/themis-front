@@ -29,6 +29,10 @@ export const createPresentationUrl = (state: RootState): string => {
   const presentationUrl = isProduction ?   'http://localhost:3000':'https://themis-e4f6j5kdsq-ew.a.run.app';
   return presentationUrl;
 };
+export const createPresentationDialog = (state: RootState): boolean => {
+  const presentationDialog = state.dialog.isOpen;
+  return presentationDialog;
+}
 export const createPrsentationTravel = (state: RootState): Travel[] => {
     const presentationTravel: Travel[] = [];
     const { ids, travels } = state.travel;

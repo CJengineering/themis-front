@@ -53,6 +53,22 @@ export function mapStatusToOutput(status: StatusInput): string {
       return "Unknown";
   }
 }
+export function mapStatusToSteps(status: StatusInput): string {
+  switch (status) {
+    case "Request":
+      return "Authentication";
+    case "Authentication":
+      return "Validation";
+    case "Validation":
+      return "Approval";
+    case "Approval":
+      return "Finalisation";
+    case "Finalisation":
+      return "Finalised";
+    default:
+      return "Unknown";
+  }
+}
 const formatDateCell = (props: any) => {
   const dateValue = props.getValue();
   return (

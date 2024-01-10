@@ -6,6 +6,7 @@ import MainNav from '../main components/MainNav';
 import TopRightNavBar from './top-right-navbar';
 import TopRightNav from '../main components/TopNavBar';
 import MainContent from './main-content';
+import { Toaster } from '@/components/ui/toaster';
 
 const MainLayout = () => {
   return (
@@ -26,6 +27,7 @@ const MainLayout = () => {
           </MainContent>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };

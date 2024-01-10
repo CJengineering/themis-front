@@ -20,6 +20,9 @@ import { DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dial
 import { TravelAdminForm } from '../main components/TravelAdminForm';
 import { useState } from 'react';
 import React from 'react';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
+import { createPresentationDialog } from '../features/Presentations';
+import { closeDialog, openDialog, toggle } from '../features/openDialog/dialogSlice';
 
 interface DataTableProps<TData , TValue> {
   columns: ColumnDef<TData , TValue>[];
@@ -35,25 +38,7 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-  const getCellClassName = (cell: Cell<TData, TValue>) => {
-    switch (cell.column.id) {
-      case 'requestedDepartureDate':
-      case 'requestedArrivalDate':
-      case 'requestedDepartureCity':
-      case 'requestedArrivalCity':
-        return 'bg-green-100';
-      case 'arrivalCityLeg1':
-      case 'returnDateLeg1':
-      case 'departureDateLeg1':
-      case 'departureCityLeg1':
-      case 'returnDepartureDateLeg2':
-      case 'returnDepartureCityLeg2':
-      case 'returnArrivalCityLeg2':
-        return 'bg-orange-100';
-      default:
-        return '';
-    }
-  };
+ const dispatch = useAppDispatch();
   const getCellClassNameHeader = (header: Header<TData, TValue>) => {
     switch (header.column.id) {
       case 'requestedDepartureDate':
@@ -73,10 +58,16 @@ export function DataTable<TData, TValue>({
         return '';
     }
   };
+  const dialog = useAppSelector(createPresentationDialog)
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
 
   const handleRowClick = (id: string) => {
     setOpenDialogId(id);
+    dispatch(openDialog())
+    
+  };
+  const handleCloseDialog = () => {
+    dispatch(closeDialog()); 
   };
   return (
     <div className="rounded-md border">
@@ -164,7 +155,7 @@ export function DataTable<TData, TValue>({
                     ))}
                   </TableRow>
                   {openDialogId === id && (
-                    <Dialog open={true} onOpenChange={() => setOpenDialogId(null)}>
+                    <Dialog open={dialog} onOpenChange={() => setOpenDialogId(null)}>
                       <DialogContent>
                         <DialogHeader>
                           <TravelAdminForm id={id} />

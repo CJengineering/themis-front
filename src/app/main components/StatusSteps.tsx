@@ -5,9 +5,10 @@ interface StatusStepsProps {
 
 const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
   if (!statusTravel) {
-    statusTravel = 'Request';
+    statusTravel = 'new';
   }
   const navLinks = [
+    
     { name: 'Request', icon: 'unknown_document' },
     { name: 'Authentication', icon: 'grading' },
     { name: 'Validation', icon: 'outgoing_mail' },
@@ -15,7 +16,11 @@ const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
     { name: 'Finalisation', icon: 'north_east' },
   ];
   const getNextStepIndex = (currentStep: string) => {
+    if (currentStep === 'new') {
+      return 0;
+    }
     const stepOrder = [
+    
       'Request',
       'Authentication',
       'Validation',
@@ -29,9 +34,13 @@ const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
   };
 
   const activeStepIndex = getNextStepIndex(statusTravel);
-  // Function to determine if the step is completed
+ 
   const isStepCompleted = (stepName: string) => {
+    if (statusTravel === 'new') {
+      return false; 
+    }
     const stepOrder = [
+     
       'Request',
       'Authentication',
       'Validation',

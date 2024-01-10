@@ -23,93 +23,18 @@ import { FormGeneral } from './FormGeneral';
 import { TravelInitiateForm } from './TravelInitiateForm';
 import { Card } from '@/components/ui/card';
 import StatusSteps from './StatusSteps';
-interface Country {
-  capital: string;
-}
-interface TravelFormData {
-  departureCityLeg1: string;
-  arrivalCityLeg1: string;
-  departureDateLeg1: string;
-}
-const travelSchema = zod.object({
-  departureCityLeg1: zod
-    .string()
-    .nonempty({ message: 'Departure city is required' }),
-  arrivalCityLeg1: zod
-    .string()
-    .nonempty({ message: 'Arrival city is required' }),
-  departureDateLeg1: zod
-    .string()
-    .nonempty({ message: 'Departure date is required' }),
-});
+
 
 export function TravelForm() {
-  const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await fetch('https://restcountries.com/v2/all');
-        const data: Country[] = await response.json();
-        const cityOptions = data.map((country) => ({
-          value: country.capital,
-          label: country.capital,
-        }));
-        setCities(cityOptions);
-      } catch (error) {
-        console.error('Error fetching cities:', error);
-      }
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const closeDialog = () => {
+        setIsDialogOpen(false);
     };
-
-    fetchCities();
-  }, []);
-  const [isRoundTrip, setIsRoundTrip] = useState(false);
-  const handleSwitchChange = () => {
-    setIsRoundTrip(!isRoundTrip);
-  };
-  const handleTripTypeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setIsRoundTrip(event.target.value === 'roundTrip');
-  };
-  const transitionStyle = {
-    transition: 'opacity 0.5s ease-in-out, max-height 1s ease-in-out',
-    maxHeight: isRoundTrip ? '500px' : '0', // Adjust max height as needed
-    opacity: isRoundTrip ? 1 : 0,
-  };
-  const form = useForm<TravelFormData>({
-    resolver: zodResolver(travelSchema),
-    defaultValues: {
-      departureCityLeg1: '',
-      arrivalCityLeg1: '',
-      departureDateLeg1: '',
-    },
-  });
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = form;
-
-  const onSubmit = async (data: TravelFormData) => {
-    console.log('Form data:', data);
-    try {
-      const response = await fetch('https://themis-e4f6j5kdsq-ew.a.run.app/travel', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      // Handle success
-    } catch (error) {
-      console.error('Error posting data:', error);
-    }
-  };
+  
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Add New Travel</Button>
       </DialogTrigger>
@@ -122,13 +47,13 @@ export function TravelForm() {
         </DialogHeader>
         <div className="grid grid-cols-8 gap-4 py-4">
           <div className="col-span-2">
-            <StatusSteps statusTravel={"Request"}></StatusSteps>
+            <StatusSteps statusTravel={"new"}></StatusSteps>
           </div>
           <div className="col-span-6">
             <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
               Request
             </h4>
-            <TravelInitiateForm />
+            <TravelInitiateForm  onClose={closeDialog} />
           </div>
         </div>
       </DialogContent>

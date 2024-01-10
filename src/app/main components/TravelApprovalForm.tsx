@@ -42,6 +42,8 @@ import { createPresentationUrl } from '../features/Presentations';
 import { CityData } from '@/interfaces';
 import { Badge } from '@/components/ui/badge';
 import { StatusInput, mapStatusToOutput } from '../travel/columns';
+import { useToast } from '@/components/ui/use-toast';
+import { toggle } from '../features/openDialog/dialogSlice';
 const formSchema = z.object({
   name: z.string().optional(),
   costOriginal: z.string().optional(),
@@ -95,7 +97,7 @@ interface PropsTravelAuthForm {
 export function TravelApprovalForm(id: PropsTravelAuthForm) {
   const userString = localStorage.getItem('user-data');
   if (!userString) return null;
-
+  const { toast } = useToast();
   const user = JSON.parse(userString);
   const url = useAppSelector(createPresentationUrl);
   const [message, setMessage] = useState('');
@@ -103,6 +105,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
   const dispatch = useAppDispatch();
   const fileInputRef = useRef(null);
   const [status, setStatus] = useState('');
+  const [showForm, setShowForm] = useState(true);
   const idTravel = id.id;
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   const [travel, setTravel] = useState<TravelItem>();
@@ -117,24 +120,6 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
     },
   });
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        // Replace with the URL of the Countries States Cities Database API
-        const url =
-          'https://countriesnow.space/api/v0.1/countries/population/cities';
-        const response = await fetch(url);
-        const data: { data: CityData[] } = await response.json();
-
-        // Adjust the mapping based on the actual response structure
-        const cityOptions = data.data.map((city) => ({
-          value: city.city,
-          label: city.city,
-        }));
-        setCities(cityOptions);
-      } catch (error) {
-        console.error('Error fetching cities:', error);
-      }
-    };
     const fetchTravel = async () => {
       try {
         const response = await fetch(`${url}/travel/` + idTravel);
@@ -152,32 +137,46 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
         console.error('Error fetching cities:', error);
       }
     };
-
-    fetchCities();
-    fetchTravel();
+    if (showForm) {
+      fetchTravel();
+    }
   }, []);
-  const [isRoundTrip, setIsRoundTrip] = useState(false);
-  const handleSwitchChange = () => {
-    setIsRoundTrip(!isRoundTrip);
-  };
+
   const handleDelete = async () => {
+    setShowForm(false);
     try {
-      const response = await fetch(`${url}/travel/${id}`, {
+      const response = await fetch(`${url}/travel/${id.id}`, {
         method: 'DELETE',
       });
-
-      if (!response.ok) {
+      console.log('Delete response:', response);
+  
+      if (!response.status.toString().startsWith('2')) {
         throw new Error(`Error: ${response.status}`);
       }
-
-      alert('Travel deleted successfully');
-      // Handle successful deletion here, like updating the UI
+  
+      toast({
+        title: 'Deleted',
+        description: 'Your travel has been deleted.',
+      });
+  
+      // Dispatching at the end to ensure all above operations complete
+      dispatch(toggle());
+  
+      // Fetch travels after updating the state
+      await dispatch<any>(
+        fetchTravels(`${url}/travel`, {
+          userRole: `${user.role}`,
+        })
+      );
     } catch (error) {
-      console.error('Failed to delete travel:', error);
-      alert('Failed to delete travel');
+      console.error('Error deleting travel item:', error);
+      toast({
+        title: 'Error',
+        description: 'Error occurred while deleting travel.',
+      });
     }
   };
-
+  
   async function onSubmit(
     values: z.infer<typeof formSchema>,
     isValidation: boolean
@@ -187,11 +186,13 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       console.log('when true');
     }
     if (!isValidation) {
-        values = { status: 'Request' };
-        console.log('when false');
-      }
+      values = { status: 'Request' };
+      console.log('when false');
+    }
     console.log(values);
-
+    setShowForm(false);
+    setMessageType('success');
+    setMessage('Sending...');
     const formData = new FormData();
 
     try {
@@ -210,16 +211,20 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       const responseData = await response.json();
       console.log('Success:', responseData);
       setMessage('You have approved the trip !');
-      if(!isValidation){
+      toast({
+        title: 'Approved',
+        description: 'Your travel has been approved.',
+      });
+      if (!isValidation) {
         setMessage('You have declined the trip !');
+        toast({ title: 'Declined', description: 'travel has been declined.' });
       }
 
-    
       setMessageType('success');
-
+      dispatch(toggle());
       // You can add more logic here for success case
       await dispatch<any>(
-        fetchTravels(`${url}/travel`, {
+        fetchTravels(`${url}/travel/admin`, {
           userRole: `${user.role}`,
         })
       );
@@ -259,7 +264,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
   };
   return (
     <Form {...form}>
-      {message && (
+      {!showForm ? (
         <div
           className={
             messageType === 'success' ? 'text-green-500' : 'text-red-500'
@@ -267,286 +272,225 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
         >
           {message}
         </div>
+      ) : (
+        <form className="space-y-2">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Traveller</FormLabel>
+                <FormControl>
+                  <div className="col-span-3 p-2 bg-gray-100 rounded">
+                    {field.value || 'No city selected'}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="roundTrip"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Type</FormLabel>
+                <FormControl>
+                  <div className="col-span-3 p-2 bg-gray-100 rounded">
+                    {field.value || 'No city selected'}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid  gap-y-2">
+            <Label>Status</Label>
+            <Badge
+              variant={
+                travel?.status as
+                  | 'default'
+                  | 'secondary'
+                  | 'destructive'
+                  | 'outline'
+                  | 'confirmed'
+                  | 'inProgress'
+                  | 'waitingValidation'
+                  | 'Request'
+                  | 'Authentication'
+                  | 'Validation'
+                  | 'Approval'
+                  | 'Finalisation'
+              }
+              style={{ width: '50%' }}
+            >
+              {mapStatusToOutput(travel?.status as StatusInput)}
+            </Badge>
+          </div>
+          <FormField
+            control={form.control}
+            name="departureCityLeg1"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>From</FormLabel>
+                <FormControl>
+                  <div className="col-span-3 p-2 bg-gray-100 rounded">
+                    {field.value || 'No city selected'}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="arrivalCityLeg1"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>To</FormLabel>
+                <FormControl>
+                  <div className="col-span-3 p-2 bg-gray-100 rounded">
+                    {field.value || 'No city selected'}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />{' '}
+          <FormField
+            control={form.control}
+            name="departureDateLeg1"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Departure</FormLabel>
+                <div className="col-span-3 p-2 bg-gray-100 rounded">
+                  {field.value
+                    ? format(field.value, 'PPP')
+                    : 'No date selected'}
+                </div>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="returnDepartureDateLeg2"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Returning</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <div className="col-span-3 p-2 bg-gray-100 rounded">
+                        {field.value
+                          ? format(field.value, 'PPP')
+                          : 'No date selected'}
+                      </div>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="costOriginal"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cost (GBP)</FormLabel>
+                <FormControl>
+                  <div className="col-span-3 p-2 bg-gray-100 rounded">
+                    {field.value || 'No city selected'}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="file"
+            render={({ field: { ref, ...field } }) => (
+              <FormItem>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {travel?.bookingReferenceDocument && (
+            <Button style={{ backgroundColor: '#006400' }}>
+              <a href={`${travel.bookingReferenceDocument}`} target="_blank">
+                Download
+              </a>
+            </Button>
+          )}
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Notes</FormLabel>
+                <FormControl>
+                  {travel?.status === 'Aproval' ? (
+                    <Textarea
+                      placeholder="Add any suplementary information here."
+                      className="col-span-3"
+                      {...field}
+                    />
+                  ) : (
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No notes'}
+                    </div>
+                  )}
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <DialogFooter>
+            {travel?.status === 'Validation' ? (
+              <>
+                <Button
+                  onClick={onSendForFinalisation}
+                  type="button"
+                  style={{ backgroundColor: 'green' }}
+                >
+                  Approve
+                </Button>
+                <Button
+                  onClick={onSendForDecline}
+                  type="button"
+                  style={{ backgroundColor: 'brown' }}
+                >
+                  Decline
+                </Button>
+              </>
+            ) : (
+              ''
+            )}
+
+            <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </form>
       )}
-      <form className="space-y-2">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Traveller</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="roundTrip"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Type</FormLabel>
-              <FormControl>
-                <Selectcdn>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="One Way" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">One Way</SelectItem>
-                    <SelectItem value="dark">Round Trip</SelectItem>
-                  </SelectContent>
-                </Selectcdn>
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-       <div className="grid  gap-y-2">
-          <Label>Status</Label>
-          <Badge
-            variant={
-              travel?.status as
-                | 'default'
-                | 'secondary'
-                | 'destructive'
-                | 'outline'
-                | 'confirmed'
-                | 'inProgress'
-                | 'waitingValidation'
-                | 'Request'
-                | 'Authentication'
-                | 'Validation'
-                | 'Approval'
-                | 'Finalisation'
-            }
-            style={{ width: '50%' }}
-          >
-            {mapStatusToOutput(travel?.status as StatusInput)}
-          </Badge>
-        </div>
-        <FormField
-          control={form.control}
-          name="departureCityLeg1"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>From</FormLabel>
-              <FormControl>
-                <Controller
-                  name="departureCityLeg1"
-                  control={form.control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <Select<{ value: string; label: string }>
-                      options={cities}
-                      className="col-span-3"
-                      placeholder="Select a city"
-                      isSearchable
-                      onChange={(option) =>
-                        onChange(option ? option.value : '')
-                      }
-                      onBlur={onBlur}
-                      value={cities.find((c) => c.value === value)}
-                      ref={ref}
-                    />
-                  )}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="arrivalCityLeg1"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>To</FormLabel>
-              <FormControl>
-                <Controller
-                  name="arrivalCityLeg1"
-                  control={form.control}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <Select<{ value: string; label: string }>
-                      options={cities}
-                      className="col-span-3"
-                      placeholder="Select a city"
-                      isSearchable
-                      onChange={(option) =>
-                        onChange(option ? option.value : '')
-                      }
-                      onBlur={onBlur}
-                      value={cities.find((c) => c.value === value)}
-                      ref={ref}
-                    />
-                  )}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />{' '}
-        <FormField
-          control={form.control}
-          name="departureDateLeg1"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Departure</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={'outline'}
-                      className={cn(
-                        'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, 'PPP')
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="returnDepartureDateLeg2"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Returning</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={'outline'}
-                      className={cn(
-                        'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, 'PPP')
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="costOriginal"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cost (GBP)</FormLabel>
-              <FormControl>
-                <Input placeholder="0" type="number" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="file"
-          render={({ field: { ref, ...field } }) => (
-            <FormItem>
-              <FormLabel>Reference</FormLabel>
-              <FormControl>
-                <Input type="file" onChange={handleFileChange} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {travel?.bookingReferenceDocument && (
-          <Button style={{ backgroundColor: '#006400' }}>
-            <a href={`${travel.bookingReferenceDocument}`} target="_blank">
-              Download
-            </a>
-          </Button>
-        )}
-        <FormField
-          control={form.control}
-          name="notes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Notes</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Add any suplementary information here."
-                  className="col-span-3"
-                  {...field}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <DialogFooter>
-          {travel?.status === 'Validation' ? (
-            <>
-            <Button
-              onClick={onSendForFinalisation}
-              type="button"
-              style={{ backgroundColor: 'green' }}
-            >
-              Approve
-            </Button>
-            <Button
-              onClick={onSendForDecline}
-              type="button"
-              style={{ backgroundColor: 'brown' }}
-            >
-              Decline
-            </Button>
-            </>
-          ) : (
-            ''
-          )}
-
-          <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
-       
-            Delete
-          </Button>
-        </DialogFooter>
-      </form>
     </Form>
   );
 }
