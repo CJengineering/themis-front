@@ -245,6 +245,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
     }
   }
   const handleDelete = async () => {
+    setShowForm(false);
     try {
       const response = await fetch(`${url}/travel/${id.id}`, {
         method: 'DELETE',
@@ -266,7 +267,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
         })
       );
     } catch (error) {
-     console.error('Error deleting travel item:', error);
+      console.error('Error deleting travel item:', error);
     }
   };
   function toUTCDate(date: Date) {
@@ -319,261 +320,276 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
           {message}
         </div>
       ) : (
-        <form className="space-y-2">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Traveller</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No city selected'}
-                  </div>
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="roundTrip"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Type</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No city selected'}
-                  </div>
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="grid  gap-y-2 w-50 ">
-            <Label>Status</Label>
-            <Badge
-              variant={
-                travel?.status as
-                  | 'default'
-                  | 'secondary'
-                  | 'destructive'
-                  | 'outline'
-                  | 'confirmed'
-                  | 'inProgress'
-                  | 'waitingValidation'
-                  | 'Request'
-                  | 'Authentication'
-                  | 'Validation'
-                  | 'Approval'
-                  | 'Finalisation'
-              }
-              style={{ width: '30%' }}
-            >
-              {mapStatusToOutput(travel?.status as StatusInput)}
-            </Badge>
-          </div>
-          <FormField
-            control={form.control}
-            name="departureCityLeg1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>From</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No city selected'}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="arrivalCityLeg1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>To</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No city selected'}
-                  </div>
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />{' '}
-          <FormField
-            control={form.control}
-            name="departureDateLeg1"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Departure</FormLabel>
-                {travel?.status !== 'Approval' &&
-                travel?.status !== 'Finalisation' ? (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'w-[240px] pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                ) : (
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value
-                      ? format(field.value, 'PPP')
-                      : 'No date selected'}
-                  </div>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="returnDepartureDateLeg2"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Return</FormLabel>
-                {travel?.status !== 'Approval' &&
-                travel?.status !== 'Finalisation' ? (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'w-[240px] pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                ) : (
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value ? format(field.value, 'PPP') : 'One way'}
-                  </div>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="costOriginal"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cost (GBP)</FormLabel>
-                <FormControl>
-                  {travel?.status !== 'Approval' &&
-                  travel?.status !== 'Finalisation' ? (
-                    <Input
-                      {...field}
-                      value={field.value !== null ? String(field.value) : ''}
-                      type="number"
-                    />
-                  ) : (
+        <form className="space-y-6 ">
+          <div className="space-y-6 pr-2 max-h-[50vh]  overflow-y-auto h-">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Traveller</FormLabel>
+                  <FormControl>
                     <div className="col-span-3 p-2 bg-gray-100 rounded">
                       {field.value || 'No city selected'}
                     </div>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="roundTrip"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No city selected'}
+                    </div>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className=" block ">
+              <Label>Status</Label>
+              <div className="">
+                <Badge
+                  variant={
+                    travel?.status as
+                      | 'default'
+                      | 'secondary'
+                      | 'destructive'
+                      | 'outline'
+                      | 'confirmed'
+                      | 'inProgress'
+                      | 'waitingValidation'
+                      | 'Request'
+                      | 'Authentication'
+                      | 'Validation'
+                      | 'Approval'
+                      | 'Finalisation'
+                  }
+                >
+                  {mapStatusToOutput(travel?.status as StatusInput)}
+                </Badge>
+              </div>
+            </div>
+            <FormField
+              control={form.control}
+              name="departureCityLeg1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>From</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No city selected'}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="arrivalCityLeg1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>To</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No city selected'}
+                    </div>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />{' '}
+            <FormField
+              control={form.control}
+              name="departureDateLeg1"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Departure</FormLabel>
+                  {travel?.status !== 'Approval' &&
+                  travel?.status !== 'Finalisation' ? (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-[240px] pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value
+                        ? format(field.value, 'PPP')
+                        : 'No date selected'}
+                    </div>
                   )}
-                </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="returnDepartureDateLeg2"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Return</FormLabel>
+                  {travel?.status !== 'Approval' &&
+                  travel?.status !== 'Finalisation' ? (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-[240px] pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value ? format(field.value, 'PPP') : 'One way'}
+                    </div>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="costOriginal"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cost (GBP)</FormLabel>
+                  <FormControl>
+                    {travel?.status !== 'Approval' &&
+                    travel?.status !== 'Finalisation' ? (
+                      <Input
+                        {...field}
+                        value={field.value !== null ? String(field.value) : ''}
+                        type="number"
+                      />
+                    ) : (
+                      <div className="col-span-3 p-2 bg-gray-100 rounded">
+                        {field.value || 'No city selected'}
+                      </div>
+                    )}
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="file"
-            render={({ field: { ref, ...field } }) => (
-              <FormItem>
-                {travel?.status !== 'Approval' &&
-                travel?.status !== 'Finalisation' ? (
-                  <>
-                    <FormLabel>Reference</FormLabel>
-                    <FormControl>
-                      <Input type="file" onChange={handleFileChange} />
-                    </FormControl>
-
-                    <FormMessage />
-                  </>
-                ) : (
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No city selected'}
-                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field: { ref, ...field } }) => (
+                <FormItem>
+                  {travel?.status !== 'Finalisation' && (
+                    <>
+                      <FormLabel>Reference</FormLabel>
+                      <FormControl>
+                        <Input type="file" onChange={handleFileChange} />
+                      </FormControl>
+                    </>
+                  )}
+                </FormItem>
+              )}
+            />
+            {travel?.bookingReferenceDocument && (
+              <div className="block">
+                {travel?.status === 'Finalisation' && (
+                  <FormLabel>Reference</FormLabel>
                 )}
-              </FormItem>
-            )}
-          />
-          {travel?.bookingReferenceDocument && (
-            <Button style={{ backgroundColor: '#006400' }}>
-              <a href={`${travel.bookingReferenceDocument}`} target="_blank">
-                Download
-              </a>
-            </Button>
-          )}
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Add any suplementary information here."
-                    className="col-span-3"
-                    {...field}
-                  />
-                </FormControl>
 
-                <FormMessage />
-              </FormItem>
+                <div className="mt-2">
+                  <Button style={{ backgroundColor: '#006400' }}>
+                    <a
+                      href={`${travel.bookingReferenceDocument}`}
+                      target="_blank"
+                    >
+                      Download
+                    </a>
+                  </Button>
+                </div>
+              </div>
             )}
-          />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    {travel?.status !== 'Approval' &&
+                    travel?.status !== 'Finalisation' ? (
+                      <Textarea
+                        placeholder="Add any suplementary information here."
+                        className="col-span-3"
+                        {...field}
+                      />
+                    ) : (
+                      <div className="col-span-3 p-2 bg-gray-100 rounded">
+                        {field.value || 'No notes'}
+                      </div>
+                    )}
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           <DialogFooter>
             {travel?.status === 'Request' && (
               <>
                 <Button
-                  style={{ backgroundColor: 'red', marginRight: '12px' }}
+                  style={{ backgroundColor: 'red', marginRight: '6px' }}
                   onClick={handleDelete}
                 >
                   Delete
@@ -581,7 +597,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                 <Button
                   type="button"
                   onClick={onSave}
-                  style={{ backgroundColor: 'blue', marginRight: '12px' }}
+                  style={{ backgroundColor: 'blue', marginRight: '6px' }}
                 >
                   Save
                 </Button>
@@ -626,7 +642,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                 <Button
                   type="button"
                   onClick={onSave}
-                  style={{ backgroundColor: 'blue', marginRight: '12px' }}
+                  style={{ backgroundColor: 'blue', marginRight: '6px' }}
                 >
                   Save
                 </Button>

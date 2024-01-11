@@ -54,14 +54,12 @@ const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
 
   return (
     <div className="flex flex-col items-start">
-      <h6 className="scroll-m-20 text-sm mb-2 text-muted-foreground tracking-tight">
-        PROGRESS
-      </h6>
+   
       <div className="w-full">
         {navLinks.map((link,index) => (
           <div
             key={link.name}
-            className={`flex justify-between items-center text-sm mb-4 ${
+            className={`flex justify-between items-center text-sm mb-4  ${
               index === activeStepIndex ? 'activeStatus' : ''
             } ${
               isStepCompleted(link.name) ? 'text-bold' : 'text-muted-foreground'
@@ -79,7 +77,7 @@ const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
 
             {isStepCompleted(link.name) && (
               <span className="material-symbols-outlined text-green-500">
-                check_circle
+                done
               </span>
             )}
           </div>

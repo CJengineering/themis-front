@@ -73,14 +73,14 @@ export function TravelAdminForm(props: PropsTravelAuthForm) {
       <DialogDescription>
         Please follow the steps below to complete this trip
       </DialogDescription>
-      <div className="grid grid-cols-8 gap-8 py-4">
-        <div className="col-span-2">
+      <div className="grid grid-cols-12 gap-4 py-4 ">
+        <div className="col-span-3">
           <StatusSteps
             statusTravel={travel?.status ? travel.status : 'Request'}
           ></StatusSteps>
         </div>
-        <div className="col-span-6">
-          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+        <div className="col-span-9">
+          <h4 className="scroll-m-20 text-l mb-4 font-semibold tracking-tight">
           {mapStatusToSteps(travel?.status as StatusInput)}
           </h4>
           {user.role === 'traveller' ? (

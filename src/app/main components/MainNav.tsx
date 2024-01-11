@@ -5,8 +5,8 @@ const MainNav = () => {
 
   const location = useLocation();
   const navLinks = [
-    { name: "Dashboard", icon: "dashboard", path: "/" },
-    { name: "Travel", icon: "flight", path: "/travel" },
+   // { name: "Dashboard", icon: "dashboard", path: "/" },
+    { name: "Travel", icon: "flight", path: "/" },
     //{ name: "Accommodation", icon: "hotel", path: "/accommodation" },
   ];
 

@@ -136,5 +136,19 @@
     font-weight: bold;
     /* Add other styles as needed to highlight the active link */
   }
-  
+  .bg-request{
+    background-color:#576574 ;
+  }
+  .bg-authenticated{
+    background-color:#FF9F43;
+  }
+  .bg-validated{
+    background-color:#5F27CD ;
+  }
+  .bg-approved{
+    background-color:#10AC84 ;
+  }
+  .bg-finalised{
+    background-color:#2E86DE;
+  }
 }

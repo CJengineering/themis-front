@@ -57,8 +57,8 @@ interface Country {
 interface TravelInitFromProps {
   onClose: () => void;
 }
-export function TravelInitiateForm({onClose}:TravelInitFromProps) {
-  const { toast } = useToast()
+export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
+  const { toast } = useToast();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const dispatch = useAppDispatch();
@@ -71,20 +71,20 @@ export function TravelInitiateForm({onClose}:TravelInitFromProps) {
   }
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(true);
-  const fetchCities2 = async (query:string) => {
+  const fetchCities2 = async (query: string) => {
     try {
       const url = `https://api.api-ninjas.com/v1/city?name=${query}&limit=30`;
       const response = await fetch(url, {
         method: 'GET',
-        headers: { 
+        headers: {
           'X-Api-Key': 'Kh9wcmGqloUhMtGKrwf9Fg==3ehfaiVh85GDvwfd',
-          'Content-Type': 'application/json' 
+          'Content-Type': 'application/json',
         },
       });
       const data = await response.json();
 
       // Assuming the response is an array of cities
-      const cityOptions = data.map((city : any) => ({
+      const cityOptions = data.map((city: any) => ({
         value: city.name,
         label: city.name,
       }));
@@ -96,10 +96,13 @@ export function TravelInitiateForm({onClose}:TravelInitFromProps) {
   function getMonthAbbreviation(date: Date): string {
     return format(date, 'MMM').toUpperCase();
   }
-  function debounce<F extends (...args: any[]) => void>(func: F, waitFor: number) {
+  function debounce<F extends (...args: any[]) => void>(
+    func: F,
+    waitFor: number
+  ) {
     let timeoutId: NodeJS.Timeout;
-  
-    return function(...args: Parameters<F>) {
+
+    return function (...args: Parameters<F>) {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => func(...args), waitFor);
     } as F;
@@ -115,7 +118,7 @@ export function TravelInitiateForm({onClose}:TravelInitFromProps) {
     },
   });
   const debouncedFetchCities = useCallback(
-    debounce((query:string) => fetchCities2(query), 200),
+    debounce((query: string) => fetchCities2(query), 200),
     []
   );
 
@@ -125,7 +128,7 @@ export function TravelInitiateForm({onClose}:TravelInitFromProps) {
     }
   }, [searchTerm, debouncedFetchCities]);
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
-  
+
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const url = useAppSelector(createPresentationUrl);
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -148,15 +151,19 @@ export function TravelInitiateForm({onClose}:TravelInitFromProps) {
         values.departureCityLeg1
       );
       const arrivalConsonants = getFirstThreeConsonants(values.arrivalCityLeg1);
-      nametrip = ` ${departureConsonants} <-> ${arrivalConsonants} | ${firstName[0]}. ${lastName} | ${monthAbbreviation}`;
+      nametrip = ` ${departureConsonants} <-> ${arrivalConsonants} | ${firstName[0]}${lastName[0]}`;
     } else {
       console.log('User data not found in localStorage');
     }
-   
+
     const submissionData = {
       ...values,
-      departureDateLeg1: values.departureDateLeg1 ? toUTCDate(values.departureDateLeg1).toISOString() : null,
-      returnDepartureDateLeg2: values.returnDepartureDateLeg2 ? toUTCDate(values.returnDepartureDateLeg2).toISOString() : null,
+      departureDateLeg1: values.departureDateLeg1
+        ? toUTCDate(values.departureDateLeg1).toISOString()
+        : null,
+      returnDepartureDateLeg2: values.returnDepartureDateLeg2
+        ? toUTCDate(values.returnDepartureDateLeg2).toISOString()
+        : null,
       userId: userId,
       name: nametrip,
       status: status,
@@ -197,10 +204,9 @@ export function TravelInitiateForm({onClose}:TravelInitFromProps) {
       });
       onClose();
       toast({
-        title: "Sent for Authentication",
-        description: "Your trip request was sent! ",
-      })
-
+        title: 'Sent for Authentication',
+        description: 'Your trip request was sent! ',
+      });
     } catch (error) {
       console.error('Error submitting form:', error);
       // You can add more logic here for error handling
@@ -211,214 +217,222 @@ export function TravelInitiateForm({onClose}:TravelInitFromProps) {
     maxHeight: isRoundTrip ? '500px' : '0', // Adjust max height as needed
     opacity: isRoundTrip ? 1 : 0,
   };
-  function toUTCDate(date:Date) {
+  function toUTCDate(date: Date) {
     const year = date.getFullYear();
     const month = date.getMonth();
     const day = date.getDate();
-  
- 
+
     return new Date(Date.UTC(year, month, day));
   }
   return (
     <Form {...form}>
-        {!showForm ? 
-          <div
-            className={
-              messageType === 'success' ? 'text-green-500' : 'text-red-500'
-            }
-          >
-            {message}
-          </div>
-          :     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <FormField
-            control={form.control}
-            name="tripType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Type</FormLabel>
-                <Selectcdn
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+      {!showForm ? (
+        <div
+          className={
+            messageType === 'success' ? 'text-green-500' : 'text-red-500'
+          }
+        >
+          {message}
+        </div>
+      ) : (
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-6 pr-2 max-h-[50vh]  overflow-y-auto h-">
+            <FormField
+              control={form.control}
+              name="tripType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <Selectcdn
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type trip" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="One Way">One Way</SelectItem>
+                      <SelectItem value="Round Trip">Round Trip</SelectItem>
+                    </SelectContent>
+                  </Selectcdn>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="departureCityLeg1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>From</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type trip" />
-                    </SelectTrigger>
+                    <Controller
+                      name="departureCityLeg1"
+                      control={form.control}
+                      render={({ field: { onChange, onBlur, value, ref } }) => (
+                        <Select<{ value: string; label: string }>
+                          options={cities}
+                          className="col-span-3"
+                          placeholder="Select a city"
+                          isSearchable
+                          onInputChange={(inputValue) =>
+                            setSearchTerm(inputValue)
+                          }
+                          onChange={(option) =>
+                            onChange(option ? option.value : '')
+                          }
+                          onBlur={onBlur}
+                          value={cities.find((c) => c.value === value)}
+                          ref={ref}
+                        />
+                      )}
+                    />
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="One Way">One Way</SelectItem>
-                    <SelectItem value="Round Trip">Round Trip</SelectItem>
-                  </SelectContent>
-                </Selectcdn>
-  
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="departureCityLeg1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>From</FormLabel>
-                <FormControl>
-                  <Controller
-                    name="departureCityLeg1"
-                    control={form.control}
-                    render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Select<{ value: string; label: string }>
-                        options={cities}
-                        className="col-span-3"
-                        placeholder="Select a city"
-                        isSearchable
-                        onInputChange={(inputValue) => setSearchTerm(inputValue)}
-                        onChange={(option) =>
-                          onChange(option ? option.value : '')
-                        }
-                        onBlur={onBlur}
-                        value={cities.find((c) => c.value === value)}
-                        ref={ref}
-                      />
-                    )}
-                  />
-                </FormControl>
-  
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="arrivalCityLeg1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>To</FormLabel>
-                <FormControl>
-                  <Controller
-                    name="arrivalCityLeg1"
-                    control={form.control}
-                    render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Select<{ value: string; label: string }>
-                        options={cities}
-                        className="col-span-3"
-                        placeholder="Select a city"
-                        isSearchable
-                        onInputChange={(inputValue) => setSearchTerm(inputValue)}
-                        onChange={(option) =>
-                          onChange(option ? option.value : '')
-                        }
-                        onBlur={onBlur}
-                        value={cities.find((c) => c.value === value)}
-                        ref={ref}
-                      />
-                    )}
-                  />
-                </FormControl>
-  
-                <FormMessage />
-              </FormItem>
-            )}
-          />{' '}
-          <FormField
-            control={form.control}
-            name="departureDateLeg1"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Departure</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={'outline'}
-                        className={cn(
-                          'w-[240px] pl-3 text-left font-normal',
-                          !field.value && 'text-muted-foreground'
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, 'PPP')
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="arrivalCityLeg1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>To</FormLabel>
+                  <FormControl>
+                    <Controller
+                      name="arrivalCityLeg1"
+                      control={form.control}
+                      render={({ field: { onChange, onBlur, value, ref } }) => (
+                        <Select<{ value: string; label: string }>
+                          options={cities}
+                          className="col-span-3"
+                          placeholder="Select a city"
+                          isSearchable
+                          onInputChange={(inputValue) =>
+                            setSearchTerm(inputValue)
+                          }
+                          onChange={(option) =>
+                            onChange(option ? option.value : '')
+                          }
+                          onBlur={onBlur}
+                          value={cities.find((c) => c.value === value)}
+                          ref={ref}
+                        />
+                      )}
                     />
-                  </PopoverContent>
-                </Popover>
-  
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="returnDepartureDateLeg2"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Returning</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={'outline'}
-                        className={cn(
-                          'w-[240px] pl-3 text-left font-normal',
-                          !field.value && 'text-muted-foreground'
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, 'PPP')
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />{' '}
+            <FormField
+              control={form.control}
+              name="departureDateLeg1"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Departure</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, 'PPP')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="returnDepartureDateLeg2"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Returning</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, 'PPP')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Add any suplementary information here."
+                      className="col-span-3"
+                      {...field}
                     />
-                  </PopoverContent>
-                </Popover>
-  
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Add any suplementary information here."
-                    className="col-span-3"
-                    {...field}
-                  />
-                </FormControl>
-  
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           <DialogFooter>
-            <Button type="submit" style={{backgroundColor:'green'}}>Request Authentication</Button>
+            <Button type="submit" style={{ backgroundColor: 'green' }}>
+              Request Authentication
+            </Button>
           </DialogFooter>
         </form>
-        }
-  
+      )}
     </Form>
   );
 }

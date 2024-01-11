@@ -19,7 +19,7 @@ const MainLayout = () => {
 
       <div className="col-span-12 md:col-span-10 flex flex-col">
         <TopRightNavBar>
-          <TopRightNav currentPage="Dashboard" /> 
+          <TopRightNav currentPage="Travel" /> 
         </TopRightNavBar>
         <div className="flex-grow overflow-auto">
           <MainContent>

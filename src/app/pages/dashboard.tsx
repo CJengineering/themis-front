@@ -26,7 +26,7 @@ const Dashboard = () => {
   console.log('this is the data', travelData);
   return (
     <>
-      <h2 className="text-xl font-bold mb-4">Travels</h2>
+
       
       <DataTable columns={travelColumns} data={travelData} />
       <div className="p-4"></div>

@@ -44,6 +44,7 @@ import { Badge } from '@/components/ui/badge';
 
 import { toggle } from '../features/openDialog/dialogSlice';
 import { useToast } from '@/components/ui/use-toast';
+import { StatusInput, mapStatusToOutput } from '../travel/columns';
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -215,6 +216,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
     };
   }, [form]);
   const handleDelete = async () => {
+    setShowForm(false);
     try {
       const response = await fetch(`${url}/travel/${id.id}`, {
         method: 'DELETE',
@@ -260,172 +262,188 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
           {message}
         </div>
       ) : (
-        <form className="space-y-2">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Traveller</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No city selected'}
-                  </div>
-                </FormControl>
+        <form className="space-y-6">
+          <div className="space-y-6 pr-2 max-h-[50vh]  overflow-y-auto h-">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Traveller</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No city selected'}
+                    </div>
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="roundTrip"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Type</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'One way'}
-                  </div>
-                </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="roundTrip"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'One way'}
+                    </div>
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className=" block ">
+              <Label>Status</Label>
+              <div className="">
+                <Badge
+                  variant={
+                    travel?.status as
+                      | 'default'
+                      | 'secondary'
+                      | 'destructive'
+                      | 'outline'
+                      | 'confirmed'
+                      | 'inProgress'
+                      | 'waitingValidation'
+                      | 'Request'
+                      | 'Authentication'
+                      | 'Validation'
+                      | 'Approval'
+                      | 'Finalisation'
+                  }
+                >
+                  {mapStatusToOutput(travel?.status as StatusInput)}
+                </Badge>
+              </div>
+            </div>
+            <FormField
+              control={form.control}
+              name="departureCityLeg1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>From</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No city selected'}
+                    </div>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="arrivalCityLeg1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>To</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No city selected'}
+                    </div>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />{' '}
+            <FormField
+              control={form.control}
+              name="departureDateLeg1"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Departure</FormLabel>
+
+                  <div className="col-span-3 p-2 bg-gray-100 rounded">
+                    {field.value
+                      ? format(field.value, 'PPP')
+                      : 'No date selected'}
+                  </div>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="returnDepartureDateLeg2"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Returning</FormLabel>
+                  <div className="col-span-3 p-2 bg-gray-100 rounded">
+                    {field.value ? format(field.value, 'PPP') : 'One way'}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="costOriginal"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cost (GBP)</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || '0'}
+                    </div>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field: { ref, ...field } }) => <FormItem></FormItem>}
+            />
+            {travel?.bookingReferenceDocument && (
+              <div className="block">
+                <FormLabel>Reference</FormLabel>
+                <div className="mt-2">
+                  <Button style={{ backgroundColor: '#006400' }}>
+                    <a
+                      href={`${travel.bookingReferenceDocument}`}
+                      target="_blank"
+                    >
+                      Download
+                    </a>
+                  </Button>
+                </div>
+              </div>
             )}
-          />
-          <div className="grid  gap-y-2 w-50">
-            <Label>Status</Label>
-            <Badge
-              variant={
-                travel?.status as
-                  | 'default'
-                  | 'secondary'
-                  | 'destructive'
-                  | 'outline'
-                  | 'confirmed'
-                  | 'inProgress'
-                  | 'waitingValidation'
-                  | 'Request'
-                  | 'Authentication'
-                  | 'Validation'
-                  | 'Approval'
-                  | 'Finalisation'
-              }
-              style={{ width: '50%' }}
-            >
-              {travel?.status}
-            </Badge>
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    {travel?.status === 'Validation' ? (
+                      <Textarea
+                        placeholder="Add any suplementary information here."
+                        className="col-span-3"
+                        {...field}
+                      />
+                    ) : (
+                      <div className="col-span-3 p-2 bg-gray-100 rounded">
+                        {field.value || 'No notes'}{' '}
+                      </div>
+                    )}
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-          <FormField
-            control={form.control}
-            name="departureCityLeg1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>From</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No city selected'}
-                  </div>
-                </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="arrivalCityLeg1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>To</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No city selected'}
-                  </div>
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />{' '}
-          <FormField
-            control={form.control}
-            name="departureDateLeg1"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Departure</FormLabel>
-
-                <div className="col-span-3 p-2 bg-gray-100 rounded">
-                  {field.value
-                    ? format(field.value, 'PPP')
-                    : 'No date selected'}
-                </div>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="returnDepartureDateLeg2"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Returning</FormLabel>
-                <div className="col-span-3 p-2 bg-gray-100 rounded">
-                  {field.value ? format(field.value, 'PPP') : 'One way'}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="costOriginal"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cost (GBP)</FormLabel>
-                <FormControl>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || '0'}
-                  </div>
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="file"
-            render={({ field: { ref, ...field } }) => <FormItem></FormItem>}
-          />
-          {travel?.bookingReferenceDocument && (
-            <Button style={{ backgroundColor: '#006400' }}>
-              <a href={`${travel.bookingReferenceDocument}`} target="_blank">
-                Download
-              </a>
-            </Button>
-          )}
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                   { travel?.status === 'Request' ? 
-                  <Textarea
-                    placeholder="Add any suplementary information here."
-                    className="col-span-3"
-                    {...field}
-                  /> : <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value || 'No notes'} </div>}
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <DialogFooter>
             {travel?.status === 'Authentication' ? (
               <>
