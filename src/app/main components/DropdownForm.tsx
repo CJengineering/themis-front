@@ -37,7 +37,7 @@ export default function DropdownForm() {
           </div>
           <div className="-mx-1 my-1 h-px bg-muted"></div>
           <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
-            <div onClick={handleLogout}>Log out</div>
+            <div className='cursor-pointer' onClick={handleLogout}>Log out</div>
           </div>
          
         </div>

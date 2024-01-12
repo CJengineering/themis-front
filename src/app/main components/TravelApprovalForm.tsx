@@ -156,7 +156,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
 
       toast({
         title: 'Deleted',
-        description: 'Your travel has been deleted.',
+        description: 'Travel has been deleted.',
       });
 
       // Dispatching at the end to ensure all above operations complete
@@ -213,7 +213,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       setMessage('You have approved the trip !');
       toast({
         title: 'Approved',
-        description: 'Your travel has been approved.',
+        description: 'Travel has been approved.',
       });
       if (!isValidation) {
         setMessage('You have declined the trip !');

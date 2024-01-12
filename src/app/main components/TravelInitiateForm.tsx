@@ -58,6 +58,7 @@ interface TravelInitFromProps {
   onClose: () => void;
 }
 export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
+  const [tripType, setTripType] = useState('One Way');
   const { toast } = useToast();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
@@ -186,7 +187,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
       const responseData = await response.json();
       console.log('Success:', responseData);
       setMessage(
-        'Your trip request was sent! You can close or add another trip'
+        'Your trip request was sent! '
       );
       setMessageType('success');
 
@@ -204,7 +205,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
       });
       onClose();
       toast({
-        title: 'Sent for Authentication',
+        title: 'Sent for authentication',
         description: 'Your trip request was sent! ',
       });
     } catch (error) {
@@ -244,8 +245,11 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
                 <FormItem>
                   <FormLabel>Type</FormLabel>
                   <Selectcdn
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+                   onValueChange={(value) => {
+                    setTripType(value);
+                    field.onChange(value);
+                  }}
+                  defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -368,7 +372,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
                 </FormItem>
               )}
             />
-            <FormField
+            {tripType === 'Round Trip' && (  <FormField
               control={form.control}
               name="returnDepartureDateLeg2"
               render={({ field }) => (
@@ -405,7 +409,8 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            />)}
+          
             <FormField
               control={form.control}
               name="notes"
@@ -428,7 +433,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
 
           <DialogFooter>
             <Button type="submit" style={{ backgroundColor: 'green' }}>
-              Request Authentication
+              Authenticate
             </Button>
           </DialogFooter>
         </form>

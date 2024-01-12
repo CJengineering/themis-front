@@ -39,7 +39,7 @@ export function TravelForm() {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-      <div  onClick={openDialog}>
+      <div className='cursor-pointer'  onClick={openDialog}>
         New travel 
       </div>
       </DialogTrigger>

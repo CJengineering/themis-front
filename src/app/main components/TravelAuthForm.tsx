@@ -216,12 +216,12 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
         });
       } else if (isValidation === 'validation') {
         setMessage(
-          'Your changes have been saved. The travel request has been sent for approval.'
+          'Your changes have been saved. The travel request has been sent for validation.'
         );
         toast({
           title: 'Sent for Validation',
           description:
-            'Your changes have been saved. The travel request has been sent for validation',
+            'Your changes have been saved and sent for validation',
         });
       } else {
         setMessage('Your changes have been saved.');
@@ -257,7 +257,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
 
       toast({
         title: 'Deleted',
-        description: 'Your travel has been deleted.',
+        description: 'Travel has been deleted.',
       });
 
       dispatch(toggle());

@@ -374,11 +374,15 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
               name="returnDepartureDateLeg2"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Returning</FormLabel>
-                  <div className="col-span-3 p-2 bg-gray-100 rounded">
-                    {field.value ? format(field.value, 'PPP') : 'One way'}
-                  </div>
-                  <FormMessage />
+                  {field.value && (
+                    <>
+                      <FormLabel>Returning</FormLabel>
+                      <div className="col-span-3 p-2 bg-gray-100 rounded">
+                        {field.value ? format(field.value, 'PPP') : 'One way'}
+                      </div>
+                      <FormMessage />
+                    </>
+                  )}
                 </FormItem>
               )}
             />
@@ -445,7 +449,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
           </div>
 
           <DialogFooter>
-            {travel?.status === 'Authentication' ? (
+            {travel?.status !== 'Finalisation' ? (
               <>
                 <Button
                   style={{ backgroundColor: 'red' }}
@@ -453,13 +457,15 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
                 >
                   Delete
                 </Button>
-                <Button
-                  onClick={onSendForValidation}
-                  type="button"
-                  style={{ backgroundColor: 'green' }}
-                >
-                  Send for approval
-                </Button>
+                {travel?.status === 'Authentication' && (
+                  <Button
+                    onClick={onSendForValidation}
+                    type="button"
+                    style={{ backgroundColor: 'green' }}
+                  >
+                    Send for approval
+                  </Button>
+                )}
               </>
             ) : (
               ''
