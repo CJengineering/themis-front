@@ -25,8 +25,8 @@ export type TravelRows = {
 }
 export const createPresentationUrl = (state: RootState): string => {
   const isProduction = state.url.isProduction; 
-   const presentationUrl = isProduction ? 'https://themis-e4f6j5kdsq-ew.a.run.app' : 'http://localhost:3000';
-     // const presentationUrl = isProduction ?   'http://localhost:3000':'https://themis-e4f6j5kdsq-ew.a.run.app';
+  // const presentationUrl = isProduction ? 'https://themis-e4f6j5kdsq-ew.a.run.app' : 'http://localhost:3000';
+     const presentationUrl = isProduction ?   'http://localhost:3000':'https://themis-e4f6j5kdsq-ew.a.run.app';
   return presentationUrl;
 };
 export const createPresentationDialog = (state: RootState): boolean => {
