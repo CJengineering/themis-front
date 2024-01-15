@@ -42,7 +42,7 @@ export function CreateUserForm() {
     },
   });
   async function createUser(userData: UserData) {
-    const response = await fetch('http://localhost:3000/user', {
+    const response = await fetch('https://themis-e4f6j5kdsq-ew.a.run.app/user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
