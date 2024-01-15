@@ -11,7 +11,7 @@ function TypographyH1({ children, color, className }: TypographyH1Props) {
   const textStyle = color ? { color } : {};
 
   return (
-    <h1 className={`scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl ${className}`} style={textStyle}>
+    <h1 className={`scroll-m-20 text-4xl font-extrabold special-font tracking-tight lg:text-5xl ${className}`} style={textStyle}>
       {children}
     </h1>
   );

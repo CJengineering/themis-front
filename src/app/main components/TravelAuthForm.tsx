@@ -180,7 +180,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
       };
     }
     const formData = new FormData();
-
+    console.log('files ', values?.file);
     // Append file to FormData if it exists
     if (values.file) {
       formData.append('file', values.file);
@@ -220,8 +220,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
         );
         toast({
           title: 'Sent for Validation',
-          description:
-            'Your changes have been saved and sent for validation',
+          description: 'Your changes have been saved and sent for validation',
         });
       } else {
         setMessage('Your changes have been saved.');
@@ -321,7 +320,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
         </div>
       ) : (
         <form className="space-y-6 ">
-          <div className="space-y-6 pr-2 max-h-[50vh]  overflow-y-auto h-">
+          <div className="space-y-6 p-2 max-h-[50vh]  overflow-y-auto h-">
             <FormField
               control={form.control}
               name="name"
@@ -455,50 +454,52 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="returnDepartureDateLeg2"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Return</FormLabel>
-                  {travel?.status !== 'Approval' &&
-                  travel?.status !== 'Finalisation' ? (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-[240px] pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  ) : (
-                    <div className="col-span-3 p-2 bg-gray-100 rounded">
-                      {field.value ? format(field.value, 'PPP') : 'One way'}
-                    </div>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {travel?.tripType === 'Round Trip' && (
+              <FormField
+                control={form.control}
+                name="returnDepartureDateLeg2"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Return</FormLabel>
+                    {travel?.status !== 'Approval' &&
+                    travel?.status !== 'Finalisation' ? (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={'outline'}
+                              className={cn(
+                                'w-[240px] pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, 'PPP')
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    ) : (
+                      <div className="col-span-3 p-2 bg-gray-100 rounded">
+                        {field.value ? format(field.value, 'PPP') : 'One way'}
+                      </div>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="costOriginal"
@@ -589,19 +590,6 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
             {travel?.status === 'Request' && (
               <>
                 <Button
-                  style={{ backgroundColor: 'red', marginRight: '6px' }}
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button
-                  type="button"
-                  onClick={onSave}
-                  style={{ backgroundColor: 'blue', marginRight: '6px' }}
-                >
-                  Save
-                </Button>
-                <Button
                   onClick={onSendForValidation}
                   type="button"
                   style={{ backgroundColor: 'green' }}
@@ -610,28 +598,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                 </Button>
               </>
             )}
-            {travel?.status === 'Validation' && (
-              <>
-                {/* <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
-              Delete
-            </Button>
-            <Button
-              type="button"
-              onClick={onSave}
-              style={{ backgroundColor: 'blue', marginRight: '12px' }}
-            >
-              Save
-            </Button>
-            <Button
-              onClick={onSendForApproval}
-              type="button"
-              style={{ backgroundColor: 'green' }}
-            >
-              Send for approval
-            </Button> */}
-              </>
-            )}
-            {travel?.status === 'Approval' && (
+            {travel?.status !== 'Finalisation' && (
               <>
                 <Button
                   style={{ backgroundColor: 'red' }}
@@ -646,6 +613,10 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                 >
                   Save
                 </Button>
+              </>
+            )}
+            {travel?.status === 'Approval' && (
+              <>
                 <Button
                   onClick={onSendForFinal}
                   type="button"

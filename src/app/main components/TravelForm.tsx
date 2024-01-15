@@ -54,8 +54,8 @@ export function TravelForm() {
           <div className="col-span-3">
             <StatusSteps statusTravel={"new"}></StatusSteps>
           </div>
-          <div className="col-span-9">
-            <h4 className="scroll-m-20 text-l mb-4 font-semibold tracking-tight">
+          <div className="col-span-9 ">
+            <h4 className="scroll-m-20 text-l mb-4 pl-2 font-semibold tracking-tight">
               Request
             </h4>
             <TravelInitiateForm  onClose={closeDialog} />

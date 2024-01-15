@@ -112,8 +112,8 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      roundTrip: 'One Way',
-      departureCityLeg1: `Kabul`,
+      roundTrip: '',
+      departureCityLeg1: ``,
       arrivalCityLeg1: ``,
       departureDateLeg1: new Date(),
       notes: '',
@@ -125,12 +125,15 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
         const response = await fetch(`${url}/travel/` + idTravel);
         const data: TravelItem = await response.json();
         setTravel(data);
+        console.log(data);
         form.reset({
           name: `${data.user.firstName} ${data.user.lastName}`,
-          roundTrip: 'One Way',
+          roundTrip: `${data.tripType}`,
           departureCityLeg1: data.departureCityLeg1,
           arrivalCityLeg1: data.arrivalCityLeg1,
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
+          returnDepartureDateLeg2: data.returnDepartureDateLeg2 ? new Date(`${data.returnDepartureDateLeg2}`) : undefined,
+          
           notes: data.notes,
         });
       } catch (error) {
@@ -274,7 +277,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
         </div>
       ) : (
         <form className="space-y-6">
-          <div className="space-y-6 pr-2 max-h-[50vh]  overflow-y-auto h-">
+          <div className="space-y-6 p-2 max-h-[50vh]  overflow-y-auto h-">
             <FormField
               control={form.control}
               name="name"
@@ -283,7 +286,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                   <FormLabel>Traveller</FormLabel>
                   <FormControl>
                     <div className="col-span-3 p-2 bg-gray-100 rounded">
-                      {field.value || 'No city selected'}
+                      {field.value || 'No name'}
                     </div>
                   </FormControl>
 
@@ -379,14 +382,15 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                 </FormItem>
               )}
             />
-            <FormField
+            {travel?.tripType ==='Round Trip'?   <FormField
               control={form.control}
               name="returnDepartureDateLeg2"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Returning</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
+                 
+                    <>
+                      <FormLabel>Returning</FormLabel>
+                       
                       <FormControl>
                         <div className="col-span-3 p-2 bg-gray-100 rounded">
                           {field.value
@@ -394,21 +398,14 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                             : 'No date selected'}
                         </div>
                       </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
 
-                  <FormMessage />
+                      <FormMessage />
+                    </>
+                  
                 </FormItem>
               )}
-            />
+            /> : '' }
+          
             <FormField
               control={form.control}
               name="costOriginal"
@@ -417,7 +414,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                   <FormLabel>Cost (GBP)</FormLabel>
                   <FormControl>
                     <div className="col-span-3 p-2 bg-gray-100 rounded">
-                      {field.value || 'No city selected'}
+                      {field.value || 'No price found'}
                     </div>
                   </FormControl>
 

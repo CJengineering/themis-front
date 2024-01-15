@@ -40,6 +40,7 @@ export function TravelAdminForm(props: PropsTravelAuthForm) {
   if (!userString) return null;
   const user = JSON.parse(userString);
   const { id } = props;
+  const asTraveller = travel?.user.email === user.email;
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   useEffect(() => {
     const fetchTravel = async () => {
@@ -79,11 +80,11 @@ export function TravelAdminForm(props: PropsTravelAuthForm) {
             statusTravel={travel?.status ? travel.status : 'Request'}
           ></StatusSteps>
         </div>
-        <div className="col-span-9">
-          <h4 className="scroll-m-20 text-l mb-4 font-semibold tracking-tight">
+        <div className="col-span-9  ">
+          <h4 className="scroll-m-20 text-l pl-2  mb-4 font-semibold tracking-tight">
           {mapStatusToSteps(travel?.status as StatusInput)}
           </h4>
-          {user.role === 'traveller' ? (
+          {user.role === 'traveller' ||(travel?.status=== "Authentication"&& asTraveller) ? (
             <TravelValidationForm id={id} />
           ) : user.role === 'validator' ? (
             <TravelApprovalForm id={id} />

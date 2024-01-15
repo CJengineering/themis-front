@@ -49,7 +49,18 @@
  
     --radius: 0.5rem;
   }
- 
+
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style:  normal;
+    font-weight: 100;
+    font-display: swap;
+    src: url('/IBMPlexMono-Medium.ttf') format('ttf'),
+         url('/IBMPlexMono-Medium.ttf') format('woff');
+  }
+  .ibm-font {
+    font-family: 'IBM Plex Mono', monospace;
+  }
   .dark {
     --background: 224 71.4% 4.1%;
     --foreground: 210 20% 98%;
@@ -147,6 +158,14 @@
   }
   .bg-approved{
     background-color:#10AC84 ;
+  }
+  .bg-image-1{
+    background-image: url('/PIA02656.jpg') ;
+    background-size: cover;
+   
+  }
+  .special-font{
+    mix-blend-mode: exclusion;
   }
   .bg-finalised{
     background-color:#2E86DE;

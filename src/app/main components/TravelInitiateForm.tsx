@@ -58,7 +58,7 @@ interface TravelInitFromProps {
   onClose: () => void;
 }
 export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
-  const [tripType, setTripType] = useState('One Way');
+  const [tripType, setTripType] = useState('Round Trip');
   const { toast } = useToast();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
@@ -139,14 +139,17 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
     setMessageType('success');
     let nametrip = '';
     let userId = 0;
+    let userRole = 'traveller';
     let status = 'Request';
     const userData = localStorage.getItem('user-data');
     if (userData) {
       const user = JSON.parse(userData);
       const firstName = user.firstName;
       const lastName = user.lastName;
+      userRole = user.role;
       const email = user.email;
       userId = user.id;
+      
       const monthAbbreviation = getMonthAbbreviation(values.departureDateLeg1);
       const departureConsonants = getFirstThreeConsonants(
         values.departureCityLeg1
@@ -193,7 +196,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
 
       // You can add more logic here for success case
       await dispatch<any>(
-        fetchTravels(`${url}/travel`, { userId: `${userId}` })
+        fetchTravels(`${url}/travel`, { userId: `${userId}`, userRole: `${userRole}` })
       );
       form.reset({
         // Provide the initial values or leave empty to reset to defaultValues
@@ -237,7 +240,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
         </div>
       ) : (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-6 pr-2 max-h-[50vh]  overflow-y-auto h-">
+          <div className="space-y-6 p-2 max-h-[50vh]  overflow-y-auto h-">
             <FormField
               control={form.control}
               name="tripType"

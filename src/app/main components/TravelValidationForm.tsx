@@ -235,6 +235,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
       await dispatch<any>(
         fetchTravels(`${url}/travel`, {
           userId: `${user.id}`,
+          userRole: `${user.role}`,
         })
       );
     } catch (error) {
@@ -263,7 +264,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
         </div>
       ) : (
         <form className="space-y-6">
-          <div className="space-y-6 pr-2 max-h-[50vh]  overflow-y-auto h-">
+          <div className="space-y-6 p-2  max-h-[50vh]  overflow-y-auto h-">
             <FormField
               control={form.control}
               name="name"
