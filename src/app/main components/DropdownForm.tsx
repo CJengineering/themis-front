@@ -24,7 +24,7 @@ export default function DropdownForm() {
   return (
     <div className="dropdown-menu-root relative inline-block"style={{ userSelect: 'none' }}>
     <div className="dropdown-menu-trigger outline-none mt-2" onClick={toggleDropdown} style={{ userSelect: 'none' }}>
-      <span className={`material-symbols-outlined transition-transform ${isActive ? 'transform rotate-90' : ''}`}>
+      <span className={`material-symbols-outlined cursor-pointer transition-transform ${isActive ? 'transform rotate-90' : ''}`}>
         {isActive ? 'close' : 'menu'}
       </span>
     </div>

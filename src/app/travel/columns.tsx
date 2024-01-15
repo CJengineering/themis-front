@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { ArrowUpDown } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -31,42 +32,46 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { TravelRows } from '../features/Presentations';
-export type StatusInput = "Request" | "Authentication" | "Validation" | "Approval" | "Finalisation";
-
+export type StatusInput =
+  | 'Request'
+  | 'Authentication'
+  | 'Validation'
+  | 'Approval'
+  | 'Finalisation';
 
 const GreenCell = ({ children }: { children: React.ReactNode }) => (
   <div className="bg-green-100">{children}</div>
 );
 export function mapStatusToOutput(status: StatusInput): string {
   switch (status) {
-    case "Request":
-      return "Requested";
-    case "Authentication":
-      return "Authenticated";
-    case "Validation":
-      return "Validated";
-    case "Approval":
-      return "Approved";
-    case "Finalisation":
-      return "Finalised";
+    case 'Request':
+      return 'Requested';
+    case 'Authentication':
+      return 'Authenticated';
+    case 'Validation':
+      return 'Validated';
+    case 'Approval':
+      return 'Approved';
+    case 'Finalisation':
+      return 'Finalised';
     default:
-      return "Unknown";
+      return 'Unknown';
   }
 }
 export function mapStatusToSteps(status: StatusInput): string {
   switch (status) {
-    case "Request":
-      return "Authentication";
-    case "Authentication":
-      return "Validation";
-    case "Validation":
-      return "Approval";
-    case "Approval":
-      return "Finalisation";
-    case "Finalisation":
-      return "Finalised";
+    case 'Request':
+      return 'Authentication';
+    case 'Authentication':
+      return 'Validation';
+    case 'Validation':
+      return 'Approval';
+    case 'Approval':
+      return 'Finalisation';
+    case 'Finalisation':
+      return 'Finalised';
     default:
-      return "Unknown";
+      return 'Unknown';
   }
 }
 const formatDateCell = (props: any) => {
@@ -84,18 +89,46 @@ const baseColumns: ColumnDef<Travel>[] = [
   },
   {
     accessorKey: 'userFullName',
+  
     header: 'Traveler',
   },
 
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: ({ column }) => {
+      return (
+        <Button
+          style={{ padding: '0px' }}
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: (props) => (
-      <Badge variant={props.getValue() as "default" | "secondary" | "destructive" | "outline" | "confirmed" | "inProgress" | "waitingValidation" | "Request" | "Authentication" | "Validation" | "Approval" | "Finalisation"}>
+      <Badge
+        variant={
+          props.getValue() as
+            | 'default'
+            | 'secondary'
+            | 'destructive'
+            | 'outline'
+            | 'confirmed'
+            | 'inProgress'
+            | 'waitingValidation'
+            | 'Request'
+            | 'Authentication'
+            | 'Validation'
+            | 'Approval'
+            | 'Finalisation'
+        }
+      >
         {mapStatusToOutput(props.getValue() as StatusInput)}
       </Badge>
     ),
-    },
+  },
 
   {
     accessorKey: 'tripType',
@@ -116,7 +149,18 @@ const baseColumns: ColumnDef<Travel>[] = [
 
   {
     accessorKey: 'departureDate',
-    header: 'Departing',
+    header: ({ column }) => {
+      return (
+        <Button
+          style={{ padding: '0px' }}
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Departing
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: formatDateCell,
   },
   {
@@ -140,7 +184,9 @@ const baseColumns: ColumnDef<Travel>[] = [
       if (typeof bookingReference === 'string' && bookingReference) {
         return (
           <a href={bookingReference} target="_blank" rel="noopener noreferrer">
-            <span className="material-symbols-outlined cursor-pointer hover:text-gray-200">download</span>
+            <span className="material-symbols-outlined cursor-pointer hover:text-gray-200">
+              download
+            </span>
           </a>
         );
       }
@@ -148,8 +194,5 @@ const baseColumns: ColumnDef<Travel>[] = [
     },
   },
 ];
-
-
-
 
 export const travelColumns: ColumnDef<Travel>[] = baseColumns;

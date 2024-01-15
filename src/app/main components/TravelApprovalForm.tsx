@@ -225,9 +225,9 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
 
       setMessageType('success');
       dispatch(toggle());
-      // You can add more logic here for success case
+     
       await dispatch<any>(
-        fetchTravels(`${url}/travel/admin`, {
+        fetchTravels(`${url}/travel`, {
           userRole: `${user.role}`,
         })
       );

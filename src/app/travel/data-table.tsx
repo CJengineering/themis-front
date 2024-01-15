@@ -5,6 +5,10 @@ import {
   getCoreRowModel,
   useReactTable,
   Header,
+  SortingState,
+  getSortedRowModel,
+  ColumnFiltersState,
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 
 import {
@@ -23,20 +27,48 @@ import React from 'react';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { createPresentationDialog } from '../features/Presentations';
 import { closeDialog, openDialog, toggle } from '../features/openDialog/dialogSlice';
+import { Input } from '@/components/ui/input';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ChevronDownIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface DataTableProps<TData , TValue> {
   columns: ColumnDef<TData , TValue>[];
   data: TData[];
 }
-
+interface NamingColumns {
+  name: string;
+  userFullName: string;
+  status: string;
+  travelType: string;
+  departureCity: string;
+  arrivalCity: string;
+  departureDate: string;
+  returnDate: string;
+  costOriginal: string;
+  bookingReferenceDocument: string;
+  tripType: string;
+}
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
   const table = useReactTable({
     data,
     columns,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
   });
  const dispatch = useAppDispatch();
   const getCellClassNameHeader = (header: Header<TData, TValue>) => {
@@ -60,7 +92,22 @@ export function DataTable<TData, TValue>({
   };
   const dialog = useAppSelector(createPresentationDialog)
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
-
+  const namingColumns =   {
+    name: 'Trip',
+    userFullName: 'Traveler',
+    status: 'Status',
+    travelType: 'Type',
+    departureCity: 'From',
+    arrivalCity: 'To',
+    departureDate: 'Departing',
+    returnDate: 'Return',
+    costOriginal: 'Cost',
+    bookingReferenceDocument: 'Booking',
+    tripType: 'Type',
+  }
+  function getColumnValue(key: string) {
+    return namingColumns[key as keyof NamingColumns];
+  }
   const handleRowClick = (id: string) => {
     setOpenDialogId(id);
     dispatch(openDialog())
@@ -71,6 +118,44 @@ export function DataTable<TData, TValue>({
   };
   return (
     <div className="rounded-md border">
+            <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter travelers..."
+          value={(table.getColumn("userFullName")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("userFullName")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+           <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {getColumnValue(column.id)}
+                  </DropdownMenuCheckboxItem>
+                )
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+  
+      </div>
+
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

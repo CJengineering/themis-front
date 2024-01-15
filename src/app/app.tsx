@@ -8,6 +8,8 @@ import ProtectedRoute from './main components/ProtectedRoutes';
 import MainLayout from './layout/main-layout';
 import Accomodation from './pages/accomodation';
 import { useEffect, useState } from 'react';
+import { CreateUserForm } from './main components/CreateUserForm';
+import CreateUser from './pages/createUser';
 
 export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,11 +21,16 @@ export function App() {
   return (
     <Routes>
       <Route path="/signin" element={<SignInPage />} />
-
+ 
       <Route element={<MainLayout />}>
         <Route path="/" element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/createUser" element={
+          <ProtectedRoute>
+            <CreateUser />
           </ProtectedRoute>
         } />
         <Route path="/travel" element={
