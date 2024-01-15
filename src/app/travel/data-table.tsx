@@ -20,20 +20,33 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Dialog } from '@radix-ui/react-dialog';
-import { DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import {
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { TravelAdminForm } from '../main components/TravelAdminForm';
 import { useState } from 'react';
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { createPresentationDialog } from '../features/Presentations';
-import { closeDialog, openDialog, toggle } from '../features/openDialog/dialogSlice';
+import {
+  closeDialog,
+  openDialog,
+  toggle,
+} from '../features/openDialog/dialogSlice';
 import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ChevronDownIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface DataTableProps<TData , TValue> {
-  columns: ColumnDef<TData , TValue>[];
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 interface NamingColumns {
@@ -53,10 +66,10 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
   const table = useReactTable({
     data,
     columns,
@@ -70,7 +83,7 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
   });
- const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const getCellClassNameHeader = (header: Header<TData, TValue>) => {
     switch (header.column.id) {
       case 'requestedDepartureDate':
@@ -90,9 +103,9 @@ export function DataTable<TData, TValue>({
         return '';
     }
   };
-  const dialog = useAppSelector(createPresentationDialog)
+  const dialog = useAppSelector(createPresentationDialog);
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
-  const namingColumns =   {
+  const namingColumns = {
     name: 'Trip',
     userFullName: 'Traveler',
     status: 'Status',
@@ -104,32 +117,33 @@ export function DataTable<TData, TValue>({
     costOriginal: 'Cost',
     bookingReferenceDocument: 'Booking',
     tripType: 'Type',
-  }
+  };
   function getColumnValue(key: string) {
     return namingColumns[key as keyof NamingColumns];
   }
   const handleRowClick = (id: string) => {
     setOpenDialogId(id);
-    dispatch(openDialog())
-    
+    dispatch(openDialog());
   };
   const handleCloseDialog = () => {
-    dispatch(closeDialog()); 
+    dispatch(closeDialog());
   };
   return (
-    <div className="rounded-md border">
-            <div className="flex items-center py-4">
+    <div>
+      <div className="flex ml-auto py-4">
         <Input
-          placeholder="Filter travelers..."
-          value={(table.getColumn("userFullName")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("userFullName")?.setFilterValue(event.target.value)
+          placeholder="Search..."
+          value={
+            (table.getColumn('userFullName')?.getFilterValue() as string) ?? ''
           }
-          className="max-w-sm"
+          onChange={(event) =>
+            table.getColumn('userFullName')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm ml-auto"
         />
-           <DropdownMenu>
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-2">
               Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -149,115 +163,81 @@ export function DataTable<TData, TValue>({
                   >
                     {getColumnValue(column.id)}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-  
       </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={getCellClassNameHeader(
+                        header as Header<TData, TValue>
+                      )}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => {
+                const id = (row.original as any).id;
 
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead
-                    key={header.id}
-                    className={getCellClassNameHeader(
-                      header as Header<TData, TValue>
+                  <React.Fragment key={row.id}>
+                    <TableRow
+                      data-state={row.getIsSelected() && 'selected'}
+                      onClick={() => handleRowClick(id)}
+                      className="hover:cursor-pointer"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="whitespace-nowrap overflow-hidden overflow-ellipsis"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    {openDialogId === id && (
+                      <Dialog
+                        open={dialog}
+                        onOpenChange={() => setOpenDialogId(null)}
+                      >
+                        <DialogContent>
+                          <DialogHeader>
+                            <TravelAdminForm id={id} />
+                          </DialogHeader>
+                        </DialogContent>
+                      </Dialog>
                     )}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
+                  </React.Fragment>
                 );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        {/*}
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-        
-             
-                  
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap overflow-hidden overflow-ellipsis"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-         
-             
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>*/}
-                    <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => {
-              const id = (row.original as any).id;
-
-
-              return (
-                <React.Fragment key={row.id}>
-                  <TableRow
-                    data-state={row.getIsSelected() && 'selected'}
-                    onClick={() => handleRowClick(id)}
-                    className="hover:cursor-pointer"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap overflow-hidden overflow-ellipsis"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                  {openDialogId === id && (
-                    <Dialog open={dialog} onOpenChange={() => setOpenDialogId(null)}>
-                      <DialogContent>
-                        <DialogHeader>
-                          <TravelAdminForm id={id} />
-                        </DialogHeader>
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                </React.Fragment>
-              );
-            })
-          ) : (
-            <TableRow>
-              {/* ... No results handling */}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+              })
+            ) : (
+              <TableRow>{/* ... No results handling */}</TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

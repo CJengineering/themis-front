@@ -25,8 +25,8 @@ export type TravelRows = {
 }
 export const createPresentationUrl = (state: RootState): string => {
   const isProduction = state.url.isProduction; 
-   //const presentationUrl = isProduction ? 'https://themis-e4f6j5kdsq-ew.a.run.app' : 'http://localhost:3000';
-    const presentationUrl = isProduction ?   'http://localhost:3000':'https://themis-e4f6j5kdsq-ew.a.run.app';
+   const presentationUrl = isProduction ? 'https://themis-e4f6j5kdsq-ew.a.run.app' : 'http://localhost:3000';
+     // const presentationUrl = isProduction ?   'http://localhost:3000':'https://themis-e4f6j5kdsq-ew.a.run.app';
   return presentationUrl;
 };
 export const createPresentationDialog = (state: RootState): boolean => {
@@ -47,7 +47,7 @@ export const createPrsentationTravel = (state: RootState): Travel[] => {
         name: travel.name,
         userId: travel.userId,
         userFullName: `${travel.user.firstName} ${travel.user.lastName}`,
-        tripType: !!travel.returnDepartureDateLeg2, // Assuming Round Trip if return date is present
+        tripType: !!travel.returnDepartureDateLeg2, 
         departureCity: travel.departureCityLeg1,
         arrivalCity: travel.arrivalCityLeg1,
         departureDate: new Date(travel.departureDateLeg1),

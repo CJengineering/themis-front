@@ -14,16 +14,19 @@ import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 interface UserData {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-  }
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role?: string;
+}
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
   lastName: z.string().min(1, { message: 'Last name is required.' }),
   email: z.string().email({ message: 'Invalid email address.' }),
-  password: z.string().min(8, { message: 'Password must be at least 8 characters.' }),
+  password: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters.' }),
 });
 
 export function CreateUserForm() {
@@ -44,27 +47,32 @@ export function CreateUserForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
     });
-  
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to create user');
     }
-  
+
     return response.json();
   }
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    let role = 'traveller';
+    if (
+      values.email === 'c.godes@alj.mc' ||
+      values.email === 'communityjameeltechnology@gmail.com'
+    ) {
+      role = 'agent';
+    }
+    const newValues = { ...values, role: role };
     try {
-      const createdUser = await createUser(values);
-   
+      const createdUser = await createUser(newValues);
+
       setSubmitMessage('User created successfully!');
-      navigate('/'); // Redirect after user creation
     } catch (error) {
       if (error instanceof Error) {
-        // Now TypeScript knows that 'error' is of type Error
         console.error(error.message);
         setSubmitMessage(error.message || 'Failed to create user');
       } else {
-        // Handle cases where the error is not an instance of Error
         console.error('An unexpected error occurred');
         setSubmitMessage('An unexpected error occurred');
       }
@@ -109,7 +117,11 @@ export function CreateUserForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="email@example.com" {...field} />
+                <Input
+                  type="email"
+                  placeholder="email@example.com"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -22,15 +22,15 @@ export function App() {
     <Routes>
       <Route path="/signin" element={<SignInPage />} />
  
+        <Route path="/createUser" element={
+        
+            <CreateUser />
+         
+        } />
       <Route element={<MainLayout />}>
         <Route path="/" element={
           <ProtectedRoute>
             <Dashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/createUser" element={
-          <ProtectedRoute>
-            <CreateUser />
           </ProtectedRoute>
         } />
         <Route path="/travel" element={
