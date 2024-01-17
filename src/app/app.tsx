@@ -10,6 +10,7 @@ import Accomodation from './pages/accomodation';
 import { useEffect, useState } from 'react';
 import { CreateUserForm } from './main components/CreateUserForm';
 import CreateUser from './pages/createUser';
+import UserManager from './pages/userManager';
 
 export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -36,6 +37,11 @@ export function App() {
         <Route path="/travel" element={
           <ProtectedRoute>
             <Travel />
+          </ProtectedRoute>
+        } />
+             <Route path="/users" element={
+          <ProtectedRoute>
+            <UserManager/>
           </ProtectedRoute>
         } />
         <Route path="/accommodation" element={

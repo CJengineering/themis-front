@@ -113,7 +113,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
     defaultValues: {
       departureCityLeg1: '',
       arrivalCityLeg1: '',
-      tripType: '',
+      tripType: 'Round Trip',
       departureDateLeg1: new Date(),
       notes: '',
     },
@@ -255,8 +255,8 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
                   defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type trip" />
+                    <SelectTrigger>
+                        <SelectValue placeholder="Round Trip" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

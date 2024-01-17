@@ -134,7 +134,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
           notes: data.notes,
           costOriginal: data.costOriginal,
-          returnDepartureDateLeg2: new Date(`${data.returnDepartureDateLeg2}`)
+          returnDepartureDateLeg2: data.returnDepartureDateLeg2 ? new Date(`${data.returnDepartureDateLeg2}`) : undefined,
         });
       } catch (error) {
         console.error('Error fetching cities:', error);

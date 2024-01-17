@@ -124,8 +124,10 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
     const fetchTravel = async () => {
       try {
         const response = await fetch(url + '/travel/' + idTravel);
+      
         const data: TravelItem = await response.json();
         setTravel(data);
+        console.log('this is travel',data);
         form.reset({
           name: `${data.user.firstName} ${data.user.lastName}`,
           roundTrip: data.tripType,
@@ -134,6 +136,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
           notes: data.notes || '',
           costOriginal: data.costOriginal || null,
+          returnDepartureDateLeg2: new Date(`${data.returnDepartureDateLeg2}`) || null,
         });
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -375,8 +378,9 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
               name="returnDepartureDateLeg2"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  {field.value && (
+                  {travel?.returnDepartureDateLeg2 && (
                     <>
+                  
                       <FormLabel>Returning</FormLabel>
                       <div className="col-span-3 p-2 bg-gray-100 rounded">
                         {field.value ? format(field.value, 'PPP') : 'One way'}
