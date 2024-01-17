@@ -133,7 +133,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
           arrivalCityLeg1: data.arrivalCityLeg1,
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
           returnDepartureDateLeg2: data.returnDepartureDateLeg2 ? new Date(`${data.returnDepartureDateLeg2}`) : undefined,
-          
+          costOriginal: `${data.costOriginal}`,
           notes: data.notes,
         });
       } catch (error) {
