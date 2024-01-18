@@ -414,7 +414,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
               )}
             />)}
           
-            <FormField
+            {/* <FormField
               control={form.control}
               name="notes"
               render={({ field }) => (
@@ -431,7 +431,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
 
           <DialogFooter>

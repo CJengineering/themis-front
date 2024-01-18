@@ -447,7 +447,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                 </div>
               </div>
             )}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="notes"
               render={({ field }) => (
@@ -470,7 +470,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
 
           <DialogFooter>

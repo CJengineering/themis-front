@@ -90,7 +90,7 @@ const baseColumns: ColumnDef<Travel>[] = [
   {
     accessorKey: 'userFullName',
   
-    header: 'Traveler',
+    header: 'Traveller',
   },
 
   {

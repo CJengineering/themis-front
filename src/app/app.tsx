@@ -23,7 +23,7 @@ export function App() {
     <Routes>
       <Route path="/signin" element={<SignInPage />} />
  
-        <Route path="/createUser" element={
+        <Route path="/profile" element={
         
             <CreateUser />
          
