@@ -142,7 +142,7 @@ export function CreateUserForm() {
           )}
         />
 
-        <Button type="submit">Create User</Button>
+        <Button type="submit">Create account</Button>
         {submitMessage && <div className="mt-4">{submitMessage}</div>}
       </form>
     </Form>

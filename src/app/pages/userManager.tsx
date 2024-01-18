@@ -92,7 +92,7 @@ const UserList: React.FC = () => {
 
     // Replace with your API endpoint and method to update the user
     fetch(`${url}/user/${editingUser.id}`, {
-      method: 'PUT', // or 'PATCH'
+      method: 'PATCH', // or 'PATCH'
       headers: {
         'Content-Type': 'application/json',
       },
