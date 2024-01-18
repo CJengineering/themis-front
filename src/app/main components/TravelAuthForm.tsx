@@ -51,6 +51,7 @@ const formSchema = z.object({
   file: z.any().optional(),
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
+  fileName: z.string().optional(),
   roundTrip: z.string().optional(),
   departureCityLeg1: z.string().optional(),
   arrivalCityLeg1: z.string().optional(),
@@ -185,6 +186,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
     // Append file to FormData if it exists
     if (values.file) {
       formData.append('file', values.file);
+      values = { ...values, fileName: values.file.name };
     }
 
     try {
@@ -197,7 +199,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
 
       // Append the non-file data as a JSON string
       formData.append('data', JSON.stringify(nonFileData));
-
+       console.log('formdata ', formData)
       const response = await fetch(`${url}/travel/${id.id}`, {
         method: 'PATCH',
         body: formData, // send formData with both file and non-file data

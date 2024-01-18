@@ -490,7 +490,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                 <Button
                   onClick={onSendForFinalisation}
                   type="button"
-                  style={{ backgroundColor: 'green', }}
+                  style={{ backgroundColor: 'green', marginTop: '10px' }}
                 >
                   Approve
                 </Button>
