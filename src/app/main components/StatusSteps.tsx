@@ -53,7 +53,7 @@ const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
   };
 
   return (
-    <div className="flex flex-col items-start">
+    <div className="hidden md:flex flex-col items-start">
    
       <div className="w-full">
         {navLinks.map((link,index) => (
