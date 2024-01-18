@@ -476,28 +476,32 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
           <DialogFooter>
             {travel?.status === 'Validation' ? (
               <>
-                <Button
-                  onClick={onSendForFinalisation}
-                  type="button"
-                  style={{ backgroundColor: 'green' }}
-                >
-                  Approve
-                </Button>
+                 <Button style={{ backgroundColor: 'red', marginTop: '10px' }} onClick={handleDelete}>
+                Delete
+              </Button>
+             
                 <Button
                   onClick={onSendForDecline}
                   type="button"
-                  style={{ backgroundColor: 'brown' }}
+                  style={{ backgroundColor: 'brown', marginTop: '10px' }}
                 >
                   Decline
                 </Button>
+                <Button
+                  onClick={onSendForFinalisation}
+                  type="button"
+                  style={{ backgroundColor: 'green', }}
+                >
+                  Approve
+                </Button>
               </>
             ) : (
-              ''
+                <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
+                Delete
+              </Button>
             )}
 
-            <Button style={{ backgroundColor: 'red' }} onClick={handleDelete}>
-              Delete
-            </Button>
+        
           </DialogFooter>
         </form>
       )}
