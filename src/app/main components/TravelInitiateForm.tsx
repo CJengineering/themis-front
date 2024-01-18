@@ -436,7 +436,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
 
           <DialogFooter>
             <Button type="submit" style={{ backgroundColor: 'green' }}>
-              Authenticate
+             Request
             </Button>
           </DialogFooter>
         </form>
