@@ -15,7 +15,9 @@ const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const url = useAppSelector(createPresentationUrl);
-
+ 
+  const userData = localStorage.getItem('userData');
+    const admin = JSON.parse(userData || '{}');
   useEffect(() => {
     fetch(`${url}/user`)
       .then((response) => response.json())
@@ -33,7 +35,13 @@ const UserList: React.FC = () => {
   };
   const renderEditForm = () => {
     if (!editingUser) return null;
-
+  if(admin.email !== 'tim@communityjameel.org'){
+    return (
+        <div>
+            <h1>Your are not admin 1</h1>
+        </div>
+    );
+  }
     return (
       <form onSubmit={handleUpdateUser} className="edit-form mb-4">
         <div className="mb-2">
