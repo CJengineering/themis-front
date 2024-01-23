@@ -16,7 +16,7 @@ const UserList: React.FC = () => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const url = useAppSelector(createPresentationUrl);
  
-  const userData = localStorage.getItem('userData');
+  const userData = localStorage.getItem('user-data');
     const admin = JSON.parse(userData || '{}');
   useEffect(() => {
     fetch(`${url}/user`)
