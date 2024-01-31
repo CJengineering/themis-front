@@ -28,10 +28,7 @@ interface FormValues {
   firstName?: string;
   lastName?: string;
 
-  passportNumber?: string;
-  passportCountry?: string;
-  birthDate?: string;
-  passportExpiryDate?: string;
+
   mobileNumber?: string;
   address?: string;
 
@@ -56,22 +53,10 @@ const formFieldsConfig: FormFieldsConfig = {
     validation: z.string().min(2).max(50),
   },
 
-  passportNumber: {
-    label: 'Passport Number',
-    validation: z.string().nullable().optional(),
-  },
-  passportCountry: {
-    label: 'Passport Country',
-    validation: z.string().optional(),
-  },
-  birthDate: {
-    label: 'Birth Date',
-    validation: z.string().optional(),
-  },
-  passportExpiryDate: {
-    label: 'Passport Expiry Date',
-    validation: z.string().optional(),
-  },
+
+ 
+ 
+
   mobileNumber: {
     label: 'Mobile Number',
     validation: z.string().optional(),
@@ -83,7 +68,7 @@ const formFieldsConfig: FormFieldsConfig = {
 
 
   file: {
-    label: 'Upload your passport pdf',
+    label: 'Upload your profile picture',
     validation: z.any().optional(),
   },
 };
@@ -111,10 +96,9 @@ export function UpdateProfileForm() {
       firstName: '',
       lastName: '',
 
-      passportNumber: '',
-      passportCountry: '',
-      birthDate: '',
-      passportExpiryDate: '',
+  
+
+ 
       mobileNumber: '',
       address: '',
 
@@ -135,10 +119,10 @@ export function UpdateProfileForm() {
         form.reset({
           firstName: data.firstName || '',
           lastName: data.lastName || '',
-          passportNumber: data.passportNumber || '',
-          passportCountry: data.passportCountry || '',
-          birthDate: data.birthDate || '',
-          passportExpiryDate: data.passportExpiryDate || '',
+      
+   
+        
+ 
           mobileNumber: data.mobileNumber || '',
           address: data.address || '',
         
@@ -164,8 +148,8 @@ export function UpdateProfileForm() {
     
     const transformValues = {
       ...values,
-      birthDate: values.birthDate || null,
-      passportExpiryDate: values.passportExpiryDate || null,
+    
+   
       fileName: values.file?.[0].name || null,
     };
     console.log('this is the transfromed values',transformValues);
@@ -224,97 +208,7 @@ export function UpdateProfileForm() {
                     )}
                   />
                 );
-              } else if (fieldName === 'birthDate') {
-                return(
-                <FormField
-                  control={form.control}
-                  name={fieldName}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Birth date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={'outline'}
-                              className={cn(
-                                'w-[240px] pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground'
-                              )}
-                            >
-                              {field.value
-                                ? format(new Date(field.value), 'PPP')
-                                : 'Pick a date'}
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            onSelect={(date) => {
-                              form.setValue(
-                                fieldName,
-                                date ? format(date, 'yyyy-MM-dd') : ''
-                              );
-                            }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />)
-              } else if (fieldName === 'passportExpiryDate') {
-                return (
-                <FormField
-                  control={form.control}
-                  name={fieldName}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Passport expiracy date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={'outline'}
-                              className={cn(
-                                'w-[240px] pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground'
-                              )}
-                            >
-                              {field.value
-                                ? format(new Date(field.value), 'PPP')
-                                : 'Pick a date'}
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            onSelect={(date) => {
-                              form.setValue(
-                                fieldName,
-                                date ? format(date, 'yyyy-MM-dd') : ''
-                              );
-                            }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />)
-              } else {
+              }  else {
                 return (
                   <FormField
                     key={fieldName}

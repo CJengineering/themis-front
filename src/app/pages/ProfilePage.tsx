@@ -3,7 +3,12 @@ import { UpdateMileForm } from '../main components/UpdateMileForm';
 import { UpdateProfileForm } from '../main components/UpdateProfileForm';
 import { UpdateVisaForm } from '../main components/UpdateVisaForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import {
   Card,
   CardContent,
@@ -15,16 +20,15 @@ import {
 import { format } from 'date-fns';
 import { createPresentationUrl } from '../features/Presentations';
 import { useAppSelector } from '../features/hooks';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { PassportForm } from '../main components/PassportForm';
 interface User {
   [key: string]: any;
   firstName: string;
   lastName: string;
   role: string;
   email: string;
-  passportNumber: string;
-  passportExpiry: string;
-  passportReference: string;
-  birthDate?: Date | string;
+  profilerPicUrl?: string;
   mobileNumber?: string;
   address?: string;
   position?: string;
@@ -57,20 +61,14 @@ const PageProfile = () => {
   const userDetails = [
     { key: 'email', label: 'Email' },
     { key: 'role', label: 'Role' },
-    { key: 'birthDate', label: 'Birth Date', formatter: formatDate },
+
     { key: 'mobileNumber', label: 'Mobile Number' },
     { key: 'address', label: 'Address' },
-    { key: 'position', label: 'Position' },
-    { key: 'passportNumber', label: 'Passport Number' },
-    { key: 'passportExpiry', label: 'Passport Expiry' },
-    { key: 'passportReference', label: 'Passport Reference' },
   ];
 
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch(
-        `${url}/user/${currentUserData.id}`
-      );
+      const response = await fetch(`${url}/user/${currentUserData.id}`);
       const data = await response.json();
       console.log(data);
       setUserData(data);
@@ -81,49 +79,39 @@ const PageProfile = () => {
   return (
     <div>
       <div className="">
+        <Avatar>
+          <AvatarImage src={userData?.profilePicUrl} />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
         <div className="text-3xl font-bold  mb-6">
           {userData?.firstName} {userData?.lastName}
         </div>
         <Tabs defaultValue="account" className="w-[600px]">
           <TabsList>
             <TabsTrigger value="account">Traveler details</TabsTrigger>
-            <TabsTrigger value="details">Update details </TabsTrigger>
-            <TabsTrigger value="visas">Update visas </TabsTrigger>
-            <TabsTrigger value="miles">Update miles </TabsTrigger>
+            <TabsTrigger value="details">Personal </TabsTrigger>
+            <TabsTrigger value="passport">Passport </TabsTrigger>
+            <TabsTrigger value="visas">Visa</TabsTrigger>
+            <TabsTrigger value="miles">Frequent flyer miles </TabsTrigger>
           </TabsList>
           <TabsContent value="account">
             <Card>
               <CardHeader>
                 <CardTitle>Details</CardTitle>
-                <CardDescription>Travel details</CardDescription>
+                <CardDescription>Traveler details</CardDescription>
               </CardHeader>
               <CardContent>
-                {userDetails.map(({ key, label, formatter }) => {
+                {userDetails.map(({ key, label }) => {
                   const value = userData
                     ? userData[key as keyof User]
                     : undefined;
 
                   // Special rendering for passportReference as a hyperlink
-                  if (key === 'passportReference' && value) {
-                    return (
-                      <div key={key} className="flex items-center mb-2">
-                        <p className="font-bold mr-2">{label}:</p>
-                        <a
-                          href={value}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          Passport pdf link
-                        </a>
-                      </div>
-                    );
-                  }
 
                   return (
                     <div key={key} className="flex items-center mb-2">
                       <p className="font-bold mr-2">{label}:</p>
-                      <p>{formatter ? formatter(value) : value}</p>
+                      <p>{value}</p>
                     </div>
                   );
                 })}
@@ -153,19 +141,47 @@ const PageProfile = () => {
                   </div>
                 )}
               </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
             </Card>
           </TabsContent>
           <TabsContent value="details">
-            <UpdateProfileForm />
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Edit</AccordionTrigger>
+                <AccordionContent>
+                  <UpdateProfileForm />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </TabsContent>
+          <TabsContent value="passport">
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Edit</AccordionTrigger>
+                <AccordionContent>
+                  <PassportForm />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </TabsContent>
           <TabsContent value="visas">
-            <UpdateVisaForm></UpdateVisaForm>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Edit</AccordionTrigger>
+                <AccordionContent>
+                  <UpdateVisaForm></UpdateVisaForm>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </TabsContent>
           <TabsContent value="miles">
-            <UpdateMileForm></UpdateMileForm>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Edit</AccordionTrigger>
+                <AccordionContent>
+                  <UpdateMileForm />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </TabsContent>
         </Tabs>
       </div>
