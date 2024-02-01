@@ -3,6 +3,7 @@ import React from 'react';
 import { accommodationColumns } from '../accomodation/columnAccomodation';
 import { fakeAccommodations } from '@/fake-travel';
 import { DataTable } from '../travel/data-table';
+import { TravelAdminForm } from '../main components/TravelAdminForm';
 
 const Accomodation = () => {
   return (
@@ -11,6 +12,7 @@ const Accomodation = () => {
       <DataTable
               columns={accommodationColumns}
               data={fakeAccommodations}
+              dialogContentComponent={TravelAdminForm}
             />
     </div>
   );

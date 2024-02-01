@@ -4,11 +4,14 @@ import { UpdateProfileForm } from '../main components/UpdateProfileForm';
 import { UpdateVisaForm } from '../main components/UpdateVisaForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   Card,
   CardContent,
@@ -18,10 +21,27 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { format } from 'date-fns';
-import { createPresentationUrl } from '../features/Presentations';
-import { useAppSelector } from '../features/hooks';
+import {
+  createPresentationDialog,
+  createPresentationSecondDialog,
+  createPresentationUrl,
+  createPresentationUser,
+} from '../features/Presentations';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PassportForm } from '../main components/PassportForm';
+import { fetchUser } from '../features/user/fetchUser';
+import { DataTable } from '../travel/data-table';
+import { TravelAdminForm } from '../main components/TravelAdminForm';
+import { ColumnPassports } from '../usersData/columnsPassport';
+import { DataTableUser } from '../usersData/data-table-passports';
+import testFrom from '../main components/testFrom';
+import { ColumnVisas } from '../usersData/columnsVisa';
+import { ColumnMiles } from '../usersData/columnsMiles';
+import { Button } from '@/components/ui/button';
+import { toggleSecond } from '../features/openDialog/dialogSlice';
+import { Mile, Passport } from '@/interfaces';
+
 interface User {
   [key: string]: any;
   firstName: string;
@@ -48,16 +68,41 @@ interface Miles {
 const PageProfile = () => {
   const [userData, setUserData] = useState<User>();
   const url = useAppSelector(createPresentationUrl);
+  const userFullData = useAppSelector(createPresentationUser);
+  const dispatch = useAppDispatch();
+  const dialogSecond = useAppSelector(createPresentationSecondDialog);
   const currentUser = localStorage.getItem('user-data');
   const currentUserData = JSON.parse(currentUser || '{}');
-  const formatDate = (date: string | Date | undefined): string => {
-    if (date) {
-      // Convert to Date object if it's a string and format it
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      return format(dateObj, 'PPP');
-    }
-    return 'Not provided';
+  const urlUser = `${url}/user/${currentUserData.id}`;
+
+  const arrayPassports = userFullData.passports;
+  const arrayVisas = userFullData.visas;
+  const arrayMiles = userFullData.miles;
+  const namingColumnsPassport: Record<string, string> = {
+    passportNumber: 'Passport Number',
+    dateOfBirth: 'Date of Birth',
+    validFrom: 'Valid From',
+    expiry: 'Expiry',
+    passportReference: 'Passport Reference',
+    nationality: 'Nationality',
   };
+  const namingColumnsVisa: Record<string, string> = {
+    name: 'Country',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+  };
+  const namingColumnsMiles: Record<string, string> = {
+    companyName: 'Company Name',
+    miles: 'Miles',
+  };
+  const createGetColumnValue = (namingColumns: Record<string, string>) => {
+    return (key: string): string => namingColumns[key] || key;
+  };
+  const getColumnValueForPassports = createGetColumnValue(
+    namingColumnsPassport
+  );
+  const getColumnValueForVisas = createGetColumnValue(namingColumnsVisa);
+  const getColumnValueForMiles = createGetColumnValue(namingColumnsMiles);
   const userDetails = [
     { key: 'email', label: 'Email' },
     { key: 'role', label: 'Role' },
@@ -65,26 +110,37 @@ const PageProfile = () => {
     { key: 'mobileNumber', label: 'Mobile Number' },
     { key: 'address', label: 'Address' },
   ];
-
+  const toggleSecondDialog = () => {
+   
+      dispatch(toggleSecond());
+    
+  }
+  console.log('this is OPEN OR CLOSE', dialogSecond);
+  const firstTest = `${userFullData.visas ?? 'DefaultFirstName'}`;
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserApi = async () => {
       const response = await fetch(`${url}/user/${currentUserData.id}`);
       const data = await response.json();
       console.log(data);
       setUserData(data);
     };
-    fetchUser();
+    const fetchDate = async () => {
+      await dispatch<any>(fetchUser(urlUser));
+    };
+   
+    fetchDate();
   }, []);
-
+  console.log('this is the user Fulldata', userFullData);
   return (
     <div>
       <div className="">
         <Avatar>
-          <AvatarImage src={userData?.profilePicUrl} />
+          <AvatarImage src={userFullData.user.profilePicUrl} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
+   
         <div className="text-3xl font-bold  mb-6">
-          {userData?.firstName} {userData?.lastName}
+          {userFullData.user.firstName} {userFullData.user.lastName}
         </div>
         <Tabs defaultValue="account" className="w-[600px]">
           <TabsList>
@@ -102,8 +158,8 @@ const PageProfile = () => {
               </CardHeader>
               <CardContent>
                 {userDetails.map(({ key, label }) => {
-                  const value = userData
-                    ? userData[key as keyof User]
+                  const value = userFullData.user
+                    ? userFullData.user[key as keyof User]
                     : undefined;
 
                   // Special rendering for passportReference as a hyperlink
@@ -115,10 +171,10 @@ const PageProfile = () => {
                     </div>
                   );
                 })}
-                {userData?.visas && userData.visas.length > 0 && (
+                {userFullData.visas && userFullData.visas.length > 0 && (
                   <div className="mt-4">
                     <p className="font-bold mb-2">Visas:</p>
-                    {userData.visas.map((visa: Visa, index: number) => (
+                    {userFullData.visas.map((visa: Visa, index: number) => (
                       <div key={index} className="mb-2">
                         <p className="font-semibold">Country: {visa.name}</p>
                         <p>Start Date: {visa.startDate}</p>
@@ -127,61 +183,102 @@ const PageProfile = () => {
                     ))}
                   </div>
                 )}
-                {userData?.miles && userData.miles.length > 0 && (
+                {userFullData.miles && userFullData.miles.length > 0 && (
                   <div className="mt-4">
-                    <p className="font-bold mb-2">Visas:</p>
-                    {userData.miles.map((mile: Miles, index: number) => (
+                    <p className="font-bold mb-2">Frequent flyer miles</p>
+                    {userFullData.miles.map((mile: Mile, index: number) => (
                       <div key={index} className="mb-2">
                         <p className="font-semibold">
-                          Country: {mile.companyName}
+                          Company: {mile.companyName}
                         </p>
                         <p>miles: {mile.miles}</p>
                       </div>
                     ))}
+                    
+                  </div>
+                )}
+                    {userFullData.passports && userFullData.passports.length > 0 && (
+                  <div className="mt-4">
+                    <p className="font-bold mb-2">Passports</p>
+                    {userFullData.passports.map((passport: Passport, index: number) => (
+                      <div key={index} className="mb-2">
+                        <p className="font-semibold">
+                          Country: {passport.nationality}
+                        </p>
+                      
+                      </div>
+                    ))}
+                    
                   </div>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="details">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Edit</AccordionTrigger>
-                <AccordionContent>
-                  <UpdateProfileForm />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <UpdateProfileForm />
           </TabsContent>
           <TabsContent value="passport">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Edit</AccordionTrigger>
-                <AccordionContent>
-                  <PassportForm />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <DataTableUser
+              columns={ColumnPassports}
+              getColumnValue={getColumnValueForPassports}
+              dialogContentComponent={PassportForm}
+              data={arrayPassports}
+            />
+            <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
+              <DialogTrigger>
+                <Button className="mt-8" variant="blue" >
+                  Add new passport{' '}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle> New passport form</DialogTitle>
+                </DialogHeader>
+                <PassportForm />
+              </DialogContent>
+            </Dialog>
           </TabsContent>
           <TabsContent value="visas">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Edit</AccordionTrigger>
-                <AccordionContent>
-                  <UpdateVisaForm></UpdateVisaForm>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <DataTableUser
+              columns={ColumnVisas}
+              getColumnValue={getColumnValueForVisas}
+              dialogContentComponent={UpdateVisaForm}
+              data={arrayVisas}
+            />
+            <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
+              <DialogTrigger>
+                <Button className="mt-8" variant="blue">
+                  Add new visa
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle> New visa form</DialogTitle>
+                </DialogHeader>
+                <UpdateVisaForm />
+              </DialogContent>
+            </Dialog>
           </TabsContent>
           <TabsContent value="miles">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Edit</AccordionTrigger>
-                <AccordionContent>
-                  <UpdateMileForm />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <DataTableUser
+              columns={ColumnMiles}
+              getColumnValue={getColumnValueForMiles}
+              dialogContentComponent={UpdateMileForm}
+              data={arrayMiles}
+            />
+            <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
+              <DialogTrigger>
+                <Button className="mt-8" variant="blue">
+                  Add new frequent flyer miles
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle> New frequent flyer miles form</DialogTitle>
+                </DialogHeader>
+                <UpdateMileForm />
+              </DialogContent>
+            </Dialog>
           </TabsContent>
         </Tabs>
       </div>

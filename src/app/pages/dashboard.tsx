@@ -6,6 +6,7 @@ import { createPresentationUrl, createPrsentationTravel } from '../features/Pres
 import { useAppDispatch, useAppSelector, useUserData } from '../features/hooks';
 import { useEffect } from 'react';
 import { fetchTravels } from '../features/travel/fetchTravel';
+import { TravelAdminForm } from '../main components/TravelAdminForm';
 
 const Dashboard = () => {
   const travelData = useAppSelector(createPrsentationTravel);
@@ -28,7 +29,7 @@ const Dashboard = () => {
     <>
 
       
-      <DataTable columns={travelColumns} data={travelData} />
+      <DataTable columns={travelColumns} data={travelData}  dialogContentComponent={TravelAdminForm} />
       <div className="p-4"></div>
       {/* <h2 className="text-xl font-bold mb-4">Accomodation</h2>
       <DataTable columns={accommodationColumns} data={fakeAccommodations} /> */}

@@ -4,11 +4,15 @@ export const dialogSlice = createSlice({
   name: 'dialog',
   initialState: {
     isOpen: false,
+    isSecondOpen: false,
   },
   reducers: {
     toggle: (state) => {
       state.isOpen = !state.isOpen;
     },
+   toggleSecond: (state) => {
+        state.isSecondOpen = !state.isSecondOpen;
+        },
     openDialog: (state) => {
       state.isOpen = true;
     },
@@ -18,6 +22,6 @@ export const dialogSlice = createSlice({
   },
 });
 
-export const { toggle, openDialog, closeDialog } = dialogSlice.actions;
+export const { toggle, openDialog, closeDialog, toggleSecond } = dialogSlice.actions;
 
 export default dialogSlice.reducer;

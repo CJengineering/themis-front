@@ -44,29 +44,24 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChevronDownIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Passport } from '@/interfaces';
+import { format, parseISO } from 'date-fns';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  dialogContentComponent: React.ComponentType<{ id: string }> | ((props: { id: string }) => React.ReactNode);
+  dialogContentComponent:
+    | React.ComponentType<{ id: string }>
+    | ((props: { id: string }) => React.ReactNode);
+
+  getColumnValue: (key: string) => string;
 }
-interface NamingColumns {
-  name: string;
-  userFullName: string;
-  status: string;
-  travelType: string;
-  departureCity: string;
-  arrivalCity: string;
-  departureDate: string;
-  returnDate: string;
-  costOriginal: string;
-  bookingReferenceDocument: string;
-  tripType: string;
-}
-export function DataTable<TData, TValue>({
+
+export function DataTableUser<TData, TValue>({
   columns,
   data,
   dialogContentComponent: DialogContentComponent,
+  getColumnValue,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -107,22 +102,7 @@ export function DataTable<TData, TValue>({
   };
   const dialog = useAppSelector(createPresentationDialog);
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
-  const namingColumns = {
-    name: 'Trip',
-    userFullName: 'Traveler',
-    status: 'Status',
-    travelType: 'Type',
-    departureCity: 'From',
-    arrivalCity: 'To',
-    departureDate: 'Departing',
-    returnDate: 'Return',
-    costOriginal: 'Cost',
-    bookingReferenceDocument: 'Booking',
-    tripType: 'Type',
-  };
-  function getColumnValue(key: string) {
-    return namingColumns[key as keyof NamingColumns];
-  }
+
   const handleRowClick = (id: string) => {
     setOpenDialogId(id);
     dispatch(openDialog());
@@ -130,19 +110,27 @@ export function DataTable<TData, TValue>({
   const handleCloseDialog = () => {
     dispatch(closeDialog());
   };
+  const formatDateValue = (cellValue: unknown): string => {
+    // Check if the value is indeed a string before formatting
+    if (typeof cellValue === 'string') {
+      return safelyFormatDate(cellValue);
+    }
+    // Handle non-string cellValue appropriately, e.g., return a default string or convert to string
+    return 'Not a date'; // Or any other fallback logic
+  };
+  const safelyFormatDate = (dateString: string) => {
+    if (!dateString) return 'Not provided'; // Handle null, undefined, or empty strings
+    try {
+      const date = parseISO(dateString); // Attempt to parse the string into a date object
+      return format(date, 'PPP'); // Format the date
+    } catch (error) {
+      console.error('Failed to format date:', error);
+      return 'Invalid date'; // Handle dates that cannot be parsed
+    }
+  };
   return (
     <div>
       <div className="flex ml-auto py-4">
-        <Input
-          placeholder="Search..."
-          value={
-            (table.getColumn('userFullName')?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn('userFullName')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm ml-auto"
-        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-2">
@@ -212,10 +200,16 @@ export function DataTable<TData, TValue>({
                           key={cell.id}
                           className="whitespace-nowrap overflow-hidden overflow-ellipsis"
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+                          {flexRender(cell.column.columnDef.cell, {
+                            ...cell.getContext(),
+                            value: [
+                              'dateOfBirth',
+                              'validFrom',
+                              'expiry',
+                            ].includes(cell.column.id)
+                              ? formatDateValue(cell.getValue())
+                              : cell.getValue(),
+                          })}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -225,11 +219,13 @@ export function DataTable<TData, TValue>({
                         onOpenChange={() => setOpenDialogId(null)}
                       >
                         <DialogContent>
-                        <DialogHeader>
+                          <DialogHeader>
                             {typeof DialogContentComponent === 'function' ? (
                               <DialogContentComponent id={id} />
                             ) : (
-                              React.createElement(DialogContentComponent, { id })
+                              React.createElement(DialogContentComponent, {
+                                id,
+                              })
                             )}
                           </DialogHeader>
                         </DialogContent>

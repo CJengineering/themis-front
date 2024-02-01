@@ -21,7 +21,7 @@ type PageName = 'Dashboard' | 'Travel' | 'Accommodation';
 
 // Define the props for TopRightNav
 interface TopRightNavProps {
-  currentPage: PageName;
+  currentPage: string;
 }
 const TopRightNav = ({ currentPage }: TopRightNavProps) => {
   let userInitials = 'UN';

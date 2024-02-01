@@ -22,7 +22,11 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ZodTypeAny } from 'zod';
 import { createPresentationUrl } from '../features/Presentations';
-import { useAppSelector } from '../features/hooks';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
+import { useEffect, useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import { toggle, toggleSecond } from '../features/openDialog/dialogSlice';
+import { fetchUser } from '../features/user/fetchUser';
 
 type FormFieldConfig = {
   label: string;
@@ -60,10 +64,18 @@ const createFormSchema = (config: FormFieldsConfig) => {
 };
 
 const formSchema = createFormSchema(formFieldsConfig);
-export function UpdateVisaForm() {
-  const currentUser = localStorage.getItem('user-data');
+
+interface UpdateVisaFormProps {
+  id?: string;
+}
+export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
+  const dispatch = useAppDispatch();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const url = useAppSelector(createPresentationUrl);
+  const currentUser = localStorage.getItem('user-data');
   const currentUserData = JSON.parse(currentUser || '{}');
+  const urlUser = `${url}/user/${currentUserData.id}`;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,6 +84,25 @@ export function UpdateVisaForm() {
       endDate: '',
     },
   });
+  useEffect(() => {
+    if (id) {
+      const fetchVisaData = async () => {
+        try {
+          const response = await fetch(`${url}/visa/${id}`);
+          if (!response.ok) throw new Error('Failed to fetch visa data');
+          const visaData = await response.json();
+          form.reset({
+            name: visaData.name,
+            startDate: visaData.startDate,
+            endDate: visaData.endDate,
+          });
+        } catch (error) {
+          console.error('Error fetching visa data:', error);
+        }
+      };
+      fetchVisaData();
+    }
+  }, [id, url, form]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = new FormData();
     const data = {
@@ -81,20 +112,63 @@ export function UpdateVisaForm() {
       userId: currentUserData.id,
     };
     console.log('this is the data ', data);
+    const endpoint = id ? `${url}/visa/${id}` : `${url}/visa`;
+    const method = id ? 'PATCH' : 'POST';
     try {
-      const response = await fetch(`${url}/visa`, {
-        method: 'POST',
+      const response = await fetch(endpoint, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
+      if (id) {
+        dispatch(toggle());
+        setIsLoading(true);
+        toast({
+          title: 'Success',
+          description: 'Visa updated successfully',
 
+          duration: 5000,
+        });
+      } else {
+        dispatch(toggleSecond());
+        setIsLoading(true);
+        toast({
+          title: 'Success',
+          description: 'Visa created successfully',
+
+          duration: 5000,
+        });
+      }
+
+      await dispatch<any>(fetchUser(urlUser));
       console.log('this is the response ', response);
     } catch (error) {
       console.log(error);
     }
   }
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${url}/visa/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.status.toString().startsWith('2')) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      toast({
+        title: 'Deleted',
+        description: 'Visa has been deleted.',
+      });
+
+      dispatch(toggle());
+      await dispatch<any>(fetchUser(urlUser));
+    } catch (error) {
+      console.error('Error deleting travel item:', error);
+    }
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -217,6 +291,15 @@ export function UpdateVisaForm() {
         )}
 
         <Button type="submit">Submit</Button>
+        {id && (
+          <Button
+            type="button"
+            style={{ backgroundColor: 'red', marginLeft: '6px' }}
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+        )}
       </form>
     </Form>
   );

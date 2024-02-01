@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TravelForm } from './TravelForm';
+import { useNavigate } from 'react-router-dom';
 import { AccomodationForm } from './AccomodationForm';
 import {
   DropdownMenuContent,
@@ -11,6 +12,7 @@ import {
 export default function DropdownForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem('user-data');
     localStorage.removeItem('isAuthenticated');
@@ -18,8 +20,13 @@ export default function DropdownForm() {
   };
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
-    setIsActive(!isActive); // Toggle the active state
+    setIsActive(!isActive); 
   };
+
+  const handleProfileClick = () => {
+    navigate('/testProfile'); 
+  };
+
 
   return (
     <div className="dropdown-menu-root relative inline-block"style={{ userSelect: 'none' }}>
@@ -35,6 +42,9 @@ export default function DropdownForm() {
           <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
             <TravelForm />
           </div>
+          <div className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm" onClick={handleProfileClick}>
+              Profile 
+            </div>
           <div className="-mx-1 my-1 h-px bg-muted"></div>
           <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
             <div className='cursor-pointer' onClick={handleLogout}>Log out</div>

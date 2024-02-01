@@ -22,7 +22,15 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ZodTypeAny } from 'zod';
 import { createPresentationUrl } from '../features/Presentations';
-import { useAppSelector } from '../features/hooks';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
+import { useEffect, useState } from 'react';
+import {
+  closeDialog,
+  toggle,
+  toggleSecond,
+} from '../features/openDialog/dialogSlice';
+import { fetchUser } from '../features/user/fetchUser';
+import { useToast } from '@/components/ui/use-toast';
 
 type FormFieldConfig = {
   label: string;
@@ -75,11 +83,21 @@ const createFormSchema = (config: FormFieldsConfig) => {
 };
 
 const formSchema = createFormSchema(formFieldsConfig);
+interface PassportFormProps {
+  id?: string;
+}
 
-export function PassportForm() {
+export function PassportForm({ id }: PassportFormProps) {
+  const { toast } = useToast();
+  const isOpen = useAppSelector((state) => state.dialog.isOpen);
+  console.log('this is the is open', isOpen);
+  const dispatch = useAppDispatch();
   const currentUser = localStorage.getItem('user-data');
+  console.log('this is the id ', id);
   const url = useAppSelector(createPresentationUrl);
+  const [isLoading, setIsLoading] = useState(false);
   const currentUserData = JSON.parse(currentUser || '{}');
+  const urlUser = `${url}/user/${currentUserData.id}`;
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -91,8 +109,39 @@ export function PassportForm() {
       file: null,
     },
   });
+  useEffect(() => {
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const response = await fetch(`${url}/passports/${id}`);
+          if (!response.ok) throw new Error('Failed to fetch data');
+          const data = await response.json();
+          form.reset({
+            // Use the fetched data to populate the form
+            ...data,
+            dateOfBirth: data.dateOfBirth
+              ? format(new Date(data.dateOfBirth), 'yyyy-MM-dd')
+              : '',
+            validFrom: data.validFrom
+              ? format(new Date(data.validFrom), 'yyyy-MM-dd')
+              : '',
+            expiry: data.expiry
+              ? format(new Date(data.expiry), 'yyyy-MM-dd')
+              : '',
+            file: null, // Assuming file handling is separate
+          });
+        } catch (error) {
+          console.error('Error fetching passport data:', error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [id, url, form]);
   const onSubmit = async (values: FormValues) => {
     const formData = new FormData();
+    const method = id ? 'PATCH' : 'POST'; // Determine method based on presence of id
+    const endpoint = id ? `${url}/passports/${id}` : `${url}/passports`;
     Object.entries(values).forEach(([key, value]) => {
       if (key !== 'file') {
         formData.append(key, value || '');
@@ -103,13 +152,12 @@ export function PassportForm() {
       formData.append('fileName', values.file[0].name);
     }
 
-  
     console.log('this is the form data', formData);
-    formData.append('userId', currentUserData.id.toString()); 
+    formData.append('userId', currentUserData.id.toString());
 
     try {
-      const response = await fetch(`${url}/passports`, {
-        method: 'POST',
+      const response = await fetch(endpoint, {
+        method: method,
 
         body: formData,
       });
@@ -120,6 +168,27 @@ export function PassportForm() {
 
       const responseData = await response.json();
       console.log('Response data:', responseData);
+      if (id) {
+        dispatch(toggle());
+        setIsLoading(true);
+        toast({
+          title: 'Success',
+          description: 'Passport updated successfully',
+
+          duration: 5000,
+        });
+      } else {
+        dispatch(toggleSecond());
+        setIsLoading(true);
+        toast({
+          title: 'Success',
+          description: 'Passport created successfully',
+
+          duration: 5000,
+        });
+      }
+
+      await dispatch<any>(fetchUser(urlUser));
       // Handle successful response
     } catch (error) {
       console.error('Error during data submission:', error);
@@ -129,6 +198,35 @@ export function PassportForm() {
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     form.setValue('file', event.target.files);
+  }
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${url}/passports/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.status.toString().startsWith('2')) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      toast({
+        title: 'Deleted',
+        description: 'Passport has been deleted.',
+      });
+
+      dispatch(toggle());
+      await dispatch<any>(fetchUser(urlUser));
+    } catch (error) {
+      console.error('Error deleting travel item:', error);
+    }
+  };
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <h3>is loading</h3>
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
   return (
     <Form {...form}>
@@ -316,6 +414,15 @@ export function PassportForm() {
         )}
 
         <Button type="submit">Submit</Button>
+        {id && (
+          <Button
+            type="button"
+            style={{ backgroundColor: 'red', marginLeft: '6px' }}
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+        )}
       </form>
     </Form>
   );

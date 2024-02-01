@@ -1,6 +1,7 @@
 import { Travel, TravelData } from '@/type';
 import { RootState } from './store';
 import { TransitionEventHandler } from 'react';
+import { Mile, Passport, User, Visa } from '@/interfaces';
 
 export type PresentationTravel = {
   travels: Record<number, TravelData>;
@@ -25,7 +26,7 @@ export type TravelRows = {
 };
 export const createPresentationUrl = (state: RootState): string => {
   const isProduction = state.url.isProduction;
- // const presentationUrl = isProduction ? 'https://themis-e4f6j5kdsq-ew.a.run.app': 'http://localhost:3000';
+ //const presentationUrl = isProduction ? 'https://themis-e4f6j5kdsq-ew.a.run.app': 'http://localhost:3000';
   const presentationUrl = isProduction ?   'http://localhost:3000':'https://themis-e4f6j5kdsq-ew.a.run.app';
   return presentationUrl;
 };
@@ -33,6 +34,10 @@ export const createPresentationDialog = (state: RootState): boolean => {
   const presentationDialog = state.dialog.isOpen;
   return presentationDialog;
 };
+export const createPresentationSecondDialog = (state: RootState): boolean => {
+  const presentationSecondDialog = state.dialog.isSecondOpen;
+  return presentationSecondDialog;
+}
 export const createPrsentationTravel = (state: RootState): Travel[] => {
   const presentationTravel: Travel[] = [];
   const { ids, travels } = state.travel;
@@ -63,4 +68,21 @@ export const createPrsentationTravel = (state: RootState): Travel[] => {
   });
 
   return presentationTravel;
+};
+export const createPresentationUser = (state: RootState): {
+  user: User,
+  visas: Visa[],
+  miles: Mile[],
+  passports: Passport[]
+} => {
+  const user = state.user; 
+
+  
+
+  return {
+    user,
+    visas: user.visas ?? [],
+    miles: user.miles ?? [],
+    passports: user.passports ?? [],
+  };
 };
