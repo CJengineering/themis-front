@@ -49,8 +49,23 @@ const formSchema = z.object({
   tripType: z.string(),
   departureCityLeg1: z.string().min(1, 'Departure City Leg 1 is required'),
   arrivalCityLeg1: z.string().min(1, 'Arrival City Leg 1 is required'),
-  departureDateLeg1: z.date({ required_error: 'Departure Date  is required' }),
+  departureDateLeg1: z.date().refine((date) => date >= new Date(), {
+    message: 'Departure Date cannot be in the past',
+  }),
 });
+const enhancedFormSchema = formSchema.refine(
+  (data) => {
+    if (data.returnDepartureDateLeg2) {
+      return data.returnDepartureDateLeg2 >= data.departureDateLeg1;
+    }
+
+    return true;
+  },
+  {
+    message: 'Return Departure Date must not be before the Departure Date',
+    path: ['returnDepartureDateLeg2'],
+  }
+);
 interface Country {
   capital: string;
 }
@@ -109,7 +124,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
     } as F;
   }
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(enhancedFormSchema),
     defaultValues: {
       departureCityLeg1: '',
       arrivalCityLeg1: '',
@@ -149,7 +164,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
       userRole = user.role;
       const email = user.email;
       userId = user.id;
-      
+
       const monthAbbreviation = getMonthAbbreviation(values.departureDateLeg1);
       const departureConsonants = getFirstThreeConsonants(
         values.departureCityLeg1
@@ -189,14 +204,15 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
       // Handle the response (e.g., show success message)
       const responseData = await response.json();
       console.log('Success:', responseData);
-      setMessage(
-        'Your trip request was sent! '
-      );
+      setMessage('Your trip request was sent! ');
       setMessageType('success');
 
       // You can add more logic here for success case
       await dispatch<any>(
-        fetchTravels(`${url}/travel`, { userId: `${userId}`, userRole: `${userRole}` })
+        fetchTravels(`${url}/travel`, {
+          userId: `${userId}`,
+          userRole: `${userRole}`,
+        })
       );
       form.reset({
         // Provide the initial values or leave empty to reset to defaultValues
@@ -248,14 +264,14 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
                 <FormItem>
                   <FormLabel>Type</FormLabel>
                   <Selectcdn
-                   onValueChange={(value) => {
-                    setTripType(value);
-                    field.onChange(value);
-                  }}
-                  defaultValue={field.value}
+                    onValueChange={(value) => {
+                      setTripType(value);
+                      field.onChange(value);
+                    }}
+                    defaultValue={field.value}
                   >
                     <FormControl>
-                    <SelectTrigger>
+                      <SelectTrigger>
                         <SelectValue placeholder="Round Trip" />
                       </SelectTrigger>
                     </FormControl>
@@ -375,45 +391,46 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
                 </FormItem>
               )}
             />
-            {tripType === 'Round Trip' && (  <FormField
-              control={form.control}
-              name="returnDepartureDateLeg2"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Returning</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'w-[240px] pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+            {tripType === 'Round Trip' && (
+              <FormField
+                control={form.control}
+                name="returnDepartureDateLeg2"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Returning</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-[240px] pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />)}
-          
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             {/* <FormField
               control={form.control}
               name="notes"
@@ -436,7 +453,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
 
           <DialogFooter>
             <Button type="submit" style={{ backgroundColor: 'green' }}>
-             Request
+              Request
             </Button>
           </DialogFooter>
         </form>

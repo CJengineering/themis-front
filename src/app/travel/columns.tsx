@@ -173,9 +173,18 @@ const baseColumns: ColumnDef<Travel>[] = [
     header: 'Cost ',
     cell: (props) => {
       const value = props.getValue();
-      return <>{value ? `£${value}` : ''}</>;
+      // Ensure the value is a number before formatting
+      const numericValue = value ? Number(value) : 0; // Convert value to number, default to 0 if falsy
+      const formattedValue = numericValue ? new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP',
+        minimumFractionDigits: 2,
+      }).format(numericValue) : '';
+      
+      return <>{formattedValue}</>;
     },
-  },
+  }
+  ,
   {
     accessorKey: 'bookingReferenceDocument',
     header: 'Booking',
