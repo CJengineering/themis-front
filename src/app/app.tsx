@@ -24,7 +24,7 @@ export function App() {
     <Routes>
       <Route path="/signin" element={<SignInPage />} />
 
-      <Route path="/profile" element={<CreateUser />} />
+      <Route path="/get-started" element={<CreateUser />} />
       <Route element={<MainLayout />}>
         <Route
           path="/"
@@ -51,7 +51,7 @@ export function App() {
           }
         />
         <Route
-          path="/testProfile"
+          path="/profile"
           element={
             <ProtectedRoute>
               <ProfilePage />

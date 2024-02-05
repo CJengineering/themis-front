@@ -41,6 +41,7 @@ import { ColumnMiles } from '../usersData/columnsMiles';
 import { Button } from '@/components/ui/button';
 import { toggleSecond } from '../features/openDialog/dialogSlice';
 import { Mile, Passport } from '@/interfaces';
+import { DateYearPicker } from '../main components/date-year-picker';
 
 interface User {
   [key: string]: any;
@@ -134,11 +135,8 @@ const PageProfile = () => {
   return (
     <div>
       <div className="">
-        <Avatar>
-          <AvatarImage src={userFullData.user.profilePicUrl} />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-   
+     
+
         <div className="text-3xl font-bold  mb-6">
           {userFullData.user.firstName} {userFullData.user.lastName}
         </div>
@@ -153,8 +151,8 @@ const PageProfile = () => {
           <TabsContent value="account">
             <Card>
               <CardHeader>
-                <CardTitle>Details</CardTitle>
-                <CardDescription>Traveler details</CardDescription>
+                <CardTitle>Traveler details</CardTitle>
+                <CardDescription>     {userFullData.user.firstName} {userFullData.user.lastName}</CardDescription>
               </CardHeader>
               <CardContent>
                 {userDetails.map(({ key, label }) => {

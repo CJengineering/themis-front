@@ -1,9 +1,10 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker } from "react-day-picker"
-
+import {useState} from "react"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import 'react-day-picker/dist/style.css';
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -13,15 +14,26 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const [startDate, setStartDate] = useState(new Date());
+  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newYear = parseInt(e.target.value, 10);
+    if (!isNaN(newYear)) {
+      const newDate = new Date(startDate.setFullYear(newYear));
+      setStartDate(new Date(newDate)); // Create a new Date object to trigger re-render
+    }
+  };
   return (
+    <>
+    
     <DayPicker
       showOutsideDays={showOutsideDays}
+      captionLayout="dropdown-buttons" fromYear={1920} toYear={2025} 
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+ 
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -57,7 +69,9 @@ function Calendar({
       }}
       {...props}
     />
+    </>
   )
+  
 }
 Calendar.displayName = "Calendar"
 

@@ -24,7 +24,7 @@ export default function DropdownForm() {
   };
 
   const handleProfileClick = () => {
-    navigate('/testProfile'); 
+    navigate('/profile'); 
   };
 
 
