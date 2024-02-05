@@ -107,7 +107,11 @@ const PageProfile = () => {
   const userDetails = [
     { key: 'email', label: 'Email' },
     { key: 'role', label: 'Role' },
+    
 
+
+    { key: 'position', label: 'Position' },
+    { key: 'officeLocation', label: 'Office Location'},
     { key: 'mobileNumber', label: 'Mobile Number' },
     { key: 'address', label: 'Address' },
   ];
@@ -140,7 +144,8 @@ const PageProfile = () => {
         <div className="text-3xl font-bold  mb-6">
           {userFullData.user.firstName} {userFullData.user.lastName}
         </div>
-        <Tabs defaultValue="account" className="w-[600px]">
+     
+        <Tabs defaultValue="account" className="lg:w-[800px]">
           <TabsList>
             <TabsTrigger value="account">Traveler details</TabsTrigger>
             <TabsTrigger value="details">Personal </TabsTrigger>

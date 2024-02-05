@@ -9,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import Select from 'react-select';
 import { Input } from '@/components/ui/input';
 import {
   Popover,
@@ -18,7 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ZodTypeAny } from 'zod';
 import { createPresentationUrl } from '../features/Presentations';
@@ -31,6 +32,13 @@ import {
 } from '../features/openDialog/dialogSlice';
 import { fetchUser } from '../features/user/fetchUser';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Selectcdn,
+} from '@/components/ui/select';
 
 type FormFieldConfig = {
   label: string;
@@ -68,7 +76,7 @@ const formFieldsConfig: FormFieldsConfig = {
     validation: z.string().min(2).max(50),
   },
   file: {
-    label: 'Upload your passport PDF',
+    label: 'Upload passport scan',
     validation: z.any().optional(),
   },
 };
@@ -89,6 +97,8 @@ interface PassportFormProps {
 
 export function PassportForm({ id }: PassportFormProps) {
   const { toast } = useToast();
+  const [countries, setCountries] = useState<{ value: string; label: string }[]>([])
+
   const isOpen = useAppSelector((state) => state.dialog.isOpen);
   console.log('this is the is open', isOpen);
   const dispatch = useAppDispatch();
@@ -109,7 +119,23 @@ export function PassportForm({ id }: PassportFormProps) {
       file: null,
     },
   });
+  const [searchTerm, setSearchTerm] = useState('');
   useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch('https://restcountries.com/v3.1/all');
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const data = await response.json();
+        console.log('this is the data', data[0].name.official);
+        const countryOptions = data.map((country: any) => ({
+          value: country.name.official,
+          label: country.name.official,
+        }));
+        setCountries(countryOptions);
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+      }
+    };
     const fetchData = async () => {
       if (id) {
         try {
@@ -137,6 +163,7 @@ export function PassportForm({ id }: PassportFormProps) {
     };
 
     fetchData();
+    fetchCountries();
   }, [id, url, form]);
   const onSubmit = async (values: FormValues) => {
     const formData = new FormData();
@@ -230,7 +257,6 @@ export function PassportForm({ id }: PassportFormProps) {
   }
   return (
     <Form {...form}>
-     
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {(Object.keys(formFieldsConfig) as Array<keyof FormValues>).map(
           (fieldName) => {
@@ -387,6 +413,39 @@ export function PassportForm({ id }: PassportFormProps) {
                       <FormControl>
                         <Input type="file" onChange={handleFileChange} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              );
+            } else if (fieldName === 'nationality') {
+              return (
+                <FormField
+                  key={fieldName}
+                  control={form.control}
+                  name={fieldName}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{formFieldsConfig[fieldName].label}</FormLabel>
+                      <Controller
+                      name="nationality"
+                      control={form.control}
+                      render={({ field: { onChange, onBlur, value, ref } }) => (
+                        <Select<{ value: string; label: string }>
+                          options={countries}
+                          className="col-span-3"
+                          placeholder="Select a city"
+                          isSearchable
+                       
+                          onChange={(option) =>
+                            onChange(option ? option.value : '')
+                          }
+                          onBlur={onBlur}
+                          value={countries.find((c) => c.value === value)}
+                          ref={ref}
+                        />
+                      )}
+                    />
                       <FormMessage />
                     </FormItem>
                   )}

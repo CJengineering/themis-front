@@ -130,34 +130,7 @@ export function DataTableUser<TData, TValue>({
   };
   return (
     <div>
-      <div className="flex ml-auto py-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-2">
-              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {getColumnValue(column.id)}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -167,9 +140,7 @@ export function DataTableUser<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className={getCellClassNameHeader(
-                        header as Header<TData, TValue>
-                      )}
+                      className='whitespace-nowrap overflow-hidden overflow-ellipsis'
                     >
                       {header.isPlaceholder
                         ? null

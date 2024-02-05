@@ -33,6 +33,7 @@ export interface Visa {
   userId: number;
   name: string;
   startDate: string;
+  number: string;
 }
 export interface Mile {
   companyName: string;
@@ -40,14 +41,14 @@ export interface Mile {
   id: number;
 }
 export interface Passport {
-    dateOfBirth: string;
-    expiry: string;
-    id: number;
-    passportNumber: string;
-    userId: number;
-    passportReference: string;
-    validFrom: string;
-    nationality: string;
+  dateOfBirth: string;
+  expiry: string;
+  id: number;
+  passportNumber: string;
+  userId: number;
+  passportReference: string;
+  validFrom: string;
+  nationality: string;
 }
 export interface UserGateway {
   fetchUser(url: string): Promise<User>;

@@ -15,45 +15,27 @@ const formatDateCell = (props: any) => {
 export const ColumnPassports: ColumnDef<Passport>[] = [
   {
     accessorKey: 'passportNumber',
-    header: 'Passport N',
+    header: 'Number',
   },
   {
     accessorKey: 'dateOfBirth',
-    header: 'Date of Birth',
+    header: 'Date of birth',
     cell: formatDateCell,
   },
 
   {
     accessorKey: 'validFrom',
-    header: 'Valid from',
+    header: 'Date of issue',
     cell: formatDateCell,
   },
   {
     accessorKey: 'expiry',
-    header: 'Expiry date',
+    header: 'Date of expiry',
     cell: formatDateCell,
   },
   {
     accessorKey: 'nationality',
     header: 'Nationality',
-  },
-  {
-    accessorKey: 'passportReference',
-    header: 'PDF',
-    cell: (props) => {
-      const link = props.getValue() as string;
-
-      return (
-        <span>
-          {link ? (
-            <a href={link} target="_blank" rel="noopener noreferrer">
-              See
-            </a>
-          ) : (
-            'Not uploaded'
-          )}
-        </span>
-      );
-    },
-  },
+  }
+ 
 ];

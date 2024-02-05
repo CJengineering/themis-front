@@ -15,10 +15,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import Select from 'react-select';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ZodTypeAny } from 'zod';
 import { createPresentationUrl } from '../features/Presentations';
@@ -29,11 +30,12 @@ import { toggle, toggleSecond } from '../features/openDialog/dialogSlice';
 import { fetchUser } from '../features/user/fetchUser';
 
 type FormFieldConfig = {
-  label: string;
+  label: string 
   validation: ZodTypeAny;
 };
 interface FormValues {
   name: string;
+  number: string;
   startDate: string;
   endDate: string;
 }
@@ -42,6 +44,10 @@ type FormFieldsConfig = Record<keyof FormValues, FormFieldConfig>;
 const formFieldsConfig: FormFieldsConfig = {
   name: {
     label: 'Country',
+    validation: z.string().min(2).max(50),
+  },
+  number: {
+    label: 'Visa Number',
     validation: z.string().min(2).max(50),
   },
   startDate: {
@@ -75,6 +81,7 @@ export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
   const url = useAppSelector(createPresentationUrl);
   const currentUser = localStorage.getItem('user-data');
   const currentUserData = JSON.parse(currentUser || '{}');
+  const [countries, setCountries] = useState<{ value: string; label: string }[]>([])
   const urlUser = `${url}/user/${currentUserData.id}`;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,9 +89,25 @@ export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
       name: '',
       startDate: '',
       endDate: '',
+      number: '',
     },
   });
   useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch('https://restcountries.com/v3.1/all');
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const data = await response.json();
+        console.log('this is the data', data[0].name.official);
+        const countryOptions = data.map((country: any) => ({
+          value: country.name.official,
+          label: country.name.official,
+        }));
+        setCountries(countryOptions);
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+      }
+    };
     if (id) {
       const fetchVisaData = async () => {
         try {
@@ -102,6 +125,7 @@ export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
       };
       fetchVisaData();
     }
+    fetchCountries();
   }, [id, url, form]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = new FormData();
@@ -263,6 +287,40 @@ export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
                         </PopoverContent>
                       </Popover>
 
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              );
+            } else if (fieldName === 'name') {
+              return (
+                <FormField
+                  key={fieldName}
+                  control={form.control}
+                  name={fieldName}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{formFieldsConfig[fieldName].label}</FormLabel>
+                      <Controller
+                        name="name"
+                        control={form.control}
+                        render={({
+                          field: { onChange, onBlur, value, ref },
+                        }) => (
+                          <Select<{ value: string; label: string }>
+                            options={countries}
+                            className="col-span-3"
+                            placeholder="Select a city"
+                            isSearchable
+                            onChange={(option) =>
+                              onChange(option ? option.value : '')
+                            }
+                            onBlur={onBlur}
+                            value={countries.find((c) => c.value === value)}
+                            ref={ref}
+                          />
+                        )}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}

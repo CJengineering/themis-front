@@ -6,9 +6,11 @@ interface User {
   firstName: string;
   lastName: string;
   role: string;
+  position?: string;
   email: string;
   password?: string;
   someOptionalField?: string;
+  officeLocation?: string;
 }
 
 const UserList: React.FC = () => {
@@ -35,7 +37,7 @@ const UserList: React.FC = () => {
   };
   const renderEditForm = () => {
     if (!editingUser) return null;
-  if(admin.email !== 'tim@communityjameel.org'){
+  if(admin.email !== 'bob.traveller@example.com'){
     return (
         <div>
             <h1>Your are not admin 1</h1>
@@ -81,6 +83,36 @@ const UserList: React.FC = () => {
             <option value="validator">Validator</option>
             <option value="traveller">Traveller</option>
             <option value="agent">Agent</option>
+          </select>
+        </div>
+        <div className="mb-2">
+          <label htmlFor="position" className="block">
+            Position
+          </label>
+          <select
+            id="position"
+            value={editingUser.position}
+            onChange={(e) => handleUserChange(e, 'position')}
+            className="border p-1"
+          >
+            <option value="Director">Director</option>
+            <option value="Senior">Senior</option>
+            <option value="Associates">Associates</option>
+          </select>
+        </div>
+        <div className="mb-2">
+          <label htmlFor="officeLocation" className="block">
+            Office Location 
+          </label>
+          <select
+            id="officeLocation"
+            value={editingUser.officeLocation}
+            onChange={(e) => handleUserChange(e, 'officeLocation')}
+            className="border p-1"
+          >
+            <option value="Monaco">Monaco</option>
+            <option value="Dubai">Dubai</option>
+            <option value="London">London</option>
           </select>
         </div>
 

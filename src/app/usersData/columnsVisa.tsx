@@ -1,3 +1,4 @@
+
 import { Visa } from '@/interfaces';
 import { Accommodation } from '@/type';
 import { ColumnDef } from '@tanstack/react-table';
@@ -17,15 +18,17 @@ export const ColumnVisas: ColumnDef<Visa>[] = [
   },
   {
     accessorKey: 'startDate',
-    header: 'Start Date',
+    header: 'Date of issue',
     cell: formatDateCell,
   },
 
   {
     accessorKey: 'endDate',
-    header: 'Valid until',
+    header: 'Date of expiry',
     cell: formatDateCell,
   },
-  
- 
+  {
+    accessorKey: 'number',
+    header: 'Number',
+  },
 ];
