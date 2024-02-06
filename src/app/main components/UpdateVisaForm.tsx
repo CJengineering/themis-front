@@ -118,6 +118,7 @@ export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
             name: visaData.name,
             startDate: visaData.startDate,
             endDate: visaData.endDate,
+            number: visaData.number,
           });
         } catch (error) {
           console.error('Error fetching visa data:', error);

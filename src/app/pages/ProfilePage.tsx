@@ -157,7 +157,6 @@ const PageProfile = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Traveler details</CardTitle>
-                <CardDescription>     {userFullData.user.firstName} {userFullData.user.lastName}</CardDescription>
               </CardHeader>
               <CardContent>
                 {userDetails.map(({ key, label }) => {
@@ -176,10 +175,10 @@ const PageProfile = () => {
                 })}
                 {userFullData.visas && userFullData.visas.length > 0 && (
                   <div className="mt-4">
-                    <p className="font-bold mb-2">Visas:</p>
+                    <p className="font-bold text-lg mb-2">Visas</p>
                     {userFullData.visas.map((visa: Visa, index: number) => (
                       <div key={index} className="mb-2">
-                        <p className="font-semibold">Country: {visa.name}</p>
+                        <p className="">Country: {visa.name}</p>
                         <p>Start Date: {visa.startDate}</p>
                         <p>End Date: {visa.endDate}</p>
                       </div>
@@ -188,10 +187,10 @@ const PageProfile = () => {
                 )}
                 {userFullData.miles && userFullData.miles.length > 0 && (
                   <div className="mt-4">
-                    <p className="font-bold mb-2">Frequent flyer miles</p>
+                    <p className="font-bold text-lg mb-2">Frequent flyer miles</p>
                     {userFullData.miles.map((mile: Mile, index: number) => (
                       <div key={index} className="mb-2">
-                        <p className="font-semibold">
+                        <p className="">
                           Company: {mile.companyName}
                         </p>
                         <p>miles: {mile.miles}</p>
@@ -202,10 +201,10 @@ const PageProfile = () => {
                 )}
                     {userFullData.passports && userFullData.passports.length > 0 && (
                   <div className="mt-4">
-                    <p className="font-bold mb-2">Passports</p>
+                    <p className="font-bold text-lg mb-2">Passports</p>
                     {userFullData.passports.map((passport: Passport, index: number) => (
                       <div key={index} className="mb-2">
-                        <p className="font-semibold">
+                        <p className="">
                           Country: {passport.nationality}
                         </p>
                       

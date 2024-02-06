@@ -51,6 +51,7 @@ interface FormValues {
   validFrom: string;
   expiry: string;
   file?: FileList | null;
+  passportReference?: string;
 }
 
 type FormFieldsConfig = Record<keyof FormValues, FormFieldConfig>;
@@ -61,7 +62,7 @@ const formFieldsConfig: FormFieldsConfig = {
   },
   nationality: {
     label: 'Nationality',
-    validation: z.string().min(2).max(50),
+    validation: z.string().min(2),
   },
   dateOfBirth: {
     label: 'Date of Birth',
@@ -78,6 +79,10 @@ const formFieldsConfig: FormFieldsConfig = {
   file: {
     label: 'Upload passport scan',
     validation: z.any().optional(),
+  },
+  passportReference: {
+    label: 'Passport Reference',
+    validation: z.string().min(2).max(50),
   },
 };
 const createFormSchema = (config: FormFieldsConfig) => {
@@ -97,7 +102,9 @@ interface PassportFormProps {
 
 export function PassportForm({ id }: PassportFormProps) {
   const { toast } = useToast();
-  const [countries, setCountries] = useState<{ value: string; label: string }[]>([])
+  const [countries, setCountries] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   const isOpen = useAppSelector((state) => state.dialog.isOpen);
   console.log('this is the is open', isOpen);
@@ -354,6 +361,33 @@ export function PassportForm({ id }: PassportFormProps) {
                   )}
                 />
               );
+            } else if (fieldName === 'passportReference') {
+              return (
+                <FormField
+                  key={fieldName}
+                  control={form.control}
+                  name={fieldName}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{formFieldsConfig[fieldName].label}</FormLabel>
+                      <FormControl>
+                        {field.value ? (
+                          <div className="flex items-center justify-center bg-blue-100 p-4 rounded-lg hover:bg-blue-200 transition-colors cursor-pointer">
+                            <a
+                              href={field.value}
+                              target="_blank"
+                              className="text-blue-700 font-semibold hover:text-blue-900 "
+                            >
+                              View Your Passport
+                            </a>
+                          </div>
+                        ) : null}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              );
             } else if (fieldName === 'expiry') {
               return (
                 <FormField
@@ -428,24 +462,25 @@ export function PassportForm({ id }: PassportFormProps) {
                     <FormItem>
                       <FormLabel>{formFieldsConfig[fieldName].label}</FormLabel>
                       <Controller
-                      name="nationality"
-                      control={form.control}
-                      render={({ field: { onChange, onBlur, value, ref } }) => (
-                        <Select<{ value: string; label: string }>
-                          options={countries}
-                          className="col-span-3"
-                          placeholder="Select a city"
-                          isSearchable
-                       
-                          onChange={(option) =>
-                            onChange(option ? option.value : '')
-                          }
-                          onBlur={onBlur}
-                          value={countries.find((c) => c.value === value)}
-                          ref={ref}
-                        />
-                      )}
-                    />
+                        name="nationality"
+                        control={form.control}
+                        render={({
+                          field: { onChange, onBlur, value, ref },
+                        }) => (
+                          <Select<{ value: string; label: string }>
+                            options={countries}
+                            className="col-span-3"
+                            placeholder="Select a city"
+                            isSearchable
+                            onChange={(option) =>
+                              onChange(option ? option.value : '')
+                            }
+                            onBlur={onBlur}
+                            value={countries.find((c) => c.value === value)}
+                            ref={ref}
+                          />
+                        )}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
