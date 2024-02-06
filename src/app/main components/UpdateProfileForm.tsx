@@ -24,6 +24,7 @@ import { ZodTypeAny } from 'zod';
 import { createPresentationUrl } from '../features/Presentations';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { useToast } from '@/components/ui/use-toast';
+import { useParams } from 'react-router-dom';
 
 interface FormValues {
   firstName?: string;
@@ -81,11 +82,12 @@ const formSchema = createFormSchema(formFieldsConfig);
 
 export function UpdateProfileForm() {
   const { toast } = useToast();
+  const { userId } = useParams();
   const dispatch = useAppDispatch();
   const currentUser = localStorage.getItem('user-data');
   const currentUserData = JSON.parse(currentUser || '{}');
   const url = useAppSelector(createPresentationUrl);
-
+  const isCurrentUser = `${currentUserData.id}` == userId;
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -122,7 +124,7 @@ export function UpdateProfileForm() {
 
     fetchUser();
   }, []);
-  const [ isLoading, setIsLoading ] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const onSubmit = async (values: FormValues) => {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
@@ -160,13 +162,12 @@ export function UpdateProfileForm() {
         title: 'Profile updated',
         description: 'Your profile has been updated',
       });
-      setIsLoading(true)
+      setIsLoading(true);
       setTimeout(() => {
         window.location.reload();
-      }, 500); 
+      }, 500);
     } catch (error) {
       console.error('Error during data submission:', error);
-      
     }
   };
 
@@ -174,16 +175,10 @@ export function UpdateProfileForm() {
     form.setValue('file', event.target.files);
   }
   if (isLoading) {
-    return <div className='text-green-500'>Loading...</div>
-    }
+    return <div className="text-green-500">Loading...</div>;
+  }
   return (
-   
-    
-
     <div>
-         
-  
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {(Object.keys(formFieldsConfig) as Array<keyof FormValues>).map(
@@ -229,11 +224,9 @@ export function UpdateProfileForm() {
               }
             }
           )}
-
-          <Button type="submit">Update profile</Button>
+          {isCurrentUser && <Button type="submit">Update profile</Button>}
         </form>
       </Form>
     </div>
-    
   );
 }

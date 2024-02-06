@@ -27,6 +27,7 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { toggle, toggleSecond } from '../features/openDialog/dialogSlice';
 import { fetchUser } from '../features/user/fetchUser';
+import { useParams } from 'react-router-dom';
 
 type FormFieldConfig = {
   label: string;
@@ -70,6 +71,8 @@ export function UpdateMileForm({ id }: UpdateMileFormProps) {
   const currentUser = localStorage.getItem('user-data');
   const currentUserData = JSON.parse(currentUser || '{}');
   const urlUser = `${url}/user/${currentUserData.id}`;
+  const { userId } = useParams();
+  const isCurrentUser = `${currentUserData.id}` == userId;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -182,8 +185,8 @@ export function UpdateMileForm({ id }: UpdateMileFormProps) {
           }
         )}
 
-        <Button type="submit">Submit</Button>
-        {id && (
+        {isCurrentUser && <Button type="submit">Submit</Button>}
+        {(id || isCurrentUser) && (
           <Button
             type="button"
             style={{ backgroundColor: 'red', marginLeft: '6px' }}

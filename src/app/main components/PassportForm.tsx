@@ -39,6 +39,7 @@ import {
   SelectValue,
   Selectcdn,
 } from '@/components/ui/select';
+import { useParams } from 'react-router-dom';
 
 type FormFieldConfig = {
   label: string;
@@ -105,7 +106,7 @@ export function PassportForm({ id }: PassportFormProps) {
   const [countries, setCountries] = useState<
     { value: string; label: string }[]
   >([]);
-
+  const { userId } = useParams();
   const isOpen = useAppSelector((state) => state.dialog.isOpen);
   console.log('this is the is open', isOpen);
   const dispatch = useAppDispatch();
@@ -115,6 +116,7 @@ export function PassportForm({ id }: PassportFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const currentUserData = JSON.parse(currentUser || '{}');
   const urlUser = `${url}/user/${currentUserData.id}`;
+  const isCurrentUser = `${currentUserData.id}` == userId;
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -470,7 +472,7 @@ export function PassportForm({ id }: PassportFormProps) {
                           <Select<{ value: string; label: string }>
                             options={countries}
                             className="col-span-3"
-                            placeholder="Select a city"
+                            placeholder={field.value}
                             isSearchable
                             onChange={(option) =>
                               onChange(option ? option.value : '')
@@ -507,9 +509,9 @@ export function PassportForm({ id }: PassportFormProps) {
             }
           }
         )}
-
-        <Button type="submit">Submit</Button>
-        {id && (
+      {isCurrentUser && ( <Button type="submit">Submit</Button>)}
+       
+        {(id ||isCurrentUser) && (
           <Button
             type="button"
             style={{ backgroundColor: 'red', marginLeft: '6px' }}

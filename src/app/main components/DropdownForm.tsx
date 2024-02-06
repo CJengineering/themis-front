@@ -13,6 +13,7 @@ export default function DropdownForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
+  const currentUser = JSON.parse(localStorage.getItem('user-data') || '{}');
   const handleLogout = () => {
     localStorage.removeItem('user-data');
     localStorage.removeItem('isAuthenticated');
@@ -20,40 +21,69 @@ export default function DropdownForm() {
   };
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
-    setIsActive(!isActive); 
+    setIsActive(!isActive);
   };
 
   const handleProfileClick = () => {
-    navigate('/profile'); 
+    navigate(`/profile/${currentUser.id}`);
+  };
+  const handleProfilesClick = () => {
+    navigate(`/profiles`);
   };
 
-
   return (
-    <div className="dropdown-menu-root relative inline-block"style={{ userSelect: 'none' }}>
-    <div className="dropdown-menu-trigger outline-none mt-2" onClick={toggleDropdown} style={{ userSelect: 'none' }}>
-      <span className={`material-symbols-outlined cursor-pointer transition-transform ${isActive ? 'transform rotate-90' : ''}`}>
-        {isActive ? 'close' : 'menu'}
-      </span>
-    </div>
-
-    {isOpen && (
-      <div className="absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md top-full left-0 transform -translate-x-full"> {/* Adjust position with translate */}
-        <div className="dropdown-menu-group">
-          <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
-            <TravelForm />
-          </div>
-          <div className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm" onClick={handleProfileClick}>
-              Profile 
-            </div>
-          <div className="-mx-1 my-1 h-px bg-muted"></div>
-          <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
-            <div className='cursor-pointer' onClick={handleLogout}>Log out</div>
-          </div>
-         
-        </div>
+    <div
+      className="dropdown-menu-root relative inline-block"
+      style={{ userSelect: 'none' }}
+    >
+      <div
+        className="dropdown-menu-trigger outline-none mt-2"
+        onClick={toggleDropdown}
+        style={{ userSelect: 'none' }}
+      >
+        <span
+          className={`material-symbols-outlined cursor-pointer transition-transform ${
+            isActive ? 'transform rotate-90' : ''
+          }`}
+        >
+          {isActive ? 'close' : 'menu'}
+        </span>
       </div>
-    )}
-  </div>
+
+      {isOpen && (
+        <div className="absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md top-full left-0 transform -translate-x-full">
+          {' '}
+          {/* Adjust position with translate */}
+          <div className="dropdown-menu-group">
+            <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
+              <TravelForm />
+            </div>
+            <div
+              className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm"
+              onClick={handleProfileClick}
+            >
+              Profile
+            </div>
+            {currentUser.role === 'agent' ||
+            currentUser.role === 'validator' ? (
+              <div
+                className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm"
+                onClick={handleProfilesClick}
+              >
+                All Profiles 
+              </div>
+            ) : null}
+
+            <div className="-mx-1 my-1 h-px bg-muted"></div>
+            <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
+              <div className="cursor-pointer" onClick={handleLogout}>
+                Log out
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 {

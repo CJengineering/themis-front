@@ -12,6 +12,8 @@ import CreateUser from './pages/createUser';
 import UserManager from './pages/userManager';
 import { UpdateProfileForm } from './main components/UpdateProfileForm';
 import ProfilePage from './pages/ProfilePage';
+import { Profiles } from './pages/Profiles';
+
 
 export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -50,8 +52,16 @@ export function App() {
             </ProtectedRoute>
           }
         />
+          <Route
+          path="/profiles"
+          element={
+            <ProtectedRoute>
+              <Profiles />
+            </ProtectedRoute>
+          }
+        />
         <Route
-          path="/profile"
+          path="/profile/:userId"
           element={
             <ProtectedRoute>
               <ProfilePage />

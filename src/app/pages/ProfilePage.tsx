@@ -42,6 +42,7 @@ import { Button } from '@/components/ui/button';
 import { toggleSecond } from '../features/openDialog/dialogSlice';
 import { Mile, Passport } from '@/interfaces';
 import { DateYearPicker } from '../main components/date-year-picker';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface User {
   [key: string]: any;
@@ -74,8 +75,8 @@ const PageProfile = () => {
   const dialogSecond = useAppSelector(createPresentationSecondDialog);
   const currentUser = localStorage.getItem('user-data');
   const currentUserData = JSON.parse(currentUser || '{}');
-  const urlUser = `${url}/user/${currentUserData.id}`;
-
+  const { userId } = useParams();
+  const urlUser = `${url}/user/${userId}`;
   const arrayPassports = userFullData.passports;
   const arrayVisas = userFullData.visas;
   const arrayMiles = userFullData.miles;
@@ -102,24 +103,24 @@ const PageProfile = () => {
   const getColumnValueForPassports = createGetColumnValue(
     namingColumnsPassport
   );
+  const navigate = useNavigate();
   const getColumnValueForVisas = createGetColumnValue(namingColumnsVisa);
   const getColumnValueForMiles = createGetColumnValue(namingColumnsMiles);
   const userDetails = [
     { key: 'email', label: 'Email' },
     { key: 'role', label: 'Role' },
-    
-
 
     { key: 'position', label: 'Position' },
-    { key: 'officeLocation', label: 'Office Location'},
+    { key: 'officeLocation', label: 'Office Location' },
     { key: 'mobileNumber', label: 'Mobile Number' },
     { key: 'address', label: 'Address' },
   ];
   const toggleSecondDialog = () => {
-   
-      dispatch(toggleSecond());
-    
-  }
+    dispatch(toggleSecond());
+  };
+  const handleProfilesClick = () => {
+    navigate(`/profiles`);
+  };
   console.log('this is OPEN OR CLOSE', dialogSecond);
   const firstTest = `${userFullData.visas ?? 'DefaultFirstName'}`;
   useEffect(() => {
@@ -132,158 +133,161 @@ const PageProfile = () => {
     const fetchDate = async () => {
       await dispatch<any>(fetchUser(urlUser));
     };
-   
+
     fetchDate();
   }, []);
   console.log('this is the user Fulldata', userFullData);
   return (
     <div>
-      <div className="">
-     
+      {(currentUserData.role == 'agent' ||  currentUserData.role == 'validator') && (<div className='cursor-pointer' onClick={handleProfilesClick}>Back to users</div>)}
+      {userId === `${currentUserData.id}` || currentUserData.role =='agent' || currentUserData.role =='validator' ? (
+        <div className="">
+          <div className="text-3xl font-bold  mb-6">
+            {userFullData.user.firstName} {userFullData.user.lastName}
+          </div>
 
-        <div className="text-3xl font-bold  mb-6">
-          {userFullData.user.firstName} {userFullData.user.lastName}
-        </div>
-     
-        <Tabs defaultValue="account" className="lg:w-[800px]">
-          <TabsList>
-            <TabsTrigger value="account">Traveler details</TabsTrigger>
-            <TabsTrigger value="details">Personal </TabsTrigger>
-            <TabsTrigger value="passport">Passport </TabsTrigger>
-            <TabsTrigger value="visas">Visa</TabsTrigger>
-            <TabsTrigger value="miles">Frequent flyer miles </TabsTrigger>
-          </TabsList>
-          <TabsContent value="account">
-            <Card>
-              <CardHeader>
-                <CardTitle>Traveler details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {userDetails.map(({ key, label }) => {
-                  const value = userFullData.user
-                    ? userFullData.user[key as keyof User]
-                    : undefined;
+          <Tabs defaultValue="account" className="lg:w-[800px]">
+            <TabsList>
+              <TabsTrigger value="account">Traveler details</TabsTrigger>
+              <TabsTrigger value="details">Personal </TabsTrigger>
+              <TabsTrigger value="passport">Passport </TabsTrigger>
+              <TabsTrigger value="visas">Visa</TabsTrigger>
+              <TabsTrigger value="miles">Frequent flyer miles </TabsTrigger>
+            </TabsList>
+            <TabsContent value="account">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Traveler details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userDetails.map(({ key, label }) => {
+                    const value = userFullData.user
+                      ? userFullData.user[key as keyof User]
+                      : undefined;
 
-                  // Special rendering for passportReference as a hyperlink
+                    // Special rendering for passportReference as a hyperlink
 
-                  return (
-                    <div key={key} className="flex items-center mb-2">
-                      <p className="font-bold mr-2">{label}:</p>
-                      <p>{value}</p>
+                    return (
+                      <div key={key} className="flex items-center mb-2">
+                        <p className="font-bold mr-2">{label}:</p>
+                        <p>{value}</p>
+                      </div>
+                    );
+                  })}
+                  {userFullData.visas && userFullData.visas.length > 0 && (
+                    <div className="mt-4">
+                      <p className="font-bold text-lg mb-2">Visas</p>
+                      {userFullData.visas.map((visa: Visa, index: number) => (
+                        <div key={index} className="mb-2">
+                          <p className="">Country: {visa.name}</p>
+                          <p>Start Date: {visa.startDate}</p>
+                          <p>End Date: {visa.endDate}</p>
+                        </div>
+                      ))}
                     </div>
-                  );
-                })}
-                {userFullData.visas && userFullData.visas.length > 0 && (
-                  <div className="mt-4">
-                    <p className="font-bold text-lg mb-2">Visas</p>
-                    {userFullData.visas.map((visa: Visa, index: number) => (
-                      <div key={index} className="mb-2">
-                        <p className="">Country: {visa.name}</p>
-                        <p>Start Date: {visa.startDate}</p>
-                        <p>End Date: {visa.endDate}</p>
+                  )}
+                  {userFullData.miles && userFullData.miles.length > 0 && (
+                    <div className="mt-4">
+                      <p className="font-bold text-lg mb-2">
+                        Frequent flyer miles
+                      </p>
+                      {userFullData.miles.map((mile: Mile, index: number) => (
+                        <div key={index} className="mb-2">
+                          <p className="">Company: {mile.companyName}</p>
+                          <p>miles: {mile.miles}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {userFullData.passports &&
+                    userFullData.passports.length > 0 && (
+                      <div className="mt-4">
+                        <p className="font-bold text-lg mb-2">Passports</p>
+                        {userFullData.passports.map(
+                          (passport: Passport, index: number) => (
+                            <div key={index} className="mb-2">
+                              <p className="">
+                                Country: {passport.nationality}
+                              </p>
+                            </div>
+                          )
+                        )}
                       </div>
-                    ))}
-                  </div>
-                )}
-                {userFullData.miles && userFullData.miles.length > 0 && (
-                  <div className="mt-4">
-                    <p className="font-bold text-lg mb-2">Frequent flyer miles</p>
-                    {userFullData.miles.map((mile: Mile, index: number) => (
-                      <div key={index} className="mb-2">
-                        <p className="">
-                          Company: {mile.companyName}
-                        </p>
-                        <p>miles: {mile.miles}</p>
-                      </div>
-                    ))}
-                    
-                  </div>
-                )}
-                    {userFullData.passports && userFullData.passports.length > 0 && (
-                  <div className="mt-4">
-                    <p className="font-bold text-lg mb-2">Passports</p>
-                    {userFullData.passports.map((passport: Passport, index: number) => (
-                      <div key={index} className="mb-2">
-                        <p className="">
-                          Country: {passport.nationality}
-                        </p>
-                      
-                      </div>
-                    ))}
-                    
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="details">
-            <UpdateProfileForm />
-          </TabsContent>
-          <TabsContent value="passport">
-            <DataTableUser
-              columns={ColumnPassports}
-              getColumnValue={getColumnValueForPassports}
-              dialogContentComponent={PassportForm}
-              data={arrayPassports}
-            />
-            <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
-              <DialogTrigger>
-                <Button className="mt-8" variant="blue" >
-                  Add new passport{' '}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle> New passport form</DialogTitle>
-                </DialogHeader>
-                <PassportForm />
-              </DialogContent>
-            </Dialog>
-          </TabsContent>
-          <TabsContent value="visas">
-            <DataTableUser
-              columns={ColumnVisas}
-              getColumnValue={getColumnValueForVisas}
-              dialogContentComponent={UpdateVisaForm}
-              data={arrayVisas}
-            />
-            <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
-              <DialogTrigger>
-                <Button className="mt-8" variant="blue">
-                  Add new visa
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle> New visa form</DialogTitle>
-                </DialogHeader>
-                <UpdateVisaForm />
-              </DialogContent>
-            </Dialog>
-          </TabsContent>
-          <TabsContent value="miles">
-            <DataTableUser
-              columns={ColumnMiles}
-              getColumnValue={getColumnValueForMiles}
-              dialogContentComponent={UpdateMileForm}
-              data={arrayMiles}
-            />
-            <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
-              <DialogTrigger>
-                <Button className="mt-8" variant="blue">
-                  Add new frequent flyer miles
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle> New frequent flyer miles form</DialogTitle>
-                </DialogHeader>
-                <UpdateMileForm />
-              </DialogContent>
-            </Dialog>
-          </TabsContent>
-        </Tabs>
-      </div>
+                    )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="details">
+              <UpdateProfileForm />
+            </TabsContent>
+            <TabsContent value="passport">
+              <DataTableUser
+                columns={ColumnPassports}
+                getColumnValue={getColumnValueForPassports}
+                dialogContentComponent={PassportForm}
+                data={arrayPassports}
+              />
+              <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
+                <DialogTrigger>
+                  <Button className="mt-8" variant="blue">
+                    Add new passport{' '}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle> New passport form</DialogTitle>
+                  </DialogHeader>
+                  <PassportForm />
+                </DialogContent>
+              </Dialog>
+            </TabsContent>
+            <TabsContent value="visas">
+              <DataTableUser
+                columns={ColumnVisas}
+                getColumnValue={getColumnValueForVisas}
+                dialogContentComponent={UpdateVisaForm}
+                data={arrayVisas}
+              />
+              <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
+                <DialogTrigger>
+                  <Button className="mt-8" variant="blue">
+                    Add new visa
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle> New visa form</DialogTitle>
+                  </DialogHeader>
+                  <UpdateVisaForm />
+                </DialogContent>
+              </Dialog>
+            </TabsContent>
+            <TabsContent value="miles">
+              <DataTableUser
+                columns={ColumnMiles}
+                getColumnValue={getColumnValueForMiles}
+                dialogContentComponent={UpdateMileForm}
+                data={arrayMiles}
+              />
+              <Dialog open={dialogSecond} onOpenChange={toggleSecondDialog}>
+                <DialogTrigger>
+                  <Button className="mt-8" variant="blue">
+                    Add new frequent flyer miles
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle> New frequent flyer miles form</DialogTitle>
+                  </DialogHeader>
+                  <UpdateMileForm />
+                </DialogContent>
+              </Dialog>
+            </TabsContent>
+          </Tabs>
+        </div>
+      ) : (
+        'Not authorised'
+      )}
     </div>
   );
 };

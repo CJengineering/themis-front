@@ -28,9 +28,10 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { toggle, toggleSecond } from '../features/openDialog/dialogSlice';
 import { fetchUser } from '../features/user/fetchUser';
+import { useParams } from 'react-router-dom';
 
 type FormFieldConfig = {
-  label: string 
+  label: string;
   validation: ZodTypeAny;
 };
 interface FormValues {
@@ -77,12 +78,16 @@ interface UpdateVisaFormProps {
 export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
+  const { userId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const url = useAppSelector(createPresentationUrl);
   const currentUser = localStorage.getItem('user-data');
   const currentUserData = JSON.parse(currentUser || '{}');
-  const [countries, setCountries] = useState<{ value: string; label: string }[]>([])
+  const [countries, setCountries] = useState<
+    { value: string; label: string }[]
+  >([]);
   const urlUser = `${url}/user/${currentUserData.id}`;
+  const isCurrentUser = `${currentUserData.id}` == userId;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -311,7 +316,7 @@ export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
                           <Select<{ value: string; label: string }>
                             options={countries}
                             className="col-span-3"
-                            placeholder="Select a city"
+                            placeholder={field.value}
                             isSearchable
                             onChange={(option) =>
                               onChange(option ? option.value : '')
@@ -348,9 +353,9 @@ export function UpdateVisaForm({ id }: UpdateVisaFormProps) {
             }
           }
         )}
+        {isCurrentUser && <Button type="submit">Submit</Button>}
 
-        <Button type="submit">Submit</Button>
-        {id && (
+        {(id || isCurrentUser) && (
           <Button
             type="button"
             style={{ backgroundColor: 'red', marginLeft: '6px' }}

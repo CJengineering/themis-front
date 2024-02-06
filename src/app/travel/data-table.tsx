@@ -44,11 +44,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChevronDownIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TravelInitiateForm } from '../main components/TravelInitiateForm';
+import { TravelForm } from '../main components/TravelForm';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  dialogContentComponent: React.ComponentType<{ id: string }> | ((props: { id: string }) => React.ReactNode);
+  dialogContentComponent:
+    | React.ComponentType<{ id: string }>
+    | ((props: { id: string }) => React.ReactNode);
 }
 interface NamingColumns {
   name: string;
@@ -72,6 +76,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
   const table = useReactTable({
     data,
     columns,
@@ -130,6 +135,11 @@ export function DataTable<TData, TValue>({
   const handleCloseDialog = () => {
     dispatch(closeDialog());
   };
+  const handleClose = () => {
+   
+    console.log("Form closed");
+  };
+
   return (
     <div>
       <div className="flex ml-auto py-4">
@@ -143,6 +153,14 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm ml-auto"
         />
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="ml-2" variant="blue">New trip</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <TravelInitiateForm onClose={handleClose}/>
+          </DialogContent>
+        </Dialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-2">
@@ -225,11 +243,13 @@ export function DataTable<TData, TValue>({
                         onOpenChange={() => setOpenDialogId(null)}
                       >
                         <DialogContent>
-                        <DialogHeader>
+                          <DialogHeader>
                             {typeof DialogContentComponent === 'function' ? (
                               <DialogContentComponent id={id} />
                             ) : (
-                              React.createElement(DialogContentComponent, { id })
+                              React.createElement(DialogContentComponent, {
+                                id,
+                              })
                             )}
                           </DialogHeader>
                         </DialogContent>

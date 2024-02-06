@@ -9,14 +9,18 @@ import MainContent from './main-content';
 import { Toaster } from '@/components/ui/toaster';
 
 const MainLayout = () => {
-  const formatPathname = (pathname:string) => {
+  const formatPathname = (pathname: string) => {
+    
     if (pathname === '/') return 'Travel';
   
-   
     const parts = pathname.slice(1).split('/');
   
-    
-    return parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+   
+    const formattedParts = parts
+      .filter(part => isNaN(Number(part))) 
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1)); 
+  
+    return formattedParts.join(' ');
   };
   
   const location = useLocation();

@@ -17,9 +17,13 @@ const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const url = useAppSelector(createPresentationUrl);
- const adminEmails =[ 'bob.traveller@example.com','tim@communityjameel.org','nathaniel@communityjameel.org']
+  const adminEmails = [
+    'bob.traveller@example.com',
+    'tim@communityjameel.org',
+    'nathaniel@communityjameel.org',
+  ];
   const userData = localStorage.getItem('user-data');
-    const admin = JSON.parse(userData || '{}');
+  const admin = JSON.parse(userData || '{}');
   useEffect(() => {
     fetch(`${url}/user`)
       .then((response) => response.json())
@@ -27,7 +31,7 @@ const UserList: React.FC = () => {
       .catch((error) => console.error('Error fetching data: ', error));
   }, []);
   const handleUserChange = (
-    event: ChangeEvent<HTMLInputElement| HTMLSelectElement>,
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: keyof User
   ) => {
     setEditingUser((prev) => {
@@ -37,13 +41,13 @@ const UserList: React.FC = () => {
   };
   const renderEditForm = () => {
     if (!editingUser) return null;
-  if(!adminEmails.includes(admin.email)){
-    return (
+    if (!adminEmails.includes(admin.email)) {
+      return (
         <div>
-            <h1>Your are not admin 1</h1>
+          <h1>Your are not admin 1</h1>
         </div>
-    );
-  }
+      );
+    }
     return (
       <form onSubmit={handleUpdateUser} className="edit-form mb-4">
         <div className="mb-2">
@@ -102,7 +106,7 @@ const UserList: React.FC = () => {
         </div>
         <div className="mb-2">
           <label htmlFor="officeLocation" className="block">
-            Office Location 
+            Office Location
           </label>
           <select
             id="officeLocation"
@@ -162,7 +166,7 @@ const UserList: React.FC = () => {
         {users.map((user) => (
           <li key={user.id} className="mb-2 flex justify-between items-center">
             <span>
-              {user.firstName} {user.lastName} {user.role} 
+              {user.firstName} {user.lastName} {user.role}
             </span>
             <span>{user.email}</span>
             <div>

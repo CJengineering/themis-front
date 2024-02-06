@@ -46,24 +46,23 @@ import { ChevronDownIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Passport } from '@/interfaces';
 import { format, parseISO } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  dialogContentComponent:
-    | React.ComponentType<{ id: string }>
-    | ((props: { id: string }) => React.ReactNode);
-
-  getColumnValue: (key: string) => string;
+ 
 }
 
-export function DataTableUser<TData, TValue>({
+export function DataTableAdminUser<TData, TValue>({
   columns,
   data,
-  dialogContentComponent: DialogContentComponent,
-  getColumnValue,
+
+ 
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const currentUser = JSON.parse(localStorage.getItem('user-data') || '{}');
+  const navigate = useNavigate();
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -78,7 +77,7 @@ export function DataTableUser<TData, TValue>({
     state: {
       sorting,
       columnFilters,
-    },   
+    },
   });
   const dispatch = useAppDispatch();
 
@@ -86,8 +85,7 @@ export function DataTableUser<TData, TValue>({
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
 
   const handleRowClick = (id: string) => {
-    setOpenDialogId(id);
-    dispatch(openDialog());
+    navigate(`/profile/${id}`);
   };
   const handleCloseDialog = () => {
     dispatch(closeDialog());
@@ -112,7 +110,6 @@ export function DataTableUser<TData, TValue>({
   };
   return (
     <div>
-
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -122,7 +119,7 @@ export function DataTableUser<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className='whitespace-nowrap overflow-hidden overflow-ellipsis'
+                      className="whitespace-nowrap overflow-hidden overflow-ellipsis"
                     >
                       {header.isPlaceholder
                         ? null
@@ -166,24 +163,7 @@ export function DataTableUser<TData, TValue>({
                         </TableCell>
                       ))}
                     </TableRow>
-                    {openDialogId === id && (
-                      <Dialog
-                        open={dialog}
-                        onOpenChange={() => setOpenDialogId(null)}
-                      >
-                        <DialogContent>
-                          <DialogHeader>
-                            {typeof DialogContentComponent === 'function' ? (
-                              <DialogContentComponent id={id} />
-                            ) : (
-                              React.createElement(DialogContentComponent, {
-                                id,
-                              })
-                            )}
-                          </DialogHeader>
-                        </DialogContent>
-                      </Dialog>
-                    )}
+                   
                   </React.Fragment>
                 );
               })
