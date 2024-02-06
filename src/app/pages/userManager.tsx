@@ -17,7 +17,7 @@ const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const url = useAppSelector(createPresentationUrl);
- 
+ const adminEmails =[ 'bob.traveller@example.com','tim@communityjameel.org','nathaniel@communityjameel.org']
   const userData = localStorage.getItem('user-data');
     const admin = JSON.parse(userData || '{}');
   useEffect(() => {
@@ -37,7 +37,7 @@ const UserList: React.FC = () => {
   };
   const renderEditForm = () => {
     if (!editingUser) return null;
-  if(admin.email !== 'bob.traveller@example.com'|| 'tim@communityjameel.org'||'nathaniel@communityjameel.org'){
+  if(!adminEmails.includes(admin.email)){
     return (
         <div>
             <h1>Your are not admin 1</h1>
