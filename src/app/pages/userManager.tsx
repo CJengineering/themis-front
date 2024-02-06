@@ -37,7 +37,7 @@ const UserList: React.FC = () => {
   };
   const renderEditForm = () => {
     if (!editingUser) return null;
-  if(admin.email !== 'bob.traveller@example.com'){
+  if(admin.email !== 'bob.traveller@example.com'|| 'tim@communityjameel.org'||'nathaniel@communityjameel.org'){
     return (
         <div>
             <h1>Your are not admin 1</h1>
