@@ -49,6 +49,7 @@ const formSchema = z.object({
   name: z.string().optional(),
   costOriginal: z.number().nullable().optional(),
   file: z.any().optional(),
+  purpose: z.string().optional(),
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
   fileName: z.string().optional(),
@@ -77,6 +78,7 @@ export type TravelItem = {
   costOriginal: number | null;
   originalCurrency: string | null;
   costUSD: number | null;
+  purpose?: string | null;
   bookingReferenceDocument: string | null;
   notes: string;
   pdfLink: string | null;
@@ -117,6 +119,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
       roundTrip: '',
       departureCityLeg1: ``,
       arrivalCityLeg1: ``,
+      purpose: '',
       departureDateLeg1: new Date(),
       notes: '',
     },
@@ -135,7 +138,9 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
           notes: data.notes,
           costOriginal: data.costOriginal,
-          returnDepartureDateLeg2: data.returnDepartureDateLeg2 ? new Date(`${data.returnDepartureDateLeg2}`) : undefined,
+          returnDepartureDateLeg2: data.returnDepartureDateLeg2
+            ? new Date(`${data.returnDepartureDateLeg2}`)
+            : undefined,
         });
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -199,7 +204,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
 
       // Append the non-file data as a JSON string
       formData.append('data', JSON.stringify(nonFileData));
-       console.log('formdata ', formData)
+      console.log('formdata ', formData);
       const response = await fetch(`${url}/travel/${id.id}`, {
         method: 'PATCH',
         body: formData, // send formData with both file and non-file data
@@ -333,6 +338,22 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                   <FormControl>
                     <div className="col-span-3 p-2 bg-gray-100 rounded">
                       {field.value || 'No city selected'}
+                    </div>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="purpose"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Purpose</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No purpose selected'}
                     </div>
                   </FormControl>
 

@@ -50,6 +50,7 @@ const formSchema = z.object({
   file: z.any().optional(),
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
+  purpose: z.string().optional(),
   roundTrip: z.string().optional(),
   departureCityLeg1: z.string().optional(),
   arrivalCityLeg1: z.string().optional(),
@@ -75,6 +76,7 @@ export type TravelItem = {
   costOriginal: number | null;
   originalCurrency: string | null;
   costUSD: number | null;
+  purpose: string | null;
   bookingReferenceDocument: string | null;
   notes: string;
   pdfLink: string | null;
@@ -116,6 +118,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       departureCityLeg1: ``,
       arrivalCityLeg1: ``,
       departureDateLeg1: new Date(),
+      purpose: '',
       notes: '',
     },
   });
@@ -132,6 +135,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
           departureCityLeg1: data.departureCityLeg1,
           arrivalCityLeg1: data.arrivalCityLeg1,
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
+          purpose: `${data.purpose}`,
           returnDepartureDateLeg2: data.returnDepartureDateLeg2 ? new Date(`${data.returnDepartureDateLeg2}`) : undefined,
           costOriginal: `${data.costOriginal}`,
           notes: data.notes,
@@ -293,7 +297,22 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            />      <FormField
+            control={form.control}
+            name="purpose"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Purpose</FormLabel>
+                <FormControl>
+                  <div className="col-span-3 p-2 bg-gray-100 rounded">
+                    {field.value || 'No purpose selected'}
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
             <FormField
               control={form.control}
               name="roundTrip"

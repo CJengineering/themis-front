@@ -50,6 +50,7 @@ const formSchema = z.object({
   name: z.string().optional(),
   costOriginal: z.number().optional().nullable(),
   file: z.any().optional(),
+  purpose: z.string().optional(),
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
   roundTrip: z.string().optional().nullable(),
@@ -77,6 +78,7 @@ export type TravelItem = {
   costOriginal: number | null;
   originalCurrency: string | null;
   costUSD: number | null;
+  purpose?: string | null;
   bookingReferenceDocument: string | null;
   notes: string | null;
   pdfLink: string | null;
@@ -118,6 +120,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
       arrivalCityLeg1: ``,
       departureDateLeg1: new Date(),
       notes: '',
+      purpose: '',
     },
   });
   useEffect(() => {
@@ -135,6 +138,7 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
           arrivalCityLeg1: data.arrivalCityLeg1,
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
           notes: data.notes || '',
+          purpose: data.purpose || '',
           costOriginal: data.costOriginal || null,
           returnDepartureDateLeg2: new Date(`${data.returnDepartureDateLeg2}`) || null,
         });
@@ -277,6 +281,22 @@ export function TravelValidationForm(id: PropsTravelAuthForm) {
                   <FormControl>
                     <div className="col-span-3 p-2 bg-gray-100 rounded">
                       {field.value || 'No city selected'}
+                    </div>
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+                  <FormField
+              control={form.control}
+              name="purpose"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Purpose</FormLabel>
+                  <FormControl>
+                    <div className="col-span-3 p-2 bg-gray-100 rounded">
+                      {field.value || 'No purpose selected'}
                     </div>
                   </FormControl>
 

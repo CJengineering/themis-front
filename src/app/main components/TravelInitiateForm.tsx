@@ -47,6 +47,7 @@ const formSchema = z.object({
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
   tripType: z.string(),
+  purpose: z.string().optional(),
   departureCityLeg1: z.string().min(1, 'Departure City Leg 1 is required'),
   arrivalCityLeg1: z.string().min(1, 'Arrival City Leg 1 is required'),
   departureDateLeg1: z.date().refine((date) => date >= new Date(), {
@@ -127,6 +128,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
     resolver: zodResolver(enhancedFormSchema),
     defaultValues: {
       departureCityLeg1: '',
+      purpose: '',
       arrivalCityLeg1: '',
       tripType: 'Round Trip',
       departureDateLeg1: new Date(),
@@ -219,6 +221,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
         departureCityLeg1: '',
         arrivalCityLeg1: '',
         tripType: '',
+        purpose: '',
         departureDateLeg1: new Date(),
         notes: '',
       });
@@ -352,7 +355,24 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />{' '}
+            /><FormField
+            control={form.control}
+            name="purpose"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Purpose</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Purpose of the trip..."
+                    className="col-span-3"
+                    {...field}
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          /> 
             <FormField
               control={form.control}
               name="departureDateLeg1"
