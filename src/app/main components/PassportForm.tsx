@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ZodTypeAny } from 'zod';
@@ -40,6 +40,7 @@ import {
   Selectcdn,
 } from '@/components/ui/select';
 import { useParams } from 'react-router-dom';
+import { Passport, User } from '@/interfaces';
 
 type FormFieldConfig = {
   label: string;
@@ -52,7 +53,7 @@ interface FormValues {
   validFrom: string;
   expiry: string;
   file?: FileList | null;
-  passportReference?: string;
+
 }
 
 type FormFieldsConfig = Record<keyof FormValues, FormFieldConfig>;
@@ -81,10 +82,7 @@ const formFieldsConfig: FormFieldsConfig = {
     label: 'Upload passport scan',
     validation: z.any().optional(),
   },
-  passportReference: {
-    label: 'Passport Reference',
-    validation: z.string().min(2).max(50),
-  },
+ 
 };
 const createFormSchema = (config: FormFieldsConfig) => {
   const schemaObject = {} as Record<keyof FormValues, ZodTypeAny>;
@@ -103,6 +101,7 @@ interface PassportFormProps {
 
 export function PassportForm({ id }: PassportFormProps) {
   const { toast } = useToast();
+  const [passport, setPassport] = useState<Passport>();
   const [countries, setCountries] = useState<
     { value: string; label: string }[]
   >([]);
@@ -151,6 +150,8 @@ export function PassportForm({ id }: PassportFormProps) {
           const response = await fetch(`${url}/passports/${id}`);
           if (!response.ok) throw new Error('Failed to fetch data');
           const data = await response.json();
+          setPassport(data);
+          
           form.reset({
             // Use the fetched data to populate the form
             ...data,
@@ -174,6 +175,7 @@ export function PassportForm({ id }: PassportFormProps) {
     fetchData();
     fetchCountries();
   }, [id, url, form]);
+  console.log('passport', passport)
   const onSubmit = async (values: FormValues) => {
     const formData = new FormData();
     const method = id ? 'PATCH' : 'POST'; // Determine method based on presence of id
@@ -363,33 +365,6 @@ export function PassportForm({ id }: PassportFormProps) {
                   )}
                 />
               );
-            } else if (fieldName === 'passportReference') {
-              return (
-                <FormField
-                  key={fieldName}
-                  control={form.control}
-                  name={fieldName}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{formFieldsConfig[fieldName].label}</FormLabel>
-                      <FormControl>
-                        {field.value ? (
-                          <div className="flex items-center justify-center bg-blue-100 p-4 rounded-lg hover:bg-blue-200 transition-colors cursor-pointer">
-                            <a
-                              href={field.value}
-                              target="_blank"
-                              className="text-blue-700 font-semibold hover:text-blue-900 "
-                            >
-                              View Your Passport
-                            </a>
-                          </div>
-                        ) : null}
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              );
             } else if (fieldName === 'expiry') {
               return (
                 <FormField
@@ -446,6 +421,8 @@ export function PassportForm({ id }: PassportFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{formFieldsConfig[fieldName].label}</FormLabel>
+                      
+                      {passport?.fileName && (<FormDescription><a href={`${passport.passportReference}`} target='_blanck'>{passport?.fileName}</a> </FormDescription>)}
                       <FormControl>
                         <Input type="file" onChange={handleFileChange} />
                       </FormControl>

@@ -3,6 +3,7 @@ import { Calendar } from '@/components/ui/calendar';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,10 +30,10 @@ import { useParams } from 'react-router-dom';
 interface FormValues {
   firstName?: string;
   lastName?: string;
-
+  
   mobileNumber?: string;
   address?: string;
-
+  profilePicUrl?: string;
   file?: FileList | null;
 }
 
@@ -63,8 +64,12 @@ const formFieldsConfig: FormFieldsConfig = {
   },
 
   file: {
-    label: 'Upload your profile picture',
+    label: 'Upload profile picture',
     validation: z.any().optional(),
+  },
+    profilePicUrl: {
+    label: 'Profile picture',
+    validation: z.string().optional(),
   },
 };
 
@@ -101,6 +106,11 @@ export function UpdateProfileForm() {
     },
   });
   const [profile, setProfile] = useState<FormValues | null>(null);
+  function extractFileName(url: string): string {
+    const urlParts = url.split('?')[0]; // Remove query parameters
+    const segments = urlParts.split('/'); // Split by '/'
+    return segments.pop() || ''; // Get the last segment, which should be the filename
+  }
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -194,6 +204,11 @@ export function UpdateProfileForm() {
                         <FormLabel>
                           {formFieldsConfig[fieldName].label}
                         </FormLabel>
+                        {profile?.profilePicUrl && (  <FormDescription>
+                          <a href={profile.profilePicUrl} target='_blanck'> {extractFileName(profile.profilePicUrl)}</a>
+                         
+                        </FormDescription>)}
+                       
                         <FormControl>
                           <Input type="file" onChange={handleFileChange} />
                         </FormControl>
@@ -202,6 +217,8 @@ export function UpdateProfileForm() {
                     )}
                   />
                 );
+              } else if (fieldName==='profilePicUrl'){
+                return null
               } else {
                 return (
                   <FormField

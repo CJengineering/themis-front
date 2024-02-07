@@ -30,14 +30,16 @@ const UserList: React.FC = () => {
       .then((data: User[]) => setUsers(data))
       .catch((error) => console.error('Error fetching data: ', error));
   }, []);
+ 
+
+  
   const handleUserChange = (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: keyof User
   ) => {
-    setEditingUser((prev) => {
-      if (prev === null) return null;
-      return { ...prev, [field]: event.target.value };
-    });
+    if (editingUser) {
+      setEditingUser({ ...editingUser, [field]: event.target.value });
+    }
   };
   const renderEditForm = () => {
     if (!editingUser) return null;
@@ -101,7 +103,7 @@ const UserList: React.FC = () => {
           >
             <option value="Director">Director</option>
             <option value="Senior">Senior</option>
-            <option value="Associates">Associates</option>
+            <option value="Associate">Associate</option>
           </select>
         </div>
         <div className="mb-2">
@@ -129,26 +131,25 @@ const UserList: React.FC = () => {
       </form>
     );
   };
-
-  const handleUpdateUser = (event: FormEvent) => {
+  const handleUpdateUser = async (event: FormEvent) => {
     event.preventDefault();
+    console.log('editing user',editingUser)
     if (!editingUser) return;
-
-    // Replace with your API endpoint and method to update the user
-    fetch(`${url}/user/${editingUser.id}`, {
-      method: 'PATCH', // or 'PATCH'
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(editingUser),
-    })
-      .then(() => {
-        setUsers(
-          users.map((user) => (user.id === editingUser.id ? editingUser : user))
-        );
-        setEditingUser(null);
-      })
-      .catch((error) => console.error('Error updating user: ', error));
+      
+    try {
+      await fetch(`${url}/user/${editingUser.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editingUser),
+      });
+      setUsers(users.map(user => user.id === editingUser.id ? editingUser : user));
+      setEditingUser(null); 
+      console.log('editing user',editingUser)
+    } catch (error) {
+      console.error('Error updating user: ', error);
+    }
   };
   const deleteUser = (userId: number) => {
     fetch(`${url}/user/${userId}`, { method: 'DELETE' })

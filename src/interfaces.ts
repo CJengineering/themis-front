@@ -49,6 +49,7 @@ export interface Passport {
   passportReference: string;
   validFrom: string;
   nationality: string;
+  fileName?: string;
 }
 export interface UserGateway {
   fetchUser(url: string): Promise<User>;

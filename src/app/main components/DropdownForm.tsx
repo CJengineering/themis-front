@@ -62,7 +62,7 @@ export default function DropdownForm() {
               className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm"
               onClick={handleProfileClick}
             >
-              Profile
+              My profile
             </div>
             {currentUser.role === 'agent' ||
             currentUser.role === 'validator' ? (
@@ -70,7 +70,7 @@ export default function DropdownForm() {
                 className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm"
                 onClick={handleProfilesClick}
               >
-                All Profiles 
+               Users
               </div>
             ) : null}
 

@@ -43,6 +43,7 @@ import { toggleSecond } from '../features/openDialog/dialogSlice';
 import { Mile, Passport } from '@/interfaces';
 import { DateYearPicker } from '../main components/date-year-picker';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 
 interface User {
   [key: string]: any;
@@ -139,7 +140,7 @@ const PageProfile = () => {
   console.log('this is the user Fulldata', userFullData);
   return (
     <div>
-      {(currentUserData.role == 'agent' ||  currentUserData.role == 'validator') && (<div className='cursor-pointer' onClick={handleProfilesClick}>Back to users</div>)}
+      {(currentUserData.role == 'agent' ||  currentUserData.role == 'validator') && (<div className='flex cursor-pointer text-sm mb-4 underline' onClick={handleProfilesClick}><ChevronLeft />BACK TO USERS</div>)}
       {userId === `${currentUserData.id}` || currentUserData.role =='agent' || currentUserData.role =='validator' ? (
         <div className="">
           <div className="text-3xl font-bold  mb-6">

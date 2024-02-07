@@ -40,7 +40,7 @@ export function TravelForm() {
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
       <div className='cursor-pointer'  onClick={openDialog}>
-        New travel 
+        New trip
       </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
