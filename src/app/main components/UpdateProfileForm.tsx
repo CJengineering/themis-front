@@ -114,7 +114,7 @@ export function UpdateProfileForm() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${url}/user/${currentUserData.id}`);
+        const response = await fetch(`${url}/user/${userId}`);
         const data = await response.json();
         setProfile(data);
         console.log('User data', data);
@@ -205,7 +205,7 @@ export function UpdateProfileForm() {
                           {formFieldsConfig[fieldName].label}
                         </FormLabel>
                         {profile?.profilePicUrl && (  <FormDescription>
-                          <a href={profile.profilePicUrl} target='_blanck'> {extractFileName(profile.profilePicUrl)}</a>
+                          <a className='underline' href={profile.profilePicUrl} target='_blanck'> {extractFileName(profile.profilePicUrl)}</a>
                          
                         </FormDescription>)}
                        

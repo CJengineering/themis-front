@@ -58,6 +58,7 @@ const TopRightNav = ({ currentPage }: TopRightNavProps) => {
   const navigate = useNavigate();
   const handleProfileClick = () => {
     navigate(`/profile/${currentUser.id}`);
+    window.location.reload();
   };
 
   return (

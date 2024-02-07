@@ -422,7 +422,7 @@ export function PassportForm({ id }: PassportFormProps) {
                     <FormItem>
                       <FormLabel>{formFieldsConfig[fieldName].label}</FormLabel>
                       
-                      {passport?.fileName && (<FormDescription><a href={`${passport.passportReference}`} target='_blanck'>{passport?.fileName}</a> </FormDescription>)}
+                      {passport?.fileName && (<FormDescription><a className='underline' href={`${passport.passportReference}`} target='_blanck'>{passport?.fileName}</a> </FormDescription>)}
                       <FormControl>
                         <Input type="file" onChange={handleFileChange} />
                       </FormControl>

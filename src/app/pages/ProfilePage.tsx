@@ -140,7 +140,7 @@ const PageProfile = () => {
   console.log('this is the user Fulldata', userFullData);
   return (
     <div>
-      {(currentUserData.role == 'agent' ||  currentUserData.role == 'validator') && (<div className='flex cursor-pointer text-sm mb-4 underline' onClick={handleProfilesClick}><ChevronLeft />BACK TO USERS</div>)}
+      {(currentUserData.role == 'agent' ||  currentUserData.role == 'validator') && (<div className='flex cursor-pointer text-sm mb-4 underline' onClick={handleProfilesClick}><span className='align-bottom'><ChevronLeft size={18} /></span>BACK TO USERS</div>)}
       {userId === `${currentUserData.id}` || currentUserData.role =='agent' || currentUserData.role =='validator' ? (
         <div className="">
           <div className="text-3xl font-bold  mb-6">

@@ -26,6 +26,7 @@ export default function DropdownForm() {
 
   const handleProfileClick = () => {
     navigate(`/profile/${currentUser.id}`);
+    window.location.reload();
   };
   const handleProfilesClick = () => {
     navigate(`/profiles`);
