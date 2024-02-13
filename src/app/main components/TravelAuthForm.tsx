@@ -78,7 +78,7 @@ export type TravelItem = {
   costOriginal: number | null;
   originalCurrency: string | null;
   costUSD: number | null;
-  purpose?: string | null;
+  purpose: string;
   bookingReferenceDocument: string | null;
   notes: string;
   pdfLink: string | null;
@@ -130,6 +130,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
         const response = await fetch(`${url}/travel/` + idTravel);
         const data: TravelItem = await response.json();
         setTravel(data);
+        console.log('data', data);
         form.reset({
           name: `${data.user.firstName} ${data.user.lastName}`,
           roundTrip: `${data.tripType}`,
@@ -137,6 +138,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
           arrivalCityLeg1: data.arrivalCityLeg1,
           departureDateLeg1: new Date(`${data.departureDateLeg1}`),
           notes: data.notes,
+          purpose: data.purpose,
           costOriginal: data.costOriginal,
           returnDepartureDateLeg2: data.returnDepartureDateLeg2
             ? new Date(`${data.returnDepartureDateLeg2}`)
@@ -353,7 +355,7 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                   <FormLabel>Purpose</FormLabel>
                   <FormControl>
                     <div className="col-span-3 p-2 bg-gray-100 rounded">
-                      {field.value || 'No purpose selected'}
+                      {field.value }
                     </div>
                   </FormControl>
 

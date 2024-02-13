@@ -189,6 +189,7 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
       name: nametrip,
       status: status,
     };
+    console.log('this is submission data',submissionData);
     try {
       const response = await fetch(`${url}/travel`, {
         method: 'POST',
