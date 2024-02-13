@@ -47,7 +47,7 @@ const formSchema = z.object({
   returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
   tripType: z.string(),
-  purpose: z.string().optional(),
+  purpose: z.string().min(1, 'Purpose is required'),
   departureCityLeg1: z.string().min(1, 'Departure City Leg 1 is required'),
   arrivalCityLeg1: z.string().min(1, 'Arrival City Leg 1 is required'),
   departureDateLeg1: z.date().refine((date) => date >= new Date(), {
