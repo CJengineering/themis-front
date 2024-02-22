@@ -17,6 +17,8 @@ export const travels: Travel[] = [
     costUSD: 1400,
     bookingReferenceDocument: 'ABC123XYZ',
     notes: 'This is going to be an amazing trip!',
+    createdAt: new Date('2023-01-01'),
+    updatedAt: new Date('2023-01-01'),
   },
   {
     id: 2,
@@ -33,7 +35,9 @@ export const travels: Travel[] = [
     originalCurrency: 'USD',
     costUSD: 500,
     bookingReferenceDocument: 'DEF789ABC',
-    notes: null, // Nullable field
+    notes: null, // Nullable field\
+    createdAt: new Date('2023-01-10'),
+    updatedAt: new Date('2023-01-10'),
   },
   {
     id: 3,
@@ -51,6 +55,8 @@ export const travels: Travel[] = [
     costUSD: 800,
     bookingReferenceDocument: 'GHI456JKL',
     notes: 'A quick weekend escape!',
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2023-01-15'),
   },
   // You can add more travel objects here if needed
 ];
