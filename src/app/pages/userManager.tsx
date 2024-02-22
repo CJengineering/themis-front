@@ -21,6 +21,7 @@ const UserList: React.FC = () => {
     'bob.traveller@example.com',
     'tim@communityjameel.org',
     'nathaniel@communityjameel.org',
+    'mohamed.financial@example.com'
   ];
   const userData = localStorage.getItem('user-data');
   const admin = JSON.parse(userData || '{}');
@@ -89,6 +90,7 @@ const UserList: React.FC = () => {
             <option value="validator">Validator</option>
             <option value="traveller">Traveller</option>
             <option value="agent">Agent</option>
+            <option value="financial">Fianancial</option>
           </select>
         </div>
         <div className="mb-2">

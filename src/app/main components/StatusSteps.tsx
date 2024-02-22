@@ -12,6 +12,7 @@ const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
     { name: 'Request', icon: 'unknown_document' },
     { name: 'Authentication', icon: 'grading' },
     { name: 'Validation', icon: 'outgoing_mail' },
+    { name: 'Authorisation', icon: 'account_balance' },
     { name: 'Approval', icon: 'task_alt' },
     { name: 'Finalisation', icon: 'north_east' },
   ];
@@ -24,6 +25,7 @@ const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
       'Request',
       'Authentication',
       'Validation',
+      'Authorisation',
       'Approval',
       'Finalisation',
     ];
@@ -44,6 +46,7 @@ const StatusSteps = ({ statusTravel }: StatusStepsProps) => {
       'Request',
       'Authentication',
       'Validation',
+      'Authorisation',
       'Approval',
       'Finalisation',
     ];

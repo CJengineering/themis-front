@@ -12,6 +12,11 @@ export interface TravelGateway {
 export interface CityData {
   city: string;
 }
+export interface Transaction{
+  amount: string;
+  transactionDate: string;
+
+}
 export interface User {
   id: number;
   firstName: string;
@@ -26,7 +31,10 @@ export interface User {
   passports: Passport[];
   [key: string]: any;
 }
-
+export interface Transaction{
+  amount: string;
+  transactionDate: string;
+}
 export interface Visa {
   endDate: string;
   id: number;

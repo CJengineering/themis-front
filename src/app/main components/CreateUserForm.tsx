@@ -13,6 +13,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { createPresentationUrl } from '../features/Presentations';
+import { useAppSelector } from '../features/hooks';
 interface UserData {
   firstName: string;
   lastName: string;
@@ -30,6 +32,7 @@ const formSchema = z.object({
 });
 
 export function CreateUserForm() {
+  const url = useAppSelector(createPresentationUrl);
   const navigate = useNavigate();
   const [submitMessage, setSubmitMessage] = useState('');
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,7 +45,7 @@ export function CreateUserForm() {
     },
   });
   async function createUser(userData: UserData) {
-    const response = await fetch('https://themis-e4f6j5kdsq-ew.a.run.app/user', {
+    const response = await fetch(`${url}/user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),

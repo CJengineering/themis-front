@@ -36,6 +36,7 @@ export type StatusInput =
   | 'Request'
   | 'Authentication'
   | 'Validation'
+  | 'Authorisation'
   | 'Approval'
   | 'Finalisation';
 
@@ -50,6 +51,8 @@ export function mapStatusToOutput(status: StatusInput): string {
       return 'Authenticated';
     case 'Validation':
       return 'Validated';
+    case 'Authorisation':
+      return 'Authorised';
     case 'Approval':
       return 'Approved';
     case 'Finalisation':
@@ -65,6 +68,8 @@ export function mapStatusToSteps(status: StatusInput): string {
     case 'Authentication':
       return 'Validation';
     case 'Validation':
+      return 'Athorisation';
+    case 'Authorisation':
       return 'Approval';
     case 'Approval':
       return 'Finalisation';
@@ -121,6 +126,7 @@ const baseColumns: ColumnDef<Travel>[] = [
             | 'Request'
             | 'Authentication'
             | 'Validation'
+            | 'Authorisation'
             | 'Approval'
             | 'Finalisation'
         }

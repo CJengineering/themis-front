@@ -44,6 +44,9 @@ import { Badge } from '@/components/ui/badge';
 import { StatusInput, mapStatusToOutput } from '../travel/columns';
 import { useToast } from '@/components/ui/use-toast';
 import { toggle } from '../features/openDialog/dialogSlice';
+
+
+
 const formSchema = z.object({
   name: z.string().optional(),
   costOriginal: z.string().optional(),
@@ -96,7 +99,7 @@ export type TravelItem = {
 interface PropsTravelAuthForm {
   id: string;
 }
-export function TravelApprovalForm(id: PropsTravelAuthForm) {
+export function TravelFinancialAuthorizationForm(id: PropsTravelAuthForm) {
   const userString = localStorage.getItem('user-data');
   if (!userString) return null;
   const { toast } = useToast();
@@ -189,12 +192,12 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
     isValidation: boolean
   ) {
     if (isValidation) {
-      values = { status: 'Approval' };
-      console.log('when true');
+      values = { status: 'Authorisation' };
+
     }
     if (!isValidation) {
       values = { status: 'Request' };
-      console.log('when false');
+     
     }
     console.log(values);
     setShowForm(false);
@@ -219,8 +222,8 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
       console.log('Success:', responseData);
       setMessage('You have approved the trip !');
       toast({
-        title: 'Approved',
-        description: 'Travel has been approved.',
+        title: 'Authorised',
+        description: 'Travel has been athorised.',
       });
       if (!isValidation) {
         setMessage('You have declined the trip !');
@@ -249,7 +252,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
     const values = form.getValues();
     await onSubmit(values, true);
   }
-  async function onSendAuthorize(){
+  async function onSendForAuthorisation(){
     const values = form.getValues();
     await onSubmit(values, true);
   }
@@ -497,7 +500,7 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
           </div>
 
           <DialogFooter>
-            {travel?.status === 'Authorisation' ? (
+            {travel?.status === 'Validation' ? (
               <>
                  <Button style={{ backgroundColor: 'red', marginTop: '10px' }} onClick={handleDelete}>
                 Delete
@@ -511,11 +514,11 @@ export function TravelApprovalForm(id: PropsTravelAuthForm) {
                   Decline
                 </Button>
                 <Button
-                  onClick={onSendForFinalisation}
+                  onClick={onSendForAuthorisation}
                   type="button"
                   style={{ backgroundColor: 'green', marginTop: '10px' }}
                 >
-                  Approve
+                  Authorise
                 </Button>
               </>
             ) : (

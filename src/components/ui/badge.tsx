@@ -27,6 +27,8 @@ const badgeVariants = cva(
           'border-transparent bg-authenticated text-white ',
         Validation:
           'border-transparent bg-validated text-white ', 
+          Authorisation:
+          'border-transparent bg-authorised text-white ',
         Approval:
           'border-transparent bg-approved text-white ', 
         Finalisation:

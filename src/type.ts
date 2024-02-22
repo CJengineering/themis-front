@@ -13,6 +13,8 @@ export type Travel = {
     originalCurrency: string | null;
     costUSD: number | null;
     bookingReferenceDocument: string | null;
+    createdAt: Date;
+    updatedAt: Date;
     notes: string | null;
   };
   export type Accommodation = {

@@ -41,6 +41,7 @@
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.21.1",
     "react-select": "^5.8.0",
+    "recharts": "^2.12.0",
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"

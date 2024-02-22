@@ -2,13 +2,22 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const MainNav = () => {
-
+  const userString = localStorage.getItem('user-data');
+  if (!userString) return null;
+  const userData = JSON.parse(userString);
+  const userId = userData?.id;
+  const userRole = userData?.role;
   const location = useLocation();
-  const navLinks = [
+  let navLinks = [
    // { name: "Dashboard", icon: "dashboard", path: "/" },
     { name: "Travel", icon: "flight", path: "/" },
+
+    {name: 'Financial', icon: 'account_balance', path: '/financial'},
     //{ name: "Accommodation", icon: "hotel", path: "/accommodation" },
   ];
+  if (userRole === 'traveller') {
+    navLinks = navLinks.filter(link => link.name !== "Financial");
+  }
 
   return (
     <div className="flex flex-col items-start  px-2">

@@ -64,6 +64,8 @@ export const createPrsentationTravel = (state: RootState): Travel[] => {
       costUSD: travel.costUSD ?? 0,
       bookingReferenceDocument: travel.bookingReferenceDocument ?? '',
       notes: travel.notes ?? '',
+      createdAt: new Date(travel.createdAt),
+      updatedAt: new Date(travel.updatedAt),
     });
   });
 

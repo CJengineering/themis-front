@@ -13,6 +13,7 @@ import UserManager from './pages/userManager';
 import { UpdateProfileForm } from './main components/UpdateProfileForm';
 import ProfilePage from './pages/ProfilePage';
 import { Profiles } from './pages/Profiles';
+import FinancialPage from './pages/financialPage';
 
 
 export function App() {
@@ -65,6 +66,14 @@ export function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+              <Route
+          path="/financial"
+          element={
+            <ProtectedRoute>
+              <FinancialPage />
             </ProtectedRoute>
           }
         />

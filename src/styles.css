@@ -159,6 +159,9 @@
   .bg-approved{
     background-color:#10AC84 ;
   }
+ .bg-authorised{
+    background-color:#e039a2 ;
+  }
   .bg-image-1{
     background-image: url('/PIA02656.jpg') ;
     background-size: cover;

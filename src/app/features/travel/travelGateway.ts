@@ -8,7 +8,7 @@ export class ApiTravelGateway implements TravelGateway {
   ): Promise<TravelData[]> {
     let finalUrl = url;
 
-    if (options.userRole === 'validator' || options.userRole === 'agent') {
+    if (options.userRole === 'validator' || options.userRole === 'agent'|| options.userRole === 'financial') {
       finalUrl = `${url}/admin`;
     } else if (options.id) {
       finalUrl = `${url}/${options.id}`;
