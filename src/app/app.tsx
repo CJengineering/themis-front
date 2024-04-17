@@ -14,6 +14,7 @@ import { UpdateProfileForm } from './main components/UpdateProfileForm';
 import ProfilePage from './pages/ProfilePage';
 import { Profiles } from './pages/Profiles';
 import FinancialPage from './pages/financialPage';
+import TravelV2Page from './pages/travelV2Page';
 
 
 export function App() {
@@ -74,6 +75,14 @@ export function App() {
           element={
             <ProtectedRoute>
               <FinancialPage />
+            </ProtectedRoute>
+          }
+        />
+              <Route
+          path="/travelv2"
+          element={
+            <ProtectedRoute>
+              <TravelV2Page />
             </ProtectedRoute>
           }
         />

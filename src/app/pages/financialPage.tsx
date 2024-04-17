@@ -112,7 +112,7 @@ export default function FinancialPage() {
   const totalAmountTravels =()=>{
     let total = 0;
     travels.map((travel)=>{
-      if (travel.costOriginal !== null) {
+      if ((travel.costOriginal !== null )&& (travel.status === 'Finalisation')) {
         total = total + travel.costOriginal;
       }
     })
@@ -148,7 +148,7 @@ export default function FinancialPage() {
         const date = new Date(travel.updatedAt);
         const month = date.toLocaleString('default', { month: 'long' });
         const cost = travel.costOriginal ?? 0;
-  
+       
         if (monthTotals[month]) {
           monthTotals[month] += cost;
         } else {

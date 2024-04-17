@@ -173,4 +173,34 @@
   .bg-finalised{
     background-color:#2E86DE;
   }
+  .shadow-neonBlur {
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.7); /* Adjust color and blur radius as needed */
+  }
+  .rotate-90 {
+    transform: rotate(90deg) translateY(-50%);
+   transform-origin: center;
+  }
+  .dashed-line {
+    
+    border-top: 2px dashed #dddddd; 
+    position: absolute;
+    bottom: 21px;
+    height: 2px; 
+    width: 80%; 
+  }
+  @keyframes movePlane {
+    from {
+      left: 0;
+    }
+    to {
+      left: 80%;
+    }
+  }
+  
+  .animated-plane {
+    position: absolute;
+    bottom: 10px;
+    animation: movePlane 5s linear infinite; /* Adjust timing as needed */
+  }
+  
 }

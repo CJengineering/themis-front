@@ -556,14 +556,14 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
               name="file"
               render={({ field: { ref, ...field } }) => (
                 <FormItem>
-                  {travel?.status !== 'Finalisation' && (
+                 
                     <>
                       <FormLabel>Reference</FormLabel>
                       <FormControl>
                         <Input type="file" onChange={handleFileChange} />
                       </FormControl>
                     </>
-                  )}
+                  
                 </FormItem>
               )}
             />
@@ -641,6 +641,13 @@ export function TravelAuthForm(id: PropsTravelAuthForm) {
                 </Button>
               </>
             )}
+                <Button
+                  type="button"
+                  onClick={onSave}
+                  style={{ backgroundColor: 'blue', marginRight: '6px' }}
+                >
+                  Save
+                </Button>
             {travel?.status === 'Approval' && (
               <>
                 <Button
