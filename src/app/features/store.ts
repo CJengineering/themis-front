@@ -18,7 +18,7 @@ export type AppState = ReturnType<typeof rootReducer>;
 
 export const buildInitStore = (): AppState => ({
   travel: { ids: [], travels: {} },
-  url: { isProduction: false},
+  url: { isProduction: true},
   dialog: { isOpen: true, isSecondOpen: false},
   user: { 
     id: -1, 
