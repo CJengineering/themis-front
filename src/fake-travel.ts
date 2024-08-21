@@ -64,6 +64,7 @@ export const fakeAccommodations: Accommodation[] = [
   {
     id: 1,
     name: 'Oceanview Resort',
+    hotelName: 'Beachfront Hotel',
     status: 'Confirmed',
     travelerUserId: 'Summer Vacation',
     relatedTripTravelId: 'Nader',
@@ -76,6 +77,7 @@ export const fakeAccommodations: Accommodation[] = [
   {
     id: 2,
     name: 'Mountain Escape',
+    hotelName: 'Ski Resort',
     status: 'Pending',
     travelerUserId: 'Weekend Getaway',
     relatedTripTravelId: 'Nathaniel',
@@ -88,6 +90,7 @@ export const fakeAccommodations: Accommodation[] = [
   {
     id: 3,
     name: 'Urban Central Hotel',
+    hotelName: 'City Center Hotel',
     status: 'Cancelled',
     travelerUserId: 'Business Trip',
     relatedTripTravelId: 'Gerorge',
