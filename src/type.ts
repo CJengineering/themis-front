@@ -18,6 +18,7 @@ export type Travel = {
     notes: string | null;
   };
   export type Accommodation = {
+    hotelName:string;
     id: number;
     name: string;
     status: string;
@@ -30,6 +31,7 @@ export type Travel = {
     bookingConfirmationDocument: string;
 
   };
+  
   export type TravelData = {
     id: number;
     name: string;

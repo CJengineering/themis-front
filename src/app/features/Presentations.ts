@@ -1,7 +1,7 @@
 import { Travel, TravelData } from '@/type';
 import { RootState } from './store';
 import { TransitionEventHandler } from 'react';
-import { Mile, Passport, User, Visa } from '@/interfaces';
+import { Mile, Passport, Trip, TripData, User, Visa } from '@/interfaces';
 
 export type PresentationTravel = {
   travels: Record<number, TravelData>;
@@ -26,7 +26,9 @@ export type TravelRows = {
 };
 export const createPresentationUrl = (state: RootState): string => {
   const isProduction = state.url.isProduction;
-  const presentationUrl = isProduction ? 'https://themis-e4f6j5kdsq-ew.a.run.app' : 'http://localhost:3000';
+  const presentationUrl = isProduction
+    ? 'https://themis-e4f6j5kdsq-ew.a.run.app'
+    : 'http://localhost:3000';
   //const presentationUrl = isProduction ?   'http://localhost:3000':'https://themis-e4f6j5kdsq-ew.a.run.app';
   return presentationUrl;
 };
@@ -38,6 +40,40 @@ export const createPresentationSecondDialog = (state: RootState): boolean => {
   const presentationSecondDialog = state.dialog.isSecondOpen;
   return presentationSecondDialog;
 };
+export const createPresentationTrip = (state: RootState): TripData[] => {
+  const presentationTrip: TripData[] = [];
+  const { ids, trips } = state.trip;
+
+  ids.forEach((id) => {
+    const trip = trips[id];
+    if (!trip) return;
+
+    presentationTrip.push({
+      id: trip.id,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+      name: trip.fieldData.name,
+      subject: trip.fieldData.subject,
+      status: trip.fieldData.status,
+      userId: trip.fieldData.userId,
+      relatedProgramme: trip.fieldData.relatedProgramme,
+      departureDate: new Date(trip.fieldData.departureDate),
+      returnDate: trip.fieldData.returnDate ? new Date(trip.fieldData.returnDate) : undefined,
+      cityStart: trip.fieldData.cityStart,
+      cityEnd: trip.fieldData.cityEnd,
+      transitionalCities: trip.fieldData.transitionalCities,
+      daysOfStay: trip.fieldData.daysOfStay,
+      flights: trip.fieldData.flights,
+      accommodations: trip.fieldData.accommodations,
+      expenses: trip.fieldData.expenses,
+      purpose: trip.fieldData.purpose, 
+    });
+  });
+
+  return presentationTrip;
+};
+
+
 export const createPrsentationTravel = (state: RootState): Travel[] => {
   const presentationTravel: Travel[] = [];
   const { ids, travels } = state.travel;

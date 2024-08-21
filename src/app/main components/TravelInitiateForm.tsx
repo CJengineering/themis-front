@@ -149,6 +149,8 @@ export function TravelInitiateForm({ onClose }: TravelInitFromProps) {
 
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const url = useAppSelector(createPresentationUrl);
+
+  
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     setShowForm(false);

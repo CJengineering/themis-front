@@ -20,6 +20,8 @@ import {
 } from '../features/Presentations';
 import { fetchUser } from '../features/user/fetchUser';
 import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { TripRequestForm } from './TripInitialRequest';
 const handleLogout = () => {
   localStorage.removeItem('user-data');
   localStorage.removeItem('isAuthenticated');
@@ -36,6 +38,9 @@ const TopRightNav = ({ currentPage }: TopRightNavProps) => {
   const url = useAppSelector(createPresentationUrl);
 
   const currentUser = JSON.parse(localStorage.getItem('user-data') || '{}');
+  const isNatOrTim =
+    currentUser.email === 'tim@communityjameel.org' ||
+    currentUser.email === 'nathaniel@communityjameel.org';
   const userHasData = currentUser && Object.keys(currentUser).length > 0;
   let userInitials = 'UN';
   let urlUser = '';
@@ -61,10 +66,27 @@ const TopRightNav = ({ currentPage }: TopRightNavProps) => {
     window.location.reload();
   };
 
+  function handleClose(): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <div className="flex justify-between items-center w-full">
       <h1 className="text-xl font-bold mb-4">{currentPage}</h1>
       <div className="flex space-x-4">
+        {isNatOrTim && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="ml-2" variant="blue">
+                New trip
+              </Button>
+            </DialogTrigger>
+            <DialogContent className=" sm:max-w-[425px]">
+              <TripRequestForm onClose={handleClose} />
+            </DialogContent>
+          </Dialog>
+        )}
+
         <DropdownForm></DropdownForm>
 
         <Avatar onClick={handleProfileClick} className="cursor-pointer">

@@ -9,8 +9,33 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { AccommodationFormV2 } from './AccomodationFormV2';
 
-export function AccommodationDialog() {
+interface AccommodationDialogProps {
+  hotelName: string;
+  roomType: string;
+  occupancy: string;
+  nights: number;
+  checkInDate: string;
+  checkInTime: string;
+  checkOutDate: string;
+  checkOutTime: string;
+  title: string;
+  description: string;
+}
+
+export function AccommodationDialog({
+  hotelName,
+  roomType,
+  occupancy,
+  nights,
+  checkInDate,
+  checkInTime,
+  checkOutDate,
+  checkOutTime,
+  title,
+  description,
+}: AccommodationDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -20,33 +45,31 @@ export function AccommodationDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Hotel Riviera</DialogTitle>
-          <DialogDescription>
-            Booking Details
-          </DialogDescription>
+          <DialogTitle>{hotelName}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         {/* Header */}
-        <div className="grid grid-cols-7 ">
+        <div className="grid grid-cols-7">
           <div className="col-span-5">
-            <div className="font-semibold">Deluxe Room, Sea View</div>
-            <div>2 adults, 1 child</div>
+            <div className="font-semibold">{roomType}</div>
+            <div>{occupancy}</div>
           </div>
           <div className="col-span-2 flex my-2 items-center justify-end">
             <i className="material-icons">hotel</i>
-            <div className="ml-2">3 nights</div>
+            <div className="ml-2">{nights} nights</div>
           </div>
         </div>
         <Separator className="my-2" />
         <div className="grid grid-cols-12">
           <div className="col-span-6">
             <div className="text-xs text-muted-foreground">Check-in</div>
-            <div className="font-semibold text-xl">25 April 2024</div>
-            <div className="text-xs text-muted-foreground">From 15:00</div>
+            <div className="font-semibold text-xl">{checkInDate}</div>
+            <div className="text-xs text-muted-foreground">From {checkInTime}</div>
           </div>
           <div className="col-span-6">
             <div className="text-xs text-muted-foreground">Check-out</div>
-            <div className="font-semibold text-xl">28 April 2024</div>
-            <div className="text-xs text-muted-foreground">Before 12:00</div>
+            <div className="font-semibold text-xl">{checkOutDate}</div>
+            <div className="text-xs text-muted-foreground">Before {checkOutTime}</div>
           </div>
         </div>
         <DialogFooter>
@@ -54,6 +77,7 @@ export function AccommodationDialog() {
             <i className="material-icons">print</i> Print Booking
           </Button>
         </DialogFooter>
+        <AccommodationFormV2/>
       </DialogContent>
     </Dialog>
   );

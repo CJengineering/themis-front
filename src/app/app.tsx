@@ -9,6 +9,7 @@ import Accomodation from './pages/accomodation';
 import { useEffect, useState } from 'react';
 import { CreateUserForm } from './main components/CreateUserForm';
 import CreateUser from './pages/createUser';
+
 import UserManager from './pages/userManager';
 import { UpdateProfileForm } from './main components/UpdateProfileForm';
 import ProfilePage from './pages/ProfilePage';
@@ -56,6 +57,7 @@ export function App() {
         />
           <Route
           path="/profiles"
+          
           element={
             <ProtectedRoute>
               <Profiles />
