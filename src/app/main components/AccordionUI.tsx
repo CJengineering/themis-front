@@ -109,7 +109,7 @@ export function AccordionUI() {
               <div className="flex flex-col items-start w-3/4 pl-4">
                 <div className="text-lg">Tunis Carthage Airport</div>
 
-                <DialogDemo flightNumber={''} airline={''} classType={''} departureDate={''} departureTime={''} departureCity={''} arrivalDate={''} arrivalTime={''} arrivalCity={''} title={''} description={''} />
+                <DialogDemo departureDate={''} departureCity={''} arrivalDate={''} arrivalCity={''} title={''} description={''} flightId={0} />
               </div>
             </div>
           </div>
@@ -126,7 +126,7 @@ export function AccordionUI() {
                 02 April 2024 - 04 April 2024
               </p>
             </div>
-            <AccommodationDialog hotelName={''} roomType={''} occupancy={''} nights={0} checkInDate={''} checkInTime={''} checkOutDate={''} checkOutTime={''} title={''} description={''} />
+            <AccommodationDialog hotelName={''} checkInDate={''} checkOutDate={''} accommodationId={0} city={''}  />
           </div>
         </AccordionContent>
       </AccordionItem>
