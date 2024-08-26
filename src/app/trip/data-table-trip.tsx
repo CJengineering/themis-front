@@ -46,6 +46,8 @@ import { ChevronDownIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TravelInitiateForm } from '../main components/TravelInitiateForm';
 import { TravelForm } from '../main components/TravelForm';
+import { stat } from 'fs';
+import { useNavigate } from 'react-router-dom';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -56,7 +58,7 @@ interface DataTableProps<TData, TValue> {
 }
 interface NamingColumns {
   name: string;
-  userFullName: string;
+
   status: string;
   travelType: string;
   departureCity: string;
@@ -67,7 +69,7 @@ interface NamingColumns {
 
   tripType: string;
 }
-export function DataTable<TData, TValue>({
+export function DataTableTrip<TData, TValue>({
   columns,
   data,
   dialogContentComponent: DialogContentComponent,
@@ -76,7 +78,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-
+  const navigate = useNavigate();
   const table = useReactTable({
     data,
     columns,
@@ -129,7 +131,7 @@ export function DataTable<TData, TValue>({
     return namingColumns[key as keyof NamingColumns];
   }
   const handleRowClick = (id: string) => {
-  alert('Row clicked and the id is: ' + id);
+    navigate(`/trip/${id}`);
   };
   const handleCloseDialog = () => {
     dispatch(closeDialog());

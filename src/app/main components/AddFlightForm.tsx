@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import Select from 'react-select';
 import { Textarea } from '@/components/ui/textarea';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useCallback, useEffect, useState } from 'react';
@@ -29,24 +29,15 @@ import {
 } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { DialogFooter } from '@/components/ui/dialog';
-import { cn, getFirstThreeConsonants } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
-
-const flightSchema = z.object({
-  tripType: z.string(),
-  departureCity: z.string().min(1, 'Departure City is required'),
-  roundTrip: z.boolean(),
-  arrivalCity: z.string().min(1, 'Arrival City is required'),
-  departureDate: z.date().refine((date) => date >= new Date(), {
-    message: 'Departure Date cannot be in the past',
-  }),
-  returnDepartureDate: z.date().optional(),
-});
+import { useParams } from 'react-router-dom';
+import { useAppSelector } from '../features/hooks';
+import { createPresentationUrl2 } from '../features/Presentations';
 
 
 
 const formSchema = z.object({
-  returnDepartureDateLeg2: z.date().optional(),
   notes: z.string().optional(),
   tripType: z.string(),
   purpose: z.string().min(1, 'Purpose is required'),
@@ -55,13 +46,12 @@ const formSchema = z.object({
   departureDateLeg1: z.date().refine((date) => date >= new Date(), {
     message: 'Departure Date cannot be in the past',
   }),
-  flights: z.array(flightSchema).optional(),
-
+  returnDepartureDateLeg2: z.date().optional(),
 });
 
 const enhancedFormSchema = formSchema.refine(
   (data) => {
-    if (data.returnDepartureDateLeg2) {
+    if (data.tripType === 'Round Trip' && data.returnDepartureDateLeg2) {
       return data.returnDepartureDateLeg2 >= data.departureDateLeg1;
     }
     return true;
@@ -76,8 +66,9 @@ interface TripRequestFormProps {
   onClose: () => void;
 }
 
-export function AddFlightForm({ onClose }: TripRequestFormProps) {
+export function AddFlightForm() {
   const { toast } = useToast();
+  const {tripId} = useParams();
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const form = useForm<z.infer<typeof enhancedFormSchema>>({
@@ -88,15 +79,11 @@ export function AddFlightForm({ onClose }: TripRequestFormProps) {
       arrivalCityLeg1: '',
       tripType: 'Round Trip',
       departureDateLeg1: new Date(),
+      returnDepartureDateLeg2: undefined,
       notes: '',
-      flights: [],
-   
     },
   });
-
-
-
-
+  const url2 = useAppSelector(createPresentationUrl2)
   const debouncedFetchCities = useCallback(
     debounce((query: string) => fetchCities(query), 200),
     []
@@ -131,91 +118,68 @@ export function AddFlightForm({ onClose }: TripRequestFormProps) {
   }
 
   async function onSubmit(values: z.infer<typeof enhancedFormSchema>) {
-    const firstFlight = values.flights?.[0];
-    const lastFlight =
-      form.watch('tripType') === 'Round Trip'
-        ? values.flights?.[values.flights.length - 1]
-        : undefined;
-
-    let departureCity = '';
-    let arrivalCity = '';
-    let departureDate: Date | undefined = undefined;
-    let returnDate: Date | undefined = undefined;
-
-    if (firstFlight) {
-      departureCity = firstFlight.departureCity;
-      arrivalCity = firstFlight.arrivalCity;
-      departureDate = firstFlight.departureDate;
-    }
-
-    if (lastFlight && form.watch('tripType') === 'Round Trip') {
-      returnDate = lastFlight.returnDepartureDate || lastFlight.departureDate;
-    }
-
-    let nametrip = '';
-    const firstName = 'tim';
-    const lastName = 'donov';
-    const departureConsonants = getFirstThreeConsonants(values.departureCityLeg1);
-    const arrivalConsonants = getFirstThreeConsonants(values.arrivalCityLeg1);
-    nametrip = `${departureConsonants} <-> ${arrivalConsonants} | ${firstName[0]}${lastName[0]}`;
+    const flight = {
+      departureDate: values.departureDateLeg1,
+      cityDeparture: values.departureCityLeg1,
+      cityArrival: values.arrivalCityLeg1,
+      roundTrip: values.tripType === 'Round Trip',
+      returnDate:
+        values.tripType === 'Round Trip'
+          ? values.returnDepartureDateLeg2
+          : undefined,
+    };
 
     const submissionData = {
-      fieldData: {
-        name: nametrip,
-        subject: values.purpose,
-        status: 'Request',
-        relatedProgramme: values.notes, // Assuming 'notes' is related to a programme
-        departureDate: values.departureDateLeg1?.toISOString(),
-        returnDate: values.returnDepartureDateLeg2?.toISOString(),
-        cityStart: departureCity,
-        cityEnd: arrivalCity,
-        transitionalCities: [], // Assuming there are no transitional cities in this example
-        daysOfStay: [], // Assuming this needs to be filled in based on business logic
-        flights: values.flights?.map((flight, index) => ({
-          id: index + 1, // Assuming we're generating a simple ID for flights
-          cityDeparture: flight.departureCity,
-          cityArrival: flight.arrivalCity,
-          departureDate: flight.departureDate?.toISOString(),
-          roundTrip: flight.roundTrip,
-          returnDate: flight.returnDepartureDate?.toISOString(),
-        })),
-       
-      
+      action: {
+        type: 'addFlight',
+        data: flight,
       },
-      userId: '1', // Using '1' as the fixed userId for testing
-      status: 'Request',
+      fieldData: {},
     };
 
     console.log('this is submission data', submissionData);
-
     try {
-      const response = await fetch('http://localhost:3000/trips', {
-        method: 'POST',
+      const response = await fetch(`${url2}/trips/${tripId}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(submissionData),
       });
 
+      let result;
+
+      // Try parsing the response, catch any errors that might occur
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error('Error parsing JSON:', parseError);
+        throw new Error('Failed to parse response JSON');
+      }
+
+      console.log('Response Body:', result);
+
       if (response.ok) {
-        const result = await response.json();
         toast({
           title: 'Trip Request Submitted',
           description: `Your trip request has been sent to the server with ID: ${result.id}`,
         });
-        onClose();
       } else {
+        const errorText = await response.text();
+        console.log('Error Response Text:', errorText);
         toast({
           title: 'Error Submitting Trip Request',
-          description: 'There was an issue submitting your trip request. Please try again.',
+          description: `There was an issue submitting your trip request. Server responded with: ${errorText}`,
           variant: 'destructive',
         });
       }
     } catch (error) {
+      // Log the actual error that triggered the catch block
       console.error('Error submitting trip request:', error);
       toast({
         title: 'Error Submitting Trip Request',
-        description: 'There was an issue submitting your trip request. Please try again.',
+        description:
+          'There was an issue submitting your trip request. Please try again.',
         variant: 'destructive',
       });
     }
@@ -377,7 +341,45 @@ export function AddFlightForm({ onClose }: TripRequestFormProps) {
               </FormItem>
             )}
           />
-          
+          {form.watch('tripType') === 'Round Trip' && (
+            <FormField
+              control={form.control}
+              name="returnDepartureDateLeg2"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Return</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, 'PPP')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
         <DialogFooter>
           <Button type="submit" style={{ backgroundColor: 'green' }}>

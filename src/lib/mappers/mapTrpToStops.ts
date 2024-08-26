@@ -1,76 +1,148 @@
-import { Stop, Trip } from '@/interfaces';
 import { format } from 'date-fns';
-import { getFirstThreeConsonants } from '@/lib/utils'; // Assuming you have this utility function
+import { Stop, TripData } from '@/interfaces'; // Ensure to define Stop interface accordingly
 
-export const mapTripToStops = (trip: Trip): Stop[] => {
-  const { fieldData } = trip;
+export const mapTripToStops = (trip: TripData): Stop[] => {
   const stops: Stop[] = [];
 
-  // Helper function to generate name based on cities
-  const generateFlightName = (departureCity: string, arrivalCity: string): string => {
-    const departureConsonants = getFirstThreeConsonants(departureCity);
-    const arrivalConsonants = getFirstThreeConsonants(arrivalCity);
-    return `${departureConsonants} <-> ${arrivalConsonants}`;
-  };
-
-  // Add the first leg of the trip
-  stops.push({
-    time: format(new Date(fieldData.departureDate), 'HH:mm'),
-    date: format(new Date(fieldData.departureDate), 'EEE, d MMM yy'),
-    city: fieldData.cityEnd,
-    name: generateFlightName(fieldData.cityStart, fieldData.cityEnd),
-    active: true,
-    type: 'flight',
-  });
-
-  // Add additional flights and their return flights if Round Trip
-  fieldData.flights.forEach((flight) => {
+  // Map flights to stops
+  trip.flights.forEach((flight) => {
     // Outbound flight
-    stops.push({
-      time: flight.departureDate ? format(new Date(flight.departureDate), 'HH:mm') : undefined,
-      date: flight.departureDate ? format(new Date(flight.departureDate), 'EEE, d MMM yy') : undefined,
-      city: flight.cityArrival,
-      name: generateFlightName(flight.cityDeparture, flight.cityArrival),
-      active: false,
-      type: 'flight',
-      accommodation: fieldData.accommodations.find(acc => acc.city === flight.cityArrival)
-        ? {
-            status: 'stai',
-            name: fieldData.accommodations.find(acc => acc.city === flight.cityArrival)!.hotelName,
-          }
-        : { status: 'Not Added' },
-    });
+    if (flight.departureDate) {
+      stops.push({
+        type: 'flight',
+        date: format(new Date(flight.departureDate), 'EEE, d MMM yy'),
+        time: format(new Date(flight.departureDate), 'HH:mm'),
+        city: flight.cityDeparture,
+        name: `${flight.cityDeparture} to ${flight.cityArrival}`,
+        status: flight.ticketImageUrl ? 'Booked' : 'Not Booked',
+        active: false,
+        flightTicket: {
+          flightId: flight.id,
+          departureDate: format(
+            new Date(flight.departureDate),
+            'EEE, d MMM yy'
+          ),
+          departureCity: flight.cityDeparture,
+          arrivalDate: format(new Date(flight.departureDate), 'EEE, d MMM yy'),
+          arrivalCity: flight.cityArrival,
+          title: `${flight.cityDeparture} to ${flight.cityArrival}`,
+          description: 'Flight Details',
+        },
+        accomodationDetails: {
+          accommodationId: 1,
+          hotelName: '',
+          checkInDate: '',
+          checkOutDate: '',
+          city: '',
+        },
+      });
+    }
 
     // Return flight if Round Trip
     if (flight.roundTrip && flight.returnDate) {
       stops.push({
-        time: format(new Date(flight.returnDate), 'HH:mm'),
-        date: format(new Date(flight.returnDate), 'EEE, d MMM yy'),
-        city: flight.cityDeparture,
-        name: generateFlightName(flight.cityArrival, flight.cityDeparture),
-        active: false,
         type: 'flight',
-        accommodation: fieldData.accommodations.find(acc => acc.city === flight.cityDeparture)
-          ? {
-              status: 'status',
-              name: fieldData.accommodations.find(acc => acc.city === flight.cityDeparture)!.hotelName,
-            }
-          : { status: 'Not Added' },
+        date: format(new Date(flight.returnDate), 'EEE, d MMM yy'),
+        time: format(new Date(flight.returnDate), 'HH:mm'),
+        city: flight.cityArrival,
+        name: `${flight.cityArrival} to ${flight.cityDeparture}`,
+        status: flight.ticketImageUrl ? 'Booked' : 'Not Booked',
+        active: false,
+        flightTicket: {
+          flightId: flight.id,
+          departureDate: format(new Date(flight.returnDate), 'EEE, d MMM yy'),
+          departureCity: flight.cityArrival,
+          arrivalDate: format(new Date(flight.returnDate), 'EEE, d MMM yy'),
+          arrivalCity: flight.cityDeparture,
+          title: `${flight.cityArrival} to ${flight.cityDeparture}`,
+          description: 'Flight Details',
+        },
+        accomodationDetails: {
+          accommodationId: 1,
+          hotelName: '',
+          checkInDate: '',
+          checkOutDate: '',
+          city: '',
+        },
       });
     }
   });
 
-  // Add return leg if it's a round trip (overall trip)
-  if (fieldData.returnDate) {
+  // Map accommodations to stops
+  trip.accommodations.forEach((accommodation) => {
+    // Check-in stop
     stops.push({
-      time: format(new Date(fieldData.returnDate), 'HH:mm'),
-      date: format(new Date(fieldData.returnDate), 'EEE, d MMM yy'),
-      city: fieldData.cityStart,
-      name: generateFlightName(fieldData.cityEnd, fieldData.cityStart),
+      type: 'accommodation',
+      date: format(new Date(accommodation.startDate), 'EEE, d MMM yy'),
+      time: accommodation.checkInHour,
+      city: accommodation.city,
+      name: `Check-in at ${accommodation.hotelName}`,
+      status: accommodation.bookingImageUrl ? 'Booked' : 'Not Booked',
       active: false,
-      type: 'flight',
+      flightTicket: {
+        flightId: 1,
+        departureDate: format(
+          new Date(accommodation.startDate),
+          'EEE, d MMM yy'
+        ),
+        departureCity: accommodation.city,
+        arrivalDate: format(new Date(accommodation.startDate), 'EEE, d MMM yy'),
+        arrivalCity: accommodation.city,
+        title: `Check-in at ${accommodation.hotelName}`,
+        description: 'Accommodation Details',
+      },
+      accomodationDetails: {
+        accommodationId: accommodation.id,
+        hotelName: accommodation.hotelName,
+        checkInDate: format(new Date(accommodation.startDate), 'EEE, d MMM yy'),
+        checkOutDate: format(
+          new Date(accommodation.leaveDate),
+          'EEE, d MMM yy'
+        ),
+        city: accommodation.city,
+      },
     });
-  }
+
+    // Check-out stop
+    stops.push({
+      type: 'accommodation',
+      date: format(new Date(accommodation.leaveDate), 'EEE, d MMM yy'),
+      time: accommodation.checkOutHour,
+      city: accommodation.city,
+      name: `Check-out from ${accommodation.hotelName}`,
+      status: accommodation.bookingImageUrl ? 'Booked' : 'Not Booked',
+      active: false,
+      flightTicket: {
+        flightId: 1,
+        departureDate: format(
+          new Date(accommodation.leaveDate),
+          'EEE, d MMM yy'
+        ),
+        departureCity: accommodation.city,
+        arrivalDate: format(new Date(accommodation.leaveDate), 'EEE, d MMM yy'),
+        arrivalCity: accommodation.city,
+        title: `Check-out from ${accommodation.hotelName}`,
+        description: 'Accommodation Details',
+      },
+      accomodationDetails: {
+        accommodationId: accommodation.id,
+        hotelName: accommodation.hotelName,
+        checkInDate: format(new Date(accommodation.startDate), 'EEE, d MMM yy'),
+        checkOutDate: format(
+          new Date(accommodation.leaveDate),
+          'EEE, d MMM yy'
+        ),
+        city: accommodation.city,
+      },
+    });
+  });
+
+  // Sort stops chronologically by date and time
+  stops.sort((a, b) => {
+    const dateA = new Date(`${a.date}`);
+    const dateB = new Date(`${b.date}`);
+    return dateA.getTime() - dateB.getTime();
+  });
 
   return stops;
 };

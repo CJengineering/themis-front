@@ -16,13 +16,36 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { FolderUp, Hotel, Plane, Plus, Receipt } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TripRequestForm } from './TripInitialRequest';
 import { Button } from '@/components/ui/button';
 import { AddAccommodationForm } from './AddAccomodationForm';
 import { AddFlightForm } from './AddFlightForm';
+import { AccommodationFormV2 } from './AccomodationFormV2';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
+import { createPresentationSingleTrip } from '../features/Presentations';
+import { useParams } from 'react-router-dom';
+import { fetchSingleTrip } from '../features/trip/fetchTrip';
+import { cp } from 'fs';
+import { ExpensesForm } from './ExpensesFormUI';
+import { AddDocumentForm } from './AddDocumentForm';
+import { StatusInput, mapStatusToOutput } from '../travel/columns';
+import { tr } from 'date-fns/locale';
 
 const Header = () => {
+  const dispatch = useAppDispatch();
+  const trip = useAppSelector(createPresentationSingleTrip);
+  const { tripId } = useParams();
+  const status = trip.status || 'saved';
+  useEffect(() => {
+    const fetchDate = async () => {
+      await dispatch<any>(
+        fetchSingleTrip(`http://localhost:3000/trips/${tripId}`)
+      );
+    };
+
+    fetchDate();
+  }, []);
   function handleClose(): void {
     throw new Error('Function not implemented.');
   }
@@ -40,24 +63,52 @@ const Header = () => {
     // Logic to add expenses
     console.log('Add Expenses clicked');
   };
-
+ const tripStatus = trip.status || 'Saved';
   return (
     <div className="my-4">
-      <div className="flex mb-4">
+      <div className="flex mb-4 justify-between ">
         <div>
-          <h1 className="text-4xl font-bold">Nice London</h1>
-          <h2 className="text-2xl font-bold">Tim Spiridonov</h2>
-          <p className="text-sm text-muted-foreground">J-Pal</p>
-          <p className="text-sm text-muted-foreground">Meeting Esther Duflo</p>
+          <h1 className="text-4xl font-bold">{trip.name}</h1>
+          <h2 className="text-2xl font-bold">
+            {trip.firstName}
+            {trip.lastName}
+          </h2>
+
+          <p className="text-sm text-muted-foreground">{trip.purpose}</p>
+          <p className="text-sm text-muted-foreground">total price: {trip.priceTotal} $</p>
 
           <p>
-            <Badge variant={'Finalisation'}> Approved</Badge>
+            <Badge
+              variant={
+                status as
+                  | 'default'
+                  | 'secondary'
+                  | 'destructive'
+                  | 'outline'
+                  | 'Saved'
+                  | 'confirmed'
+                  | 'inProgress'
+                  | 'waitingValidation'
+                  | 'Request'
+                  | 'Authentication'
+                  | 'Validation'
+                  | 'Authorisation'
+                  | 'Approval'
+                  | 'Finalisation'
+           
+                
+              }
+            >
+              {' '}
+              {mapStatusToOutput(tripStatus as StatusInput)}
+            </Badge>
           </p>
         </div>
-        <div>
+        <div className="">
           <DropdownMenu>
-            <DropdownMenuTrigger className="bg-green-500 hover:cursor-pointer  rounded-xl p-2 ml-3 transition duration-300 ease-in-out">
-              <Plus className="text-white  text-2xl font-bold" />
+            <DropdownMenuTrigger className="flex bg-green-500 hover:cursor-pointer  rounded-xl p-2 ml-3 transition duration-300 ease-in-out">
+              <Plus className="text-white  text-2xl font-bold" />{' '}
+              <span className="text-white">Add</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel></DropdownMenuLabel>
@@ -71,9 +122,7 @@ const Header = () => {
                   </div>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
-                <AddFlightForm onClose={function (): void {
-                    throw new Error('Function not implemented.');
-                  } }/>
+                  <AddFlightForm />
                 </DialogContent>
               </Dialog>
               <Dialog>
@@ -86,7 +135,13 @@ const Header = () => {
                   </div>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
-                <AddAccommodationForm/>
+                  <AccommodationFormV2
+                    action=""
+                    accommodationId={1}
+                    city={''}
+                    hotelName={''}
+                    checkIn={new Date()}
+                  />
                 </DialogContent>
               </Dialog>
               <Dialog>
@@ -99,7 +154,7 @@ const Header = () => {
                   </div>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
-         
+                  <ExpensesForm />
                 </DialogContent>
               </Dialog>
               <Dialog>
@@ -112,15 +167,14 @@ const Header = () => {
                   </div>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
-                  <TripRequestForm onClose={handleClose} />
+                <AddDocumentForm/>
                 </DialogContent>
               </Dialog>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        <div>
-          {/* <Card>
+        {/* <Card>
             <CardHeader>
               <CardTitle>NIC=&gt;LND</CardTitle>
               <CardDescription>Mon, 22 Aug 2022</CardDescription>
@@ -137,7 +191,6 @@ const Header = () => {
               </p>
             </CardContent>
           </Card> */}
-        </div>
       </div>
     </div>
   );

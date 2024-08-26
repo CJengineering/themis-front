@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import Dashboard from './pages/dashboard';
-import Travel from './pages/travel';
+import Travel from './pages/tripsTable';
 
 import SignInPage from './pages/signInPage';
 import ProtectedRoute from './main components/ProtectedRoutes';
@@ -16,7 +16,8 @@ import ProfilePage from './pages/ProfilePage';
 import { Profiles } from './pages/Profiles';
 import FinancialPage from './pages/financialPage';
 import TravelV2Page from './pages/travelV2Page';
-
+import Trip from './pages/trip';
+import TripsTable from './pages/tripsTable';
 
 export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -40,10 +41,10 @@ export function App() {
           }
         />
         <Route
-          path="/travel"
+          path="/trips"
           element={
             <ProtectedRoute>
-              <Travel />
+              <TripsTable />
             </ProtectedRoute>
           }
         />
@@ -55,9 +56,8 @@ export function App() {
             </ProtectedRoute>
           }
         />
-          <Route
+        <Route
           path="/profiles"
-          
           element={
             <ProtectedRoute>
               <Profiles />
@@ -72,7 +72,7 @@ export function App() {
             </ProtectedRoute>
           }
         />
-              <Route
+        <Route
           path="/financial"
           element={
             <ProtectedRoute>
@@ -80,11 +80,11 @@ export function App() {
             </ProtectedRoute>
           }
         />
-              <Route
-          path="/travelv2"
+        <Route
+          path="/trip/:tripId"
           element={
             <ProtectedRoute>
-              <TravelV2Page />
+              <Trip />
             </ProtectedRoute>
           }
         />

@@ -9,7 +9,7 @@ const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => 
     statusTravel = 'new';
   }
   const navLinks = [
-    { name: 'Created', icon: 'create' },
+    { name: 'Saved', icon: 'create' },
     { name: 'Request', icon: 'unknown_document' },
     { name: 'Authentication', icon: 'grading' },
     { name: 'Validation', icon: 'outgoing_mail' },
@@ -24,7 +24,7 @@ const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => 
       return 0;
     }
     const stepOrder = [
-      'Created',
+      'Saved',
       'Request',
       'Authentication',
       'Validation',
@@ -45,6 +45,7 @@ const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => 
       return false;
     }
     const stepOrder = [
+      'Saved',
       'Request',
       'Authentication',
       'Validation',

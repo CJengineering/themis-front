@@ -1,163 +1,397 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from '@/components/ui/accordion';
+import Select from 'react-select';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useCallback, useEffect, useState } from 'react';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
-  PopoverContent,
   PopoverTrigger,
+  PopoverContent,
 } from '@/components/ui/popover';
 import { format } from 'date-fns';
+import { DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
+import { useToast } from '@/components/ui/use-toast';
+import { useParams } from 'react-router-dom';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { calculateConvertedAmounts, fetchConversionRates } from '@/lib/utils';
+import { SelectContent, SelectItem, SelectTrigger, SelectValue, Selectcdn } from '@/components/ui/select';
+import { useAppSelector } from '../features/hooks';
+import { createPresentationUrl2 } from '../features/Presentations';
+
+// Currency options
+const currencyOptions = ["USD", "EUR", "GBP", "SAR"] as const;
 
 const accommodationSchema = z.object({
-  hotelName: z.string().min(1, { message: 'Hotel name is required.' }),
-  roomType: z.string().min(1, { message: 'Room type is required.' }),
-  checkInDate: z.string().min(1, { message: 'Check-in date is required.' }),
-  checkOutDate: z.string().min(1, { message: 'Check-out date is required.' }),
+  city: z.string().min(1, 'City is required'),
+  hotelName: z.string().optional(),
+  checkIn: z.date().refine((date) => date >= new Date(), {
+    message: 'Check-in Date cannot be in the past',
+  }),
+  checkOut: z.date().optional(),
+  pricePerNight: z.preprocess(
+    (value) => parseFloat(value as string),
+    z.number().min(0, "Price per night must be positive")
+  ),
+  currency: z.enum(currencyOptions),
 });
 
-export function AccommodationFormV2() {
-  const form = useForm({
+interface AccommodationFormProps {
+  action: string;
+  accommodationId: number;
+  city: string;
+  hotelName: string;
+  checkIn: Date;
+  checkOut?: Date;
+}
+
+export function AccommodationFormV2({
+  action,
+  accommodationId,
+  city,
+  hotelName,
+  checkIn,
+  checkOut,
+}: AccommodationFormProps) {
+  const { tripId } = useParams();
+  const { toast } = useToast();
+  const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const url2 = useAppSelector(createPresentationUrl2);
+  const form = useForm<z.infer<typeof accommodationSchema>>({
     resolver: zodResolver(accommodationSchema),
     defaultValues: {
-      hotelName: '',
-      roomType: '',
-      checkInDate: new Date(),
-      checkOutDate: new Date(),
+      city: city,
+      hotelName: hotelName,
+      checkIn: checkIn,
+      checkOut: checkOut,
+      pricePerNight: 0,
+      currency: "USD",
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
+  const debouncedFetchCities = useCallback(
+    debounce((query: string) => fetchCities(query), 200),
+    []
+  );
+
+  useEffect(() => {
+    if (searchTerm) {
+      debouncedFetchCities(searchTerm);
+    }
+  }, [searchTerm, debouncedFetchCities]);
+
+  async function fetchCities(query: string) {
+    try {
+      const url = `https://api.api-ninjas.com/v1/city?name=${query}&limit=30`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'X-Api-Key': 'Kh9wcmGqloUhMtGKrwf9Fg==3ehfaiVh85GDvwfd',
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+
+      const cityOptions = data.map((city: any) => ({
+        value: city.name,
+        label: city.name,
+      }));
+      setCities(cityOptions);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+    }
+  }
+
+  async function onSubmit(values: z.infer<typeof accommodationSchema>) {
+    try {
+      const conversionRates = await fetchConversionRates();
+      const convertedAmounts = calculateConvertedAmounts(
+        values.pricePerNight,
+        values.currency,
+        conversionRates
+      );
+
+      const accommodationData = {
+        city: values.city,
+        hotelName: values.hotelName,
+        startDate: values.checkIn.toISOString(),
+        leaveDate: values.checkOut?.toISOString(),
+        pricePerNight: values.pricePerNight,
+        currency: values.currency,
+        priceInUSD: convertedAmounts.priceInUSD,
+        priceInEUR: convertedAmounts.priceInEUR,
+        priceInSAR: convertedAmounts.priceInSAR,
+        priceInGBP: convertedAmounts.priceInGBP,
+        bookingImageUrl: '',
+      };
+
+      const updateAccommodationData = {
+        ...accommodationData,
+        accommodationId: accommodationId,
+      };
+
+      const submissionData =
+        action === 'updateAccommodation'
+          ? {
+              action: { type: 'updateAccommodation', data: updateAccommodationData },
+              fieldData: {},
+            }
+          : {
+              action: { type: 'addAccommodation', data: accommodationData },
+              fieldData: {},
+            };
+
+      console.log('this is submission data', submissionData);
+
+      const response = await fetch(`${url2}/trips/${tripId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: 'Accommodation Saved',
+          description: `Your accommodation details have been saved with ID: ${result.id}`,
+        });
+      } else {
+        toast({
+          title: 'Error Saving Accommodation',
+          description:
+            'There was an issue saving your accommodation details. Please try again.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error saving accommodation:', error);
+      toast({
+        title: 'Error Saving Accommodation',
+        description:
+          'There was an issue saving your accommodation details. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  }
+
+  function debounce<F extends (...args: any[]) => void>(
+    func: F,
+    waitFor: number
+  ) {
+    let timeoutId: NodeJS.Timeout;
+    return function (...args: Parameters<F>) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), waitFor);
+    } as F;
+  }
 
   return (
     <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
-        <AccordionTrigger>Modify accomodation</AccordionTrigger>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>Modify Accommodation</AccordionTrigger>
         <AccordionContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="hotelName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hotel Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Hotel Riviera" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="roomType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Room Type</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Deluxe Suite" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="checkInDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Departure</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-[240px] pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-6 p-2 max-h-[50vh] overflow-y-auto">
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Controller
+                          name="city"
+                          control={form.control}
+                          render={({
+                            field: { onChange, onBlur, value, ref },
+                          }) => (
+                            <Select<{ value: string; label: string }>
+                              options={cities}
+                              placeholder={field.value}
+                              isSearchable
+                              onInputChange={(inputValue) =>
+                                setSearchTerm(inputValue)
+                              }
+                              onChange={(option) =>
+                                onChange(option ? option.value : '')
+                              }
+                              onBlur={onBlur}
+                              value={cities.find((c) => c.value === value)}
+                              ref={ref}
+                            />
+                          )}
                         />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="checkOutDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Departure</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-[240px] pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="hotelName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Hotel Name (optional)</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Hotel Name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="checkIn"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Check In</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={'outline'}
+                              className={cn(
+                                'w-[240px] pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, 'PPP')
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="checkOut"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Check Out</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={'outline'}
+                              className={cn(
+                                'w-[240px] pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, 'PPP')
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="pricePerNight"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Price Per Night</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number"
+                          placeholder="Enter price per night"
                         />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Submit</Button>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="currency"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Currency</FormLabel>
+                      <Controller
+                        name="currency"
+                        control={form.control}
+                        render={({ field }) => (
+                          <Selectcdn
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className="w-[240px]">
+                              <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {currencyOptions.map((currency) => (
+                                <SelectItem key={currency} value={currency}>
+                                  {currency}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Selectcdn>
+                        )}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" style={{ backgroundColor: 'green' }}>
+                  Save Accommodation
+                </Button>
+              </DialogFooter>
             </form>
           </Form>
         </AccordionContent>

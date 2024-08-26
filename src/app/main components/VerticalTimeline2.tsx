@@ -6,10 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { mapTripToStops } from '@/lib/mappers/mapTrpToStops';
 import { createPresentationSingleTrip } from '../features/Presentations';
 import { useAppSelector } from '../features/hooks';
+import { DialogDemo } from './DialogDemo';
+import { AccommodationDialog } from './AccomodationDialog';
 
 const VerticalTimeline: React.FC<{ trip: TripData }> = () => {
   const [stops, setStops] = useState<Stop[]>([]);
   const trip = useAppSelector(createPresentationSingleTrip);
+
   useEffect(() => {
     const stopsData = mapTripToStops(trip);
     setStops(stopsData);
@@ -18,7 +21,6 @@ const VerticalTimeline: React.FC<{ trip: TripData }> = () => {
   return (
     <div className="grid grid-cols-12">
       <div className="col-span-6">
-
         {stops.map((stop, index) => (
           <div
             className="relative flex items-center justify-center"
@@ -44,7 +46,13 @@ const VerticalTimeline: React.FC<{ trip: TripData }> = () => {
               <div className="relative flex items-start justify-center w-8">
                 <div
                   className={`absolute top-0 w-4 h-4 ${
-                    stop.active ? 'bg-green-500' : 'bg-gray-500'
+                    index === 0
+                      ? 'bg-green-500'
+                      : index === stops.length - 1
+                      ? 'bg-red-500'
+                      : stop.active
+                      ? 'bg-green-500'
+                      : 'bg-gray-500'
                   } rounded-full shadow-neonBlur`}
                 ></div>
                 {index < stops.length - 1 && (
@@ -60,15 +68,20 @@ const VerticalTimeline: React.FC<{ trip: TripData }> = () => {
                 <div className="text-md">{stop.city}</div>
                 <div className="text-md">{stop.name}</div>
                 <div className="mt-2 text-xs text-muted-foreground">
-                  {stop.type === 'flight' ? 'Flight' : 'Accommodation'} Details
+                  {stop.type === 'flight' ? (
+                    <DialogDemo {...stop.flightTicket} />
+                  ) : (
+                    <AccommodationDialog {...stop.accomodationDetails} />
+                  )}
                 </div>
-                <Badge
+
+                {/* <Badge
                   variant={
                     stop.status === 'Booked' ? 'confirmed' : 'inProgress'
                   }
                 >
                   {stop.status}
-                </Badge>
+                </Badge> */}
               </div>
             </div>
           </div>

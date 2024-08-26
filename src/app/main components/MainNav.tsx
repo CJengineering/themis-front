@@ -13,8 +13,12 @@ const MainNav = () => {
     { name: "Travel", icon: "flight", path: "/" },
 
     {name: 'Financial', icon: 'account_balance', path: '/financial'},
+    {name: 'Trips', icon: 'flight_takeoff', path: '/trips'},
     //{ name: "Accommodation", icon: "hotel", path: "/accommodation" },
   ];
+  if (userRole === 'traveller') {
+    navLinks = navLinks.filter(link => link.name !== "Trips");
+  }
   if (userRole === 'traveller') {
     navLinks = navLinks.filter(link => link.name !== "Financial");
   }

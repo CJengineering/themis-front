@@ -30,13 +30,15 @@ import {
 import { format } from 'date-fns';
 import { DialogFooter } from '@/components/ui/dialog';
 import { cn, getFirstThreeConsonants } from '@/lib/utils';
-import { useToast } from '@/components/ui/use-toast';
+import { toast, useToast } from '@/components/ui/use-toast';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { createPresentationUrl2 } from '../features/Presentations';
+import { useAppSelector } from '../features/hooks';
 
 const flightSchema = z.object({
   tripType: z.string(),
@@ -91,6 +93,7 @@ interface TripRequestFormProps {
 
 export function TripRequestForm({ onClose }: TripRequestFormProps) {
   const { toast } = useToast();
+  const url = useAppSelector(createPresentationUrl2);
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const form = useForm<z.infer<typeof enhancedFormSchema>>({
@@ -159,79 +162,106 @@ export function TripRequestForm({ onClose }: TripRequestFormProps) {
   }
 
   async function onSubmit(values: z.infer<typeof enhancedFormSchema>) {
-    const firstFlight = values.flights?.[0];
-    const lastFlight =
-      form.watch('tripType') === 'Round Trip'
-        ? values.flights?.[values.flights.length - 1]
-        : undefined;
+    // First Flight
+    const transitionalCities: any = []; // Adjust this as necessary based on form data
+    const daysOfStay: any = []; // Adjust this as necessary based on form data
 
-    let departureCity = '';
-    let arrivalCity = '';
-    let departureDate: Date | undefined = undefined;
-    let returnDate: Date | undefined = undefined;
+    const firstFlight = {
+      id: 1, // Ensure this ID is a number
+      cityDeparture: values.departureCityLeg1,
+      cityArrival: values.arrivalCityLeg1,
+      departureDate: values.departureDateLeg1?.toISOString(),
+      roundTrip: values.tripType === 'Round Trip', // Ensure this is a boolean
+      returnDate:
+        values.tripType === 'Round Trip'
+          ? values.returnDepartureDateLeg2?.toISOString()
+          : undefined,
+      price: 0, // Zod expects a price
+      ticketImageUrl: '', // Zod expects a ticket image URL
+    };
 
-    if (firstFlight) {
-      departureCity = firstFlight.departureCity;
-      arrivalCity = firstFlight.arrivalCity;
-      departureDate = firstFlight.departureDate;
-    }
+    const flights = [firstFlight];
 
-    if (lastFlight && form.watch('tripType') === 'Round Trip') {
-      returnDate = lastFlight.returnDepartureDate || lastFlight.departureDate;
-    }
-
-    let nametrip = '';
-    const firstName = 'tim';
-    const lastName = 'donov';
-    const departureConsonants = getFirstThreeConsonants(
-      values.departureCityLeg1
-    );
-    const arrivalConsonants = getFirstThreeConsonants(values.arrivalCityLeg1);
-    nametrip = `${departureConsonants} <-> ${arrivalConsonants} | ${firstName[0]}${lastName[0]}`;
-
-    const submissionData = {
-      fieldData: {
-        name: nametrip,
-        subject: values.purpose,
-        status: 'Request',
-        relatedProgramme: values.notes, // Assuming 'notes' is related to a programme
-        departureDate: values.departureDateLeg1?.toISOString(),
-        returnDate: values.returnDepartureDateLeg2?.toISOString(),
-        cityStart: departureCity,
-        cityEnd: arrivalCity,
-        transitionalCities: [], // Assuming there are no transitional cities in this example
-        daysOfStay: [], // Assuming this needs to be filled in based on business logic
-        flights: values.flights?.map((flight, index) => ({
-          id: index + 1, // Assuming we're generating a simple ID for flights
+    // Handle additional flights (if any)
+    if (values.flights && values.flights.length > 0) {
+      values.flights.forEach((flight, index) => {
+        const flightId = index + 2; // Ensure this ID is unique and a number
+        flights.push({
+          id: flightId,
           cityDeparture: flight.departureCity,
           cityArrival: flight.arrivalCity,
           departureDate: flight.departureDate?.toISOString(),
-          roundTrip: flight.roundTrip,
-          returnDate: flight.returnDepartureDate?.toISOString(),
-        })),
+          roundTrip: flight.roundTrip, // Ensure this is a boolean
+          returnDate: flight.roundTrip
+            ? flight.returnDepartureDate?.toISOString()
+            : undefined,
+          price: 0,
+          ticketImageUrl: '',
+        });
+      });
+    }
+    let nametrip = '';
+    let userId = '';
+    let userRole = 'traveller';
+    let status = 'Saved';
+    let firstName = '';
+    let lastName = '';
+    let email = '';
+
+    const userData = localStorage.getItem('user-data');
+    if (userData) {
+      const user = JSON.parse(userData);
+      firstName = user.firstName;
+      lastName = user.lastName;
+      userRole = user.role;
+      email = user.email;
+      userId = String(user.id);
+
+    } else {
+      console.log('no user data');
+    }
+
+    const submissionData = {
+      fieldData: {
+        name: `${getFirstThreeConsonants(
+          values.departureCityLeg1
+        )} <-> ${getFirstThreeConsonants(values.arrivalCityLeg1)} | ${firstName} ${lastName}`,
+        subject: values.purpose,
+        userId: userId,
+        userRole: userRole,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+
+        status: 'Saved',
+        relatedProgramme: values.notes,
+        departureDate: values.departureDateLeg1?.toISOString(),
+        returnDate: firstFlight.returnDate,
+        cityStart: values.departureCityLeg1,
+        cityEnd: values.arrivalCityLeg1,
+        transitionalCities: transitionalCities, // Ensure this is an array
+        daysOfStay: daysOfStay, // Ensure this is an array of objects
+        flights: flights,
         accommodations: values.accommodations?.map((accommodation, index) => ({
-          id: index + 1, // Assuming we're generating a simple ID for accommodations
+          id: index + 1, // Ensure this ID is unique and a number
           hotelName: accommodation.hotelName,
           startDate: accommodation.checkIn.toISOString(),
           leaveDate: accommodation.checkOut?.toISOString(),
           city: accommodation.city,
-          checkInHour: '', // Assuming this field is not available in the current form
-          checkOutHour: '', // Assuming this field is not available in the current form
-          lateCheckOut: false, // Assuming a default value, adjust if needed
-          pricePerNight: 0, // Assuming a default value, adjust if needed
-          totalPrice: 0, // Assuming a default value, adjust if needed
-          bookingImageUrl: '', // Assuming this field is not available in the current form
+          checkInHour: '',
+          checkOutHour: '',
+          lateCheckOut: false,
+          pricePerNight: 0,
+          totalPrice: 0,
+          bookingImageUrl: '',
         })),
-        expenses: [], // Assuming no expenses in this example
+        expenses: [], // Zod expects an array of expenses
       },
-      userId: '1', // Using '1' as the fixed userId for testing
-      status: 'Request',
     };
-
     console.log('this is submission data', submissionData);
 
     try {
-      const response = await fetch('http://localhost:3000/trips', {
+      const response = await fetch(`${url }/trips`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -671,7 +701,7 @@ export function TripRequestForm({ onClose }: TripRequestFormProps) {
                   Add Flight
                 </Button>
               </AccordionContent>
-              <AccordionTrigger>Add accomodations</AccordionTrigger>
+              {/* <AccordionTrigger>Add accomodations</AccordionTrigger>
               <AccordionContent>
                 {accommodationFields.map((accommodation, index) => (
                   <div key={accommodation.id} className="space-y-4">
@@ -820,7 +850,7 @@ export function TripRequestForm({ onClose }: TripRequestFormProps) {
                 >
                   Add Accommodation
                 </Button>
-              </AccordionContent>
+              </AccordionContent> */}
             </AccordionItem>
           </Accordion>
         </div>

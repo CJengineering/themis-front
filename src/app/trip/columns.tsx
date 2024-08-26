@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpDown } from 'lucide-react';
-import { Trip, TripFieldData } from '@/interfaces';
+import { Trip, TripData, TripFieldData } from '@/interfaces';
 
 export type StatusInput =
   | 'Request'
@@ -54,25 +54,23 @@ export function mapStatusToSteps(status: StatusInput): string {
       return 'Unknown';
   }
 }
-const formatDateCell = (props: any) => {
-  const dateValue = props.getValue();
-  return (
-    <span className="">
-      {dateValue ? format(dateValue, 'MMM dd yyyy ') : ''}
-    </span>
-  );
-};
-const baseColumns: ColumnDef<Trip>[] = [
+// const formatDateCell = (props: any) => {
+//   const dateValue = props.getValue();
+//   return (
+//     <span className="">
+//       {dateValue ? format(dateValue, 'MMM dd yyyy ') : ''}
+//     </span>
+//   );
+// };
+const baseColumns: ColumnDef<TripData>[] = [
   {
     accessorKey: 'name',
     header: 'Trip',
   },
   {
-    accessorKey: 'userFullName',
-  
+    accessorKey: 'subject',
     header: 'Traveller',
   },
-
   {
     accessorKey: 'status',
     header: ({ column }) => {
@@ -110,17 +108,14 @@ const baseColumns: ColumnDef<Trip>[] = [
       </Badge>
     ),
   },
-
- 
   {
-    accessorKey: 'departureCity',
+    accessorKey: 'cityStart',
     header: 'From',
   },
   {
-    accessorKey: 'arrivalCity',
+    accessorKey: 'cityEnd',
     header: 'To',
   },
-
   {
     accessorKey: 'departureDate',
     header: ({ column }) => {
@@ -135,31 +130,44 @@ const baseColumns: ColumnDef<Trip>[] = [
         </Button>
       );
     },
-    cell: formatDateCell,
+    cell: (props) => {
+      const dateValue = props.getValue<Date>();
+      return (
+        <span>
+          {dateValue ? format(new Date(dateValue), 'dd MMM yyyy') : ''}
+        </span>
+      );
+    },
   },
   {
     accessorKey: 'returnDate',
     header: 'Returning',
-    cell: formatDateCell,
+    cell: (props) => {
+      const dateValue = props.getValue<Date>();
+      return (
+        <span>
+          {dateValue ? format(new Date(dateValue), 'dd MMM yyyy') : ''}
+        </span>
+      );
+    },
   },
   {
-    accessorKey: 'costOriginal',
-    header: 'Cost ',
+    accessorKey: 'priceTotal',
+    header: 'Cost',
     cell: (props) => {
-      const value = props.getValue();
-      // Ensure the value is a number before formatting
-      const numericValue = value ? Number(value) : 0; // Convert value to number, default to 0 if falsy
-      const formattedValue = numericValue ? new Intl.NumberFormat('en-GB', {
-        style: 'currency',
-        currency: 'GBP',
-        minimumFractionDigits: 2,
-      }).format(numericValue) : '';
-      
+      const value = props.getValue<number>();
+      const formattedValue = value
+        ? new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+          }).format(value)
+        : '';
       return <>{formattedValue}</>;
     },
-  }
-  ,
-  
+  },
 ];
 
-export const travelColumns: ColumnDef<Trip>[] = baseColumns;
+
+
+export const tripColumns: ColumnDef<TripData>[] = baseColumns;

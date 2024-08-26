@@ -9,23 +9,34 @@ export interface TravelGateway {
   ): Promise<TravelData[]>;
 }
 export interface TripGateway {
-  fetchTrips(url: string,
-    options: { id?: number; userId?: string; userRole?: string }):Promise<Trip[]>;
-  }
+  fetchTrips(
+    url: string,
+    options: { id?: number; userId?: string; userRole?: string }
+  ): Promise<Trip[]>;
+  fetchSingleTrip(url: string): Promise<Trip>;
+}
 export interface CityData {
   city: string;
 }
-export interface Transaction{
+export interface Transaction {
   amount: string;
   transactionDate: string;
-
 }
 export interface TripFieldData {
   name: string;
-  userId: string;
   subject: string;
-  status?: string;
   purpose: string;
+  status?: string;
+  firstName: string;
+  userId: string;
+  lastName: string;
+  email: string;
+  userRole: string;
+  priceTotal: number;
+  priceTotalUSD?: number;
+  priceTotalEUR?: number;
+  priceTotalGBP?: number;
+  priceTotalSAR?: number;
   relatedProgramme?: string;
   departureDate: Date;
   returnDate?: Date;
@@ -38,10 +49,20 @@ export interface TripFieldData {
     cityDeparture: string;
     cityArrival: string;
     departureDate?: Date;
-    price?: number;
+
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
     roundTrip: boolean;
     returnDate?: Date;
     ticketImageUrl?: string;
+  }[];
+  documents: {
+    id: number;
+    name: string;
+    type: string;
+    url: string;
   }[];
 
   accommodations: {
@@ -54,6 +75,10 @@ export interface TripFieldData {
     checkOutHour?: string;
     lateCheckOut: boolean;
     pricePerNight: number;
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
     totalPrice?: number;
     bookingImageUrl?: string;
   }[];
@@ -62,6 +87,10 @@ export interface TripFieldData {
     nature: string;
     amount: number;
     currency: string;
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
     receiptImageUrl?: string;
   }[];
 }
@@ -74,13 +103,22 @@ export interface Trip {
 }
 export interface TripData {
   id: number;
-  purpose: string;
   createdAt: Date;
   updatedAt: Date;
   name: string;
   subject: string;
-  userId: string;
+  purpose: string;
   status?: string;
+  firstName: string;
+  userId: string;
+  lastName: string;
+  email: string;
+  userRole: string;
+  priceTotal: number;
+  priceTotalUSD?: number;
+  priceTotalEUR?: number;
+  priceTotalGBP?: number;
+  priceTotalSAR?: number;
   relatedProgramme?: string;
   departureDate: Date;
   returnDate?: Date;
@@ -93,11 +131,16 @@ export interface TripData {
     cityDeparture: string;
     cityArrival: string;
     departureDate?: Date;
-    price?: number;
+
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
     roundTrip: boolean;
     returnDate?: Date;
     ticketImageUrl?: string;
   }[];
+
   accommodations: {
     id: number;
     hotelName: string;
@@ -108,6 +151,10 @@ export interface TripData {
     checkOutHour?: string;
     lateCheckOut: boolean;
     pricePerNight: number;
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
     totalPrice?: number;
     bookingImageUrl?: string;
   }[];
@@ -116,7 +163,17 @@ export interface TripData {
     nature: string;
     amount: number;
     currency: string;
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
     receiptImageUrl?: string;
+  }[];
+  documents: {
+    id: number;
+    name: string;
+    type: string;
+    url: string;
   }[];
 }
 
@@ -139,7 +196,7 @@ export interface Flight2 {
   departureDate: Date;
   tripType: string;
   returnDepartureDate?: Date;
-};
+}
 
 export interface Accommodation2 {
   city: string;
@@ -151,13 +208,31 @@ export interface Stop {
   time?: string; // Optional because accommodations won't have a time
   date?: string; // Optional because accommodations won't have a date
   city: string;
+  status: string;
   name?: string; // New field to store the abbreviated flight name
   active: boolean;
-  type: 'flight' | 'accommodation'; // Added to distinguish between flight and accommodation
+  type: 'flight' | 'accommodation';
+  flightTicket: {
+    flightId: number;
+    departureDate: string;
+    departureCity: string;
+    arrivalDate: string;
+    arrivalCity: string;
+    title: string;
+    description: string;
+  };
+  accomodationDetails:{
+    accommodationId: number;
+    hotelName: string;
+    checkInDate: string;
+    checkOutDate: string;
+    city: string;
+  }
   accommodation?: {
     status: string;
     name?: string;
   };
+
 }
 
 export interface Expense {
@@ -166,7 +241,7 @@ export interface Expense {
   description: string;
   category: string;
   amount: string;
-  time: string;
+
 }
 export interface User {
   id: number;
@@ -182,7 +257,7 @@ export interface User {
   passports: Passport[];
   [key: string]: any;
 }
-export interface Transaction{
+export interface Transaction {
   amount: string;
   transactionDate: string;
 }

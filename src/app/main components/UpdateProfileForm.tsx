@@ -30,7 +30,7 @@ import { useParams } from 'react-router-dom';
 interface FormValues {
   firstName?: string;
   lastName?: string;
-  
+
   mobileNumber?: string;
   address?: string;
   profilePicUrl?: string;

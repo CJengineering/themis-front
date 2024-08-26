@@ -1,3 +1,5 @@
+import { Cost } from './app/costs table/column-costs';
+import { DocumentTrip } from './app/documents-table/column';
 import { Accommodation, Travel } from './type';
 
 export const travels: Travel[] = [
@@ -60,6 +62,77 @@ export const travels: Travel[] = [
   },
   // You can add more travel objects here if needed
 ];
+  
+export const expenseData = [
+  {
+    id: 1,
+    date: '20/04/24',
+    description: 'Flight to Nice',
+    category: 'Flight',
+    amount: '$500',
+  },
+  {
+    id: 2,
+    date: '21/04/24',
+    description: 'Hotel in Nice',
+    category: 'Accommodation',
+    amount: '$300',
+  },
+  {
+    id: 3,
+    date: '22/04/24',
+    description: 'Lunch with clients',
+    category: 'Food',
+    amount: '$50',
+  },
+  // Add more expenses as needed
+];
+export  const fakeCostData: Cost[] = [
+  {
+    type: 'Flight',
+    amountUSD: 500,
+    amountGBP: 400,
+    amountEUR: 450,
+    actualAmount: 500,
+    limitAmount: 600,
+  },
+  {
+    type: 'Hotel',
+    amountUSD: 300,
+    amountGBP: 240,
+    amountEUR: 270,
+    actualAmount: 320,
+    limitAmount: 350,
+  },
+  {
+    type: 'Car Rental',
+    amountUSD: 200,
+    amountGBP: 160,
+    amountEUR: 180,
+    actualAmount: 200,
+    limitAmount: 250,
+  },
+  {
+    type: 'Meals',
+    amountUSD: 100,
+    amountGBP: 80,
+    amountEUR: 90,
+    actualAmount: 110,
+    limitAmount: 150,
+  },
+  {
+    type: 'Miscellaneous',
+    amountUSD: 50,
+    amountGBP: 40,
+    amountEUR: 45,
+    actualAmount: 55,
+    limitAmount: 100,
+  },
+];
+
+
+
+
 export const fakeAccommodations: Accommodation[] = [
   {
     id: 1,

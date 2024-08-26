@@ -67,7 +67,7 @@ const TopRightNav = ({ currentPage }: TopRightNavProps) => {
   };
 
   function handleClose(): void {
-    throw new Error('Function not implemented.');
+    console.log('Hnadle cloe.');
   }
 
   return (
