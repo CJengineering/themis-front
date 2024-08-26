@@ -21,11 +21,12 @@ export const defaultTrip: Trip = {
     flights: [],
     accommodations: [],
     expenses: [],
+    documents: [],
     departureDate: new Date(),
     // Add any other required fields with default values
   },
 };
-
+ 
 export const initialState: {
   ids: number[];
   currentTrip: Trip ; // Add currentTrip to store a single Trip
