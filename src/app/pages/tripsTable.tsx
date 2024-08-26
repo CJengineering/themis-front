@@ -3,7 +3,7 @@ import { DataTable } from '../travel/data-table';
 import { travelColumns } from '../travel/columns';
 import { travels } from '@/fake-travel';
 import { TravelAdminForm } from '../main components/TravelAdminForm';
-import { createPresentationSingleTrip, createPresentationTrip } from '../features/Presentations';
+import { createPresentationSingleTrip, createPresentationTrip, createPresentationUrl2 } from '../features/Presentations';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { fetchTravels } from '../features/travel/fetchTravel';
 import { fetchSingleTrip, fetchTrips } from '../features/trip/fetchTrip';
@@ -17,7 +17,7 @@ const TripsTable = () => {
   if (!userString) return null;
   const userData = JSON.parse(userString);
   const dispatch = useAppDispatch();
-  const url = 'http://localhost:3000';
+  const url2 = useAppSelector(createPresentationUrl2)
 
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -42,7 +42,7 @@ const TripsTable = () => {
   useEffect(() => {
     const fetchDate = async () => {
       await dispatch<any>(
-        fetchTrips(`${url}/trips`, {
+        fetchTrips(`${url2}/trips`, {
         
           userId: `${userId}`,
         })

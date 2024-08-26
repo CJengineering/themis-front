@@ -29,7 +29,7 @@ import { useEffect, useState } from 'react';
 import { convertToUSD } from '@/lib/utils';
 import { TripButtons } from '../main components/TripButtons';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
-import { createPresentationSingleTrip } from '../features/Presentations';
+import { createPresentationSingleTrip, createPresentationUrl2 } from '../features/Presentations';
 import { fetchSingleTrip } from '../features/trip/fetchTrip';
 import VerticalTimeline2 from '../main components/VerticalTimeline2';
 import { link } from 'fs';
@@ -57,6 +57,7 @@ const Trip = () => {
 
   const dispatch = useAppDispatch();
   const trip = useAppSelector(createPresentationSingleTrip);
+  const url2 = useAppSelector(createPresentationUrl2)
   const tripStatus = trip.status || 'saved';
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
   const checkUserAccess = (user: User): boolean => {
@@ -66,7 +67,7 @@ const Trip = () => {
   useEffect(() => {
     const fetchDate = async () => {
       await dispatch<any>(
-        fetchSingleTrip(`http://localhost:3000/trips/${tripId}`)
+        fetchSingleTrip(`${url2}/trips/${tripId}`)
       );
     };
 

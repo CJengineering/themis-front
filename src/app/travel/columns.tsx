@@ -45,6 +45,8 @@ const GreenCell = ({ children }: { children: React.ReactNode }) => (
 );
 export function mapStatusToOutput(status: StatusInput): string {
   switch (status) {
+    case 'Saved':
+      return 'Saved';
     case 'Request':
       return 'Requested';
     case 'Authentication':

@@ -8,6 +8,7 @@ import { ArrowUpDown } from 'lucide-react';
 import { Trip, TripData, TripFieldData } from '@/interfaces';
 
 export type StatusInput =
+'Saved'
   | 'Request'
   | 'Authentication'
   | 'Validation'
@@ -20,6 +21,8 @@ const GreenCell = ({ children }: { children: React.ReactNode }) => (
 );
 export function mapStatusToOutput(status: StatusInput): string {
   switch (status) {
+    case 'Saved':
+      return 'Saved';
     case 'Request':
       return 'Requested';
     case 'Authentication':

@@ -58,12 +58,12 @@ const Header = () => {
     // Logic to add accommodation
     console.log('Add Accommodation clicked');
   };
-
   const handleAddExpenses = () => {
     // Logic to add expenses
     console.log('Add Expenses clicked');
   };
- const tripStatus = trip.status || 'Saved';
+  const tripStatus = trip.status || 'Saved';
+  console.log('tripstauts', trip.status, tripStatus);
   return (
     <div className="my-4">
       <div className="flex mb-4 justify-between ">
@@ -75,7 +75,9 @@ const Header = () => {
           </h2>
 
           <p className="text-sm text-muted-foreground">{trip.purpose}</p>
-          <p className="text-sm text-muted-foreground">total price: {trip.priceTotal} $</p>
+          <p className="text-sm text-muted-foreground">
+            total price: {trip.priceTotal} $
+          </p>
 
           <p>
             <Badge
@@ -89,14 +91,13 @@ const Header = () => {
                   | 'confirmed'
                   | 'inProgress'
                   | 'waitingValidation'
+                  | 'Saved'
                   | 'Request'
                   | 'Authentication'
                   | 'Validation'
                   | 'Authorisation'
                   | 'Approval'
                   | 'Finalisation'
-           
-                
               }
             >
               {' '}
@@ -167,7 +168,7 @@ const Header = () => {
                   </div>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
-                <AddDocumentForm/>
+                  <AddDocumentForm />
                 </DialogContent>
               </Dialog>
             </DropdownMenuContent>

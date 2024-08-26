@@ -76,7 +76,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
   // Handle trip deletion
   async function handleDeleteTrip() {
     try {
-      const response = await fetch(`http://localhost:3000/trips/${tripId}`, {
+      const response = await fetch(`${url2}/trips/${tripId}`, {
         method: 'DELETE',
       });
 
