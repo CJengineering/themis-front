@@ -74,18 +74,18 @@ const TopRightNav = ({ currentPage }: TopRightNavProps) => {
     <div className="flex justify-between items-center w-full">
       <h1 className="text-xl font-bold mb-4">{currentPage}</h1>
       <div className="flex space-x-4">
-        {isNatOrTim && (
+       
           <Dialog>
             <DialogTrigger asChild>
               <Button className="ml-2" variant="blue">
-                New trip
+                New trip beta
               </Button>
             </DialogTrigger>
             <DialogContent className=" sm:max-w-[425px]">
               <TripRequestForm onClose={handleClose} />
             </DialogContent>
           </Dialog>
-        )}
+      
 
         <DropdownForm></DropdownForm>
 
