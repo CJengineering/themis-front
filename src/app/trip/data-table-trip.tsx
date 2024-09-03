@@ -48,6 +48,7 @@ import { TravelInitiateForm } from '../main components/TravelInitiateForm';
 import { TravelForm } from '../main components/TravelForm';
 import { stat } from 'fs';
 import { useNavigate } from 'react-router-dom';
+import { TripSaveForm } from '../main components/TripSaveRequest';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -153,14 +154,15 @@ export function DataTableTrip<TData, TValue>({
           }
           className="max-w-sm ml-auto"
         />
+
         <Dialog>
           <DialogTrigger asChild>
             <Button className="ml-2" variant="blue">
               New trip
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <TravelInitiateForm onClose={handleClose} />
+          <DialogContent className=" sm:max-w-[425px]">
+            <TripSaveForm onClose={handleClose} />
           </DialogContent>
         </Dialog>
         <DropdownMenu>

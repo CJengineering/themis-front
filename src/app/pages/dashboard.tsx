@@ -53,6 +53,7 @@ const Dashboard = () => {
   console.log('this is the data', travelData);
   return (
     <>
+ 
       {progress < 100 ? (
         <div className="flex justify-center items-center h-[80vh]">
           <div className="w-[600px]">

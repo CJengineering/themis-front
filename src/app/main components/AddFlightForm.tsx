@@ -197,6 +197,9 @@ export function AddFlightForm() {
   }
 
   return (
+    <div>
+      <h2 className='text-xl font-bold'>Add your flight </h2>
+
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-6 p-2 max-h-[50vh] overflow-y-auto">
@@ -388,5 +391,6 @@ export function AddFlightForm() {
         </DialogFooter>
       </form>
     </Form>
+    </div>
   );
 }

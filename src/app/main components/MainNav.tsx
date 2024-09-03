@@ -10,7 +10,7 @@ const MainNav = () => {
   const location = useLocation();
   let navLinks = [
    // { name: "Dashboard", icon: "dashboard", path: "/" },
-    { name: "Travel", icon: "flight", path: "/" },
+  
 
     {name: 'Financial', icon: 'account_balance', path: '/financial'},
     {name: 'Trips', icon: 'flight_takeoff', path: '/trips'},

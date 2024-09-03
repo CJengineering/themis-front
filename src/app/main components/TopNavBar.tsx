@@ -22,6 +22,7 @@ import { fetchUser } from '../features/user/fetchUser';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { TripRequestForm } from './TripInitialRequest';
+import { TripSaveForm } from './TripSaveRequest';
 const handleLogout = () => {
   localStorage.removeItem('user-data');
   localStorage.removeItem('isAuthenticated');
@@ -74,17 +75,7 @@ const TopRightNav = ({ currentPage }: TopRightNavProps) => {
     <div className="flex justify-between items-center w-full">
       <h1 className="text-xl font-bold mb-4">{currentPage}</h1>
       <div className="flex space-x-4">
-       
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="ml-2" variant="blue">
-                New trip beta
-              </Button>
-            </DialogTrigger>
-            <DialogContent className=" sm:max-w-[425px]">
-              <TripRequestForm onClose={handleClose} />
-            </DialogContent>
-          </Dialog>
+   
       
 
         <DropdownForm></DropdownForm>

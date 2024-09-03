@@ -71,7 +71,8 @@ const baseColumns: ColumnDef<TripData>[] = [
     header: 'Trip',
   },
   {
-    accessorKey: 'subject',
+    accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+    id: 'fullName',
     header: 'Traveller',
   },
   {
@@ -110,49 +111,6 @@ const baseColumns: ColumnDef<TripData>[] = [
         {mapStatusToOutput(props.getValue() as StatusInput)}
       </Badge>
     ),
-  },
-  {
-    accessorKey: 'cityStart',
-    header: 'From',
-  },
-  {
-    accessorKey: 'cityEnd',
-    header: 'To',
-  },
-  {
-    accessorKey: 'departureDate',
-    header: ({ column }) => {
-      return (
-        <Button
-          style={{ padding: '0px' }}
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Departing
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: (props) => {
-      const dateValue = props.getValue<Date>();
-      return (
-        <span>
-          {dateValue ? format(new Date(dateValue), 'dd MMM yyyy') : ''}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: 'returnDate',
-    header: 'Returning',
-    cell: (props) => {
-      const dateValue = props.getValue<Date>();
-      return (
-        <span>
-          {dateValue ? format(new Date(dateValue), 'dd MMM yyyy') : ''}
-        </span>
-      );
-    },
   },
   {
     accessorKey: 'priceTotal',
