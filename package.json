@@ -2,10 +2,14 @@
   "name": "@themis-front/source",
   "version": "0.0.0",
   "license": "MIT",
+
+ 
   "scripts": {
     "start": "nx serve",
-    "build": "nx build",
-    "test": "nx test"
+    "build": "nx build",  
+    "lint": "nx lint",  
+    "type-check": "tsc --noEmit", 
+    "fix-lint": "eslint 'src/**/*.{js,ts,jsx,tsx}' --fix" 
   },
   "private": true,
   "dependencies": {

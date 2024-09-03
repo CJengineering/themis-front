@@ -72,7 +72,7 @@ const baseColumns: ColumnDef<TripData>[] = [
   },
   {
     accessorFn: (row) => `${row.firstName} ${row.lastName}`,
-    id: 'fullName',
+    id: 'lastName',
     header: 'Traveller',
   },
   {

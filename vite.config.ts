@@ -26,6 +26,17 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist/themis-front',
+    // Fail on any warning
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // If you want to treat certain warnings as errors
+        if (warning.code === 'SOME_WARNING_CODE') {
+          throw new Error(warning.message);
+        }
+        // Use default behavior for other warnings
+        warn(warning);
+      },
+    },
   },
 
   // Uncomment this if you are using workers.
