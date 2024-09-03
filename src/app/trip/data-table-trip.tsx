@@ -147,10 +147,10 @@ export function DataTableTrip<TData, TValue>({
         <Input
           placeholder="Search..."
           value={
-            (table.getColumn('userFullName')?.getFilterValue() as string) ?? ''
+            (table.getColumn('lastName')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn('userFullName')?.setFilterValue(event.target.value)
+            table.getColumn('lastName')?.setFilterValue(event.target.value)
           }
           className="max-w-sm ml-auto"
         />
