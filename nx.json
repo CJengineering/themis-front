@@ -2,7 +2,7 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "build": {
-      "cache": true,
+      "cache": false,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
@@ -48,6 +48,6 @@
       }
     }
   },
-  "defaultProject": "themis-front",
-  "nxCloudAccessToken": "YjYxOWI4NTItMTg5YS00OTkxLTg1YjgtMDVmNGE2MGQ0MDA4fHJlYWQtd3JpdGU="
+  "defaultProject": "themis-front"
+
 }
