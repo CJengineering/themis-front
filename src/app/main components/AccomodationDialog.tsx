@@ -20,6 +20,7 @@ import {
 interface AccommodationDialogProps {
   accommodationId: number;
   hotelName: string;
+  pricePerNight: number;
 
   checkInDate: string;
 
@@ -31,6 +32,7 @@ interface AccommodationDialogProps {
 export function AccommodationDialog({
   accommodationId,
   hotelName,
+  pricePerNight,
 
   checkInDate,
 
@@ -65,17 +67,16 @@ export function AccommodationDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" className="bg-red-500 text-white">
-            <i className="material-icons">delete</i> Delete accomodation
-          </Button>
+       
         </DialogFooter>
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-2">
             <AccordionTrigger>Modify Accomodation</AccordionTrigger>
             <AccordionContent>
               <AccommodationFormV2
-                action="updateAccomodation"
+                action='updateAccommodation'
                 accommodationId={accommodationId}
+                pricePerNight={pricePerNight}
                 city={city}
                 hotelName={hotelName}
                 checkIn={new Date(checkInDate)}

@@ -11,6 +11,9 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { FlightTicketForm } from './FlightTicketForm';
 import { useParams } from 'react-router-dom';
+import { useToast } from '@/components/ui/use-toast';
+import { createPresentationUrl2 } from '../features/Presentations';
+import { useAppSelector } from '../features/hooks';
 
 interface DialogDemoProps {
   flightId: number;
@@ -41,35 +44,10 @@ export function DialogDemo({
   title,
   description,
 }: DialogDemoProps) {
+  const { toast } = useToast();
+  const url2 = useAppSelector(createPresentationUrl2);
   const {tripId} = useParams()
-  const handleSubmit = async () => {
-    const submissionData = {
-      action: { type: 'removeFlight', data: { flightId: flightId } },
-      fieldData: {},
-    };
-  
-    console.log('Submitting data:', submissionData);
-  
-    try {
-      const response = await fetch(`http://localhost:3000/trips/${tripId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submissionData),
-      });
-  
-      if (response.ok) {
-        console.log('Flight deleted successfully');
-        // Reload the page after successful deletion
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to delete flight:', response.statusText, errorData);
-      }
-    } catch (error) {
-      console.error('Error deleting flight:', error);
-    }
-  };
+
   
   
   return (
@@ -121,11 +99,9 @@ export function DialogDemo({
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" className='bg-red-600' onClick={handleSubmit}>
-            <i className="material-icons">delete</i> Delete Flight
-          </Button>
         </DialogFooter>
-        <FlightTicketForm />
+        <FlightTicketForm flightId= {flightId} />
+        
       </DialogContent>
     </Dialog>
   );

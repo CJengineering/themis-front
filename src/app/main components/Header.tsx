@@ -139,6 +139,7 @@ const Header = () => {
                   <AccommodationFormV2
                     action=""
                     accommodationId={1}
+                    pricePerNight={0}
                     city={''}
                     hotelName={''}
                     checkIn={new Date()}

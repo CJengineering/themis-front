@@ -34,6 +34,7 @@ export const mapTripToStops = (trip: TripData): Stop[] => {
           checkInDate: '',
           checkOutDate: '',
           city: '',
+          pricePerNight: 0,
         },
       });
     }
@@ -63,6 +64,7 @@ export const mapTripToStops = (trip: TripData): Stop[] => {
           checkInDate: '',
           checkOutDate: '',
           city: '',
+          pricePerNight: 0,
         },
       });
     }
@@ -100,6 +102,8 @@ export const mapTripToStops = (trip: TripData): Stop[] => {
           'EEE, d MMM yy'
         ),
         city: accommodation.city,
+        pricePerNight: accommodation.pricePerNight,
+        
       },
     });
 
@@ -133,6 +137,7 @@ export const mapTripToStops = (trip: TripData): Stop[] => {
           'EEE, d MMM yy'
         ),
         city: accommodation.city,
+        pricePerNight: accommodation.pricePerNight, 
       },
     });
   });

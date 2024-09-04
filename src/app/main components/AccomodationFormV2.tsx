@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
@@ -59,6 +59,7 @@ interface AccommodationFormProps {
   hotelName: string;
   checkIn: Date;
   checkOut?: Date;
+  pricePerNight: number;
 }
 
 export function AccommodationFormV2({
@@ -66,6 +67,7 @@ export function AccommodationFormV2({
   accommodationId,
   city,
   hotelName,
+  pricePerNight,
   checkIn,
   checkOut,
 }: AccommodationFormProps) {
@@ -81,10 +83,11 @@ export function AccommodationFormV2({
       hotelName: hotelName,
       checkIn: checkIn,
       checkOut: checkOut,
-      pricePerNight: 0,
+      pricePerNight: pricePerNight,
       currency: "USD",
     },
   });
+  console.log('acrtion', action);
 
   const debouncedFetchCities = useCallback(
     debounce((query: string) => fetchCities(query), 200),
@@ -118,12 +121,24 @@ export function AccommodationFormV2({
       console.error('Error fetching cities:', error);
     }
   }
+  const trimmedAction = action.trim();
+  const actionStatus = trimmedAction === 'updateAccommodation' ? 'updateAccommodation' : 'addAccommodation';
 
   async function onSubmit(values: z.infer<typeof accommodationSchema>) {
     try {
+      let totalPrice = 0; 
+      if (values.checkIn && values.checkOut) {
+        const checkInDate = new Date(values.checkIn);
+        const checkOutDate = new Date(values.checkOut);
+        const numberOfNights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
+        totalPrice = numberOfNights * values.pricePerNight;
+        console.log('Number of nights:', numberOfNights);
+      } else {
+        console.log('Check-in or check-out date is missing');
+      }
       const conversionRates = await fetchConversionRates();
       const convertedAmounts = calculateConvertedAmounts(
-        values.pricePerNight,
+        totalPrice,
         values.currency,
         conversionRates
       );
@@ -138,7 +153,7 @@ export function AccommodationFormV2({
         priceInUSD: convertedAmounts.priceInUSD,
         priceInEUR: convertedAmounts.priceInEUR,
         priceInSAR: convertedAmounts.priceInSAR,
-        priceInGBP: convertedAmounts.priceInGBP,
+        pricepriceInGBP: convertedAmounts.priceInGBP,
         bookingImageUrl: '',
       };
 
@@ -146,9 +161,10 @@ export function AccommodationFormV2({
         ...accommodationData,
         accommodationId: accommodationId,
       };
+   
 
       const submissionData =
-        action === 'updateAccommodation'
+        action == 'updateAccommodation'
           ? {
               action: { type: 'updateAccommodation', data: updateAccommodationData },
               fieldData: {},
@@ -178,6 +194,7 @@ export function AccommodationFormV2({
         setTimeout(() => {
           window.location.reload();
         }, 1000);
+ 
       } else {
         toast({
           title: 'Error Saving Accommodation',
@@ -207,10 +224,49 @@ export function AccommodationFormV2({
       timeoutId = setTimeout(() => func(...args), waitFor);
     } as F;
   }
+  const handleSubmit = async () => {
+    const submissionData = {
+      action: { type: 'removeAccommodation', data: { accommodationId: accommodationId } },
+      fieldData: {},
+    };
+
+    console.log('Submitting data:', submissionData);
+
+    try {
+      const response = await fetch(`${url2}/trips/${tripId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Accomodation deleted',
+          description: `Your accomodation has been successfully deleted.`,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+     
+        // Reload the page after successful deletion
+      } else {
+        const errorData = await response.json();
+        console.error(
+          'Failed to delete flight:',
+          response.statusText,
+          errorData
+        );
+      }
+    } catch (error) {
+      console.error('Error deleting flight:', error);
+    }
+  };
 
   return (
     <div >
-      <h3 className='text-xl font-bold'>Add your accomodation</h3>
+      <h3 className='text-xl font-bold'>{actionStatus ==='updateAccommodation'? 'Update' : 'Add'} your accomodation</h3>
      
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -394,6 +450,15 @@ export function AccommodationFormV2({
                 <Button type="submit" style={{ backgroundColor: 'green' }}>
                   Save 
                 </Button>
+                {actionStatus === 'updateAccommodation' && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleSubmit}
+                  >
+                    Delete
+                  </Button>
+                )}
               </DialogFooter>
             </form>
           </Form>

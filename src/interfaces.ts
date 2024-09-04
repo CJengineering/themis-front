@@ -227,6 +227,7 @@ export interface Stop {
     checkInDate: string;
     checkOutDate: string;
     city: string;
+    pricePerNight: number;
   }
   accommodation?: {
     status: string;

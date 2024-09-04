@@ -126,7 +126,7 @@ export function AccordionUI() {
                 02 April 2024 - 04 April 2024
               </p>
             </div>
-            <AccommodationDialog hotelName={''} checkInDate={''} checkOutDate={''} accommodationId={0} city={''}  />
+            <AccommodationDialog hotelName={''} pricePerNight={0} checkInDate={''} checkOutDate={''} accommodationId={0} city={''}  />
           </div>
         </AccordionContent>
       </AccordionItem>

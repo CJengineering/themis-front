@@ -1,8 +1,9 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
-import { useAppDispatch } from '../features/hooks';
+import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { fetchSingleTrip } from '../features/trip/fetchTrip';
+import { createPresentationUrl2 } from '../features/Presentations';
 
 interface Document {
   id: string;
@@ -32,7 +33,7 @@ const DocumentRow: React.FC<DocumentRowProps> = ({ document }) => {
         return <span className="material-icons text-3xl">insert_drive_file</span>;
     }
   };
-
+  const url2 = useAppSelector(createPresentationUrl2);
   const { toast } = useToast();
   const { tripId } = useParams();
   const dispatch = useAppDispatch();
@@ -46,7 +47,7 @@ const DocumentRow: React.FC<DocumentRowProps> = ({ document }) => {
     console.log('Submitting data:', submissionData);
 
     try {
-      const response = await fetch(`http://localhost:3000/trips/${tripId}`, {
+      const response = await fetch(`${url2}/trips/${tripId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +62,7 @@ const DocumentRow: React.FC<DocumentRowProps> = ({ document }) => {
           description: 'The document has been deleted',
         });
         await dispatch<any>(
-          fetchSingleTrip(`http://localhost:3000/trips/${tripId}`)
+          fetchSingleTrip(`${url2}/trips/${tripId}`)
         );
       } else {
         const errorData = await response.json();
