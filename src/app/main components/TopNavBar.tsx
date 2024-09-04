@@ -28,7 +28,7 @@ const handleLogout = () => {
   localStorage.removeItem('isAuthenticated');
   window.location.reload();
 };
-type PageName = 'Dashboard' | 'Travel' | 'Accommodation';
+type PageName = 'Dashboard' | 'Trip' | 'Accommodation';
 
 // Define the props for TopRightNav
 interface TopRightNavProps {
