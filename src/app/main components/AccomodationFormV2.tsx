@@ -172,8 +172,12 @@ export function AccommodationFormV2({
         const result = await response.json();
         toast({
           title: 'Accommodation Saved',
-          description: `Your accommodation details have been saved with ID: ${result.id}`,
-        });
+          description: `Your accommodation details have been saved `,
+          
+        })
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
         toast({
           title: 'Error Saving Accommodation',
@@ -389,7 +393,7 @@ export function AccommodationFormV2({
               </div>
               <DialogFooter>
                 <Button type="submit" style={{ backgroundColor: 'green' }}>
-                  Save Accommodation
+                  Save 
                 </Button>
               </DialogFooter>
             </form>

@@ -18,7 +18,7 @@ const ExpenseRow: React.FC<ExpenseRowProps> = ({ expense }) => {
         return <span className="material-icons text-3xl">restaurant</span>;
       case 'Transport':
         return <span className="material-icons text-3xl">directions_car</span>;
-      case 'Furniture':
+      case 'Supplies':
         return <span className="material-icons text-3xl">weekend</span>;
       case 'Other':
         return <span className="material-icons text-3xl">attach_money</span>;

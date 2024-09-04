@@ -13,7 +13,7 @@ const MainNav = () => {
   
 
     {name: 'Financial', icon: 'account_balance', path: '/financial'},
-    {name: 'Trips', icon: 'flight_takeoff', path: '/trips'},
+    {name: 'Trips', icon: 'flight_takeoff', path: '/'},
     //{ name: "Accommodation", icon: "hotel", path: "/accommodation" },
   ];
   if (userRole === 'traveller') {

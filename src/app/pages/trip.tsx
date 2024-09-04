@@ -138,7 +138,7 @@ const Trip = () => {
             <TabsTrigger value="itinerary">Trip timeline </TabsTrigger>
             <TabsTrigger value="expenses">Expenses </TabsTrigger>
             <TabsTrigger value="documents">Documents </TabsTrigger>
-            <TabsTrigger value="costs">Costs </TabsTrigger>
+            <TabsTrigger value="costs">Rules </TabsTrigger>
           </TabsList>
           <TabsContent value="itinerary">
             <div className="flex-1 mt-4 ju">

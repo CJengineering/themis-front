@@ -40,7 +40,7 @@ import { createPresentationUrl2 } from '../features/Presentations';
 const formSchema = z.object({
   notes: z.string().optional(),
   tripType: z.string(),
-  purpose: z.string().min(1, 'Purpose is required'),
+  
   departureCityLeg1: z.string().min(1, 'Departure City Leg 1 is required'),
   arrivalCityLeg1: z.string().min(1, 'Arrival City Leg 1 is required'),
   departureDateLeg1: z.date().refine((date) => date >= new Date(), {
@@ -54,6 +54,10 @@ const enhancedFormSchema = formSchema.refine(
     if (data.tripType === 'Round Trip' && data.returnDepartureDateLeg2) {
       return data.returnDepartureDateLeg2 >= data.departureDateLeg1;
     }
+
+
+
+
     return true;
   },
   {
@@ -75,7 +79,7 @@ export function AddFlightForm() {
     resolver: zodResolver(enhancedFormSchema),
     defaultValues: {
       departureCityLeg1: '',
-      purpose: '',
+     
       arrivalCityLeg1: '',
       tripType: 'Round Trip',
       departureDateLeg1: new Date(),
@@ -161,15 +165,18 @@ export function AddFlightForm() {
 
       if (response.ok) {
         toast({
-          title: 'Trip Request Submitted',
-          description: `Your trip request has been sent to the server with ID: ${result.id}`,
+          title: 'Flight Added',
+          description: `Your flight was added `,
         });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000)
       } else {
         const errorText = await response.text();
         console.log('Error Response Text:', errorText);
         toast({
-          title: 'Error Submitting Trip Request',
-          description: `There was an issue submitting your trip request. Server responded with: ${errorText}`,
+          title: 'Error saving your flight',
+          description: `There was an issue submitting your flight`,
           variant: 'destructive',
         });
       }
@@ -294,19 +301,7 @@ export function AddFlightForm() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="purpose"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Purpose</FormLabel>
-                <FormControl>
-                  <Textarea {...field} placeholder="Purpose of the trip..." />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          
           <FormField
             control={form.control}
             name="departureDateLeg1"
@@ -386,7 +381,7 @@ export function AddFlightForm() {
         </div>
         <DialogFooter>
           <Button type="submit" style={{ backgroundColor: 'green' }}>
-            Submit Request
+            Save
           </Button>
         </DialogFooter>
       </form>

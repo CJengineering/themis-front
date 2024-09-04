@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { TripSaveForm } from './TripSaveRequest';
 
 export default function DropdownForm() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +24,7 @@ export default function DropdownForm() {
     setIsOpen(!isOpen);
     setIsActive(!isActive);
   };
-
+ const onTripSave = ()=>{console.log('closed')}
   const handleProfileClick = () => {
     navigate(`/profile/${currentUser.id}`);
     window.location.reload();
@@ -57,7 +58,7 @@ export default function DropdownForm() {
           {/* Adjust position with translate */}
           <div className="dropdown-menu-group">
             <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
-              <TravelForm />
+              <TripSaveForm  onClose={onTripSave}/>
             </div>
             <div
               className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm"

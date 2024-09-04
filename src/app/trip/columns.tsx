@@ -76,6 +76,15 @@ const baseColumns: ColumnDef<TripData>[] = [
     header: 'Traveller',
   },
   {
+    accessorKey: 'createdAt',
+    header: 'Created',
+    cell: (props) => {
+      const value = props.getValue<string>();
+      const date = new Date(value);
+      return date ? <>{format(date, 'MMM dd yyyy ')}</> : 'Invalid date';
+    },
+  },
+  {
     accessorKey: 'status',
     header: ({ column }) => {
       return (

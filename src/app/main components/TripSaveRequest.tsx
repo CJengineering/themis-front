@@ -39,6 +39,7 @@ import {
 } from '@/components/ui/accordion';
 import { createPresentationUrl2 } from '../features/Presentations';
 import { useAppSelector } from '../features/hooks';
+import { useNavigate } from 'react-router-dom';
 
 const formSchema = z.object({
   tripType: z.string(),
@@ -52,9 +53,11 @@ interface TripRequestFormProps {
 
 export function TripSaveForm({ onClose }: TripRequestFormProps) {
   const { toast } = useToast();
+  const urlThemis = 'http://localhost:4200';
   const url = useAppSelector(createPresentationUrl2);
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -90,7 +93,7 @@ export function TripSaveForm({ onClose }: TripRequestFormProps) {
     const submissionData = {
       fieldData: {
         name: values.name,
-        subject: values.purpose,
+        purpose: values.purpose,
         userId: userId,
         userRole: userRole,
         firstName: firstName,
@@ -98,10 +101,10 @@ export function TripSaveForm({ onClose }: TripRequestFormProps) {
         email: email,
 
         status: 'Saved',
-          flights: [],
-  accommodations: [],
-  expenses: [],
-  documents: [],
+        flights: [],
+        accommodations: [],
+        expenses: [],
+        documents: [],
       },
     };
     console.log('this is submission data', submissionData);
@@ -118,24 +121,28 @@ export function TripSaveForm({ onClose }: TripRequestFormProps) {
       if (response.ok) {
         const result = await response.json();
         toast({
-          title: 'Trip Request Submitted',
-          description: `Your trip request has been sent to the server with ID: ${result.id}`,
+          title: 'Trip Created',
+          description: `Your trip was saved successfully !`,
         });
+        setTimeout(() => {
+            navigate(`/trip/${result.id}`);
+           
+          }, 1000);
         onClose();
       } else {
         toast({
-          title: 'Error Submitting Trip Request',
+          title: 'Error Submitting Trip ',
           description:
-            'There was an issue submitting your trip request. Please try again.',
+            'There was an issue submitting your trip. Please try again.',
           variant: 'destructive',
         });
       }
     } catch (error) {
-      console.error('Error submitting trip request:', error);
+      console.error('Error submitting trip :', error);
       toast({
-        title: 'Error Submitting Trip Request',
+        title: 'Error Submitting Trip',
         description:
-          'There was an issue submitting your trip request. Please try again.',
+          'There was an issue submitting your trip . Please try again.',
         variant: 'destructive',
       });
     }
@@ -143,37 +150,10 @@ export function TripSaveForm({ onClose }: TripRequestFormProps) {
 
   return (
     <div>
-        <h2 className='text-xl font-bold'>Save your new trip</h2>
+      <h2 className="text-xl font-bold">Save your new trip</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-6 p-2 max-h-[50vh] overflow-y-auto">
-            <FormField
-              control={form.control}
-              name="tripType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Selectcdn
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                    }}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Round Trip" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="One Way">One Way</SelectItem>
-                      <SelectItem value="Round Trip">Round Trip</SelectItem>
-                    </SelectContent>
-                  </Selectcdn>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="name"

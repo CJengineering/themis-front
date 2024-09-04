@@ -33,7 +33,7 @@ export function App() {
       <Route path="/get-started" element={<CreateUser />} />
       <Route element={<MainLayout />}>
         <Route
-          path="/"
+          path="/travels-old"
           element={
             <ProtectedRoute>
               <Dashboard />
@@ -41,7 +41,7 @@ export function App() {
           }
         />
         <Route
-          path="/trips"
+          path= "/"
           element={
             <ProtectedRoute>
               <TripsTable />

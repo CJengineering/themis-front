@@ -31,7 +31,7 @@ import { createPresentationUrl2 } from "../features/Presentations";
 const currencyOptions = ["USD", "EUR", "GBP", "SAR"] as const;
 
 // Nature options
-const natureOptions = ["Food", "Transport", "Furniture", "Other"] as const;
+const natureOptions = ["Food", "Transport", "Supplies", "Other"] as const;
 
 // Initial fallback rates
 

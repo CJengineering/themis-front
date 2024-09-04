@@ -27,7 +27,7 @@ const expenseData: Expense[] = [
     id: 3,
     date: '03 April 2024',
     description: 'Office Chair',
-    category: 'Furniture',
+    category: 'Supplies',
     amount: '£50.00',
    
   },
