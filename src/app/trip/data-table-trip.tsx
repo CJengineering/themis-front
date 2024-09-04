@@ -49,6 +49,7 @@ import { TravelForm } from '../main components/TravelForm';
 import { stat } from 'fs';
 import { useNavigate } from 'react-router-dom';
 import { TripSaveForm } from '../main components/TripSaveRequest';
+import { create } from 'domain';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -59,14 +60,10 @@ interface DataTableProps<TData, TValue> {
 }
 interface NamingColumns {
   name: string;
+  createdAt: string;
 
   status: string;
-  travelType: string;
-  departureCity: string;
-  arrivalCity: string;
-  departureDate: string;
-  returnDate: string;
-  costOriginal: string;
+
 
   tripType: string;
 }
@@ -117,14 +114,12 @@ export function DataTableTrip<TData, TValue>({
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const namingColumns = {
     name: 'Trip',
-    userFullName: 'Traveler',
+    lastName: 'Traveler',
     status: 'Status',
     travelType: 'Type',
-    departureCity: 'From',
-    arrivalCity: 'To',
-    departureDate: 'Departing',
-    returnDate: 'Return',
-    costOriginal: 'Cost',
+    createdAt: 'Created',
+    priceTotal: 'Price',
+ 
 
     tripType: 'Type',
   };
