@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TripSaveForm } from './TripSaveRequest';
 
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+
 export default function DropdownForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -24,7 +26,12 @@ export default function DropdownForm() {
     setIsOpen(!isOpen);
     setIsActive(!isActive);
   };
- const onTripSave = ()=>{console.log('closed')}
+  const handleClose = () => {
+    console.log('closed');
+  };
+  const onTripSave = () => {
+    console.log('closed');
+  };
   const handleProfileClick = () => {
     navigate(`/profile/${currentUser.id}`);
     window.location.reload();
@@ -58,7 +65,12 @@ export default function DropdownForm() {
           {/* Adjust position with translate */}
           <div className="dropdown-menu-group">
             <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm">
-              <TripSaveForm  onClose={onTripSave}/>
+              <Dialog>
+                <DialogTrigger >Create Trip</DialogTrigger>
+                <DialogContent className=" sm:max-w-[425px]">
+                  <TripSaveForm onClose={handleClose} />
+                </DialogContent>
+              </Dialog>
             </div>
             <div
               className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm"
@@ -72,7 +84,7 @@ export default function DropdownForm() {
                 className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm"
                 onClick={handleProfilesClick}
               >
-               Users
+                Users
               </div>
             ) : null}
 
