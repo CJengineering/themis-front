@@ -209,10 +209,9 @@ export function AccommodationFormV2({
   }
 
   return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-2">
-        <AccordionTrigger>Modify Accommodation</AccordionTrigger>
-        <AccordionContent>
+    <div >
+      <h3 className='text-xl font-bold'>Add your accomodation</h3>
+     
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-6 p-2 max-h-[50vh] overflow-y-auto">
@@ -398,8 +397,7 @@ export function AccommodationFormV2({
               </DialogFooter>
             </form>
           </Form>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+  
+    </div>
   );
 }
