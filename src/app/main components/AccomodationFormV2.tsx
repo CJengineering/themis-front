@@ -72,6 +72,7 @@ export function AccommodationFormV2({
   checkOut,
 }: AccommodationFormProps) {
   const { tripId } = useParams();
+  const [submited, setSubmited] = useState(false);
   const { toast } = useToast();
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -191,6 +192,7 @@ export function AccommodationFormV2({
           description: `Your accommodation details have been saved `,
           
         })
+        setSubmited(true);
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -263,12 +265,11 @@ export function AccommodationFormV2({
       console.error('Error deleting flight:', error);
     }
   };
-
+  
   return (
     <div >
       <h3 className='text-xl font-bold'>{actionStatus ==='updateAccommodation'? 'Update' : 'Add'} your accomodation</h3>
-     
-          <Form {...form}>
+         {submited? <p>Accomodation saved</p>: <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-6 p-2 max-h-[50vh] overflow-y-auto">
                 <FormField
@@ -461,7 +462,9 @@ export function AccommodationFormV2({
                 )}
               </DialogFooter>
             </form>
-          </Form>
+          </Form>}
+
+         
   
     </div>
   );

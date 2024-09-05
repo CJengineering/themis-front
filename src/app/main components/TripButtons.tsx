@@ -88,7 +88,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
         if (onDelete) {
           onDelete(); // Call optional onDelete callback if provided
         } else {
-          navigate('/trips'); // Redirect to the trips list page
+          navigate('/'); // Redirect to the trips list page
         }
       } else {
         toast({
@@ -165,7 +165,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
           Authenticate
         </Button>
       )}
-      {isTraveller && status === 'Authentication' && (
+      { status === 'Authentication' && (
         <Button
           type="button"
           onClick={handleValidation}
@@ -174,7 +174,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
           Validate
         </Button>
       )}
-      {isFinance && status === 'Validation' && (
+      {(isFinance || isValidator) && status === 'Validation' && (
         <Button
           type="button"
           onClick={handleAuthorisation}

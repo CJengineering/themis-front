@@ -36,7 +36,7 @@ const VerticalTimeline: React.FC<{ trip: TripData }> = () => {
                     <Hotel className="mr-2" />
                   )}
                   <div className="text-sm text-muted-foreground">
-                    {stop.date}
+                    {stop.date} {stop.accomodationDetails.accommodationId}
                   </div>
                 </div>
                 <div className="text-xs">{stop.time}</div>

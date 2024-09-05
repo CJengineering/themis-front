@@ -29,13 +29,17 @@ import { useEffect, useState } from 'react';
 import { convertToUSD } from '@/lib/utils';
 import { TripButtons } from '../main components/TripButtons';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
-import { createPresentationSingleTrip, createPresentationUrl2 } from '../features/Presentations';
+import {
+  createPresentationSingleTrip,
+  createPresentationUrl2,
+} from '../features/Presentations';
 import { fetchSingleTrip } from '../features/trip/fetchTrip';
 import VerticalTimeline2 from '../main components/VerticalTimeline2';
 import { link } from 'fs';
 import DocuemtnsTable from '../main components/DocumentTable';
 import DocumentsTable from '../main components/DocumentTable';
 import AllTables from '../main components/CostsTableRules';
+import { TripData } from '@/interfaces';
 
 const Trip = () => {
   type User = {
@@ -57,18 +61,21 @@ const Trip = () => {
 
   const dispatch = useAppDispatch();
   const trip = useAppSelector(createPresentationSingleTrip);
-  const url2 = useAppSelector(createPresentationUrl2)
+  const url2 = useAppSelector(createPresentationUrl2);
   const tripStatus = trip.status || 'saved';
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
-  const checkUserAccess = (user: User): boolean => {
-    // If userId is not in the URL, deny access
-    return user.role === 'agent' || user.role === 'validator';
+  const checkUserAccess = (user: User, trip: TripData): boolean => {
+    if (user.role === 'traveller') {
+    
+      return trip.userId === '35';  
+    }
+    
+   
+    return user.role === 'agent' || user.role === 'validator' || user.role === 'financial';
   };
   useEffect(() => {
     const fetchDate = async () => {
-      await dispatch<any>(
-        fetchSingleTrip(`${url2}/trips/${tripId}`)
-      );
+      await dispatch<any>(fetchSingleTrip(`${url2}/trips/${tripId}`));
     };
 
     fetchDate();
@@ -85,7 +92,7 @@ const Trip = () => {
       setUser(userDataJSON);
 
       // Check access after setting the user
-      const allowed = checkUserAccess(userDataJSON);
+      const allowed = checkUserAccess(userDataJSON, trip);
       setIsAllowed(allowed);
 
       if (!allowed) {
@@ -154,8 +161,7 @@ const Trip = () => {
             <DocumentsTable />
           </TabsContent>
           <TabsContent value="costs">
-          {user.role !== 'traveller' && (     <AllTables />)}
-       
+            {user.role !== 'traveller' && <AllTables />}
           </TabsContent>
         </Tabs>
       </div>
