@@ -65,13 +65,18 @@ const Trip = () => {
   const tripStatus = trip.status || 'saved';
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
   const checkUserAccess = (user: User, trip: TripData): boolean => {
+    // Check if the user is a traveller and the trip's user ID matches the user's ID
     if (user.role === 'traveller') {
-    
-      return trip.userId === user.id;  
+      return trip.userId === user.id;
     }
-    
-   
-    return user.role === 'agent' || user.role === 'validator' || user.role === 'financial';
+  
+    // Allow access to agents, financial, and validators
+    if (user.role === 'agent' || user.role === 'validator' || user.role === 'financial') {
+      return true;
+    }
+  
+    // Default to false if no conditions are met
+    return false;
   };
   useEffect(() => {
     const fetchDate = async () => {
