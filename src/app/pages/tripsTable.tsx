@@ -13,9 +13,11 @@ import { fetchTravels } from '../features/travel/fetchTravel';
 import { fetchSingleTrip, fetchTrips } from '../features/trip/fetchTrip';
 import { tripColumns } from '../trip/columns';
 import { DataTableTrip } from '../trip/data-table-trip';
+import { TripData } from '@/interfaces';
 
 const TripsTable = () => {
   const travelData = useAppSelector(createPresentationTrip);
+  const [filteredTravelData, setFilteredTravelData] = useState<any[]>([]);
 
   const userString = localStorage.getItem('user-data');
   if (!userString) return null;
@@ -72,10 +74,33 @@ const TripsTable = () => {
 
 
   const travelIdarray = travelData.map((trip) => String(trip.id));
-
-
+  useEffect(() => {
+    if (!travelData || !userRole || !userId) {
+      console.log('Missing data:', { travelData, userRole, userId });
+      return;
+    }
+  
+    console.log('Travel Data before filtering:', travelData);
+    console.log('User Role:', userRole);
+    console.log('User ID:', userId);
+  
+    const filterTravelData = (data:TripData[], role: string, userId: number) => {
+      if (role === 'traveller') {
+        return data.filter((trip) => String(trip.userId) === String(userId));
+      }
+      if (['agent', 'validator', 'financial'].includes(role)) {
+        return data;
+      }
+      return [];
+    };
+  
+    const filteredData = filterTravelData(travelData, userRole, userId);
+    console.log('Filtered Travel Data:', filteredData);
+    setFilteredTravelData(filteredData);
+  }, [travelData, userRole, userId]);
+  
   // Apply the filter to travelData
-  const filteredTravelData = filterTravelData(travelData, userRole, userId);
+
 
   //dele data
 

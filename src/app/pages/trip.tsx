@@ -65,13 +65,18 @@ const Trip = () => {
   const tripStatus = trip.status || 'saved';
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
   const checkUserAccess = (user: User, trip: TripData): boolean => {
-    // Check if the user is a traveller and the trip's user ID matches the user's ID
+    if (!user || !trip) return false; // Ensure both user and trip data exist
+  
+    // Check if the user is a traveler and the trip's user ID matches the user's ID
     if (user.role === 'traveller') {
-      return trip.userId === user.id;
+      const userId = Number(user.id);
+      const tripUserId = Number(trip.userId);
+      console.log('user', user.id, 'trip', trip.userId);
+      return tripUserId === userId;
     }
   
     // Allow access to agents, financial, and validators
-    if (user.role === 'agent' || user.role === 'validator' || user.role === 'financial') {
+    if (['agent', 'validator', 'financial'].includes(user.role)) {
       return true;
     }
   
@@ -91,20 +96,27 @@ const Trip = () => {
         console.log(`Converted amount in USD: $${usdAmount.toFixed(2)}`);
       }
     });
+   
+  }, []);
+  useEffect(() => {
     const userData = localStorage.getItem('user-data');
     if (userData) {
       const userDataJSON = JSON.parse(userData);
       setUser(userDataJSON);
-
-      // Check access after setting the user
-      const allowed = checkUserAccess(userDataJSON, trip);
+    }
+  }, []);
+  
+  // Perform access check when both user and trip are available
+  useEffect(() => {
+    if (user && trip && trip.userId) {
+      const allowed = checkUserAccess(user, trip);
       setIsAllowed(allowed);
-
+  
       if (!allowed) {
         console.log('You are not allowed to access this page.');
       }
     }
-  }, []);
+  }, [user, trip]);
   useEffect(() => {
     if (trip && trip.documents) {
       const updatedDocumentsData = trip.documents.map((document) => ({
