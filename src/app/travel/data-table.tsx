@@ -110,6 +110,7 @@ export function DataTable<TData, TValue>({
         return '';
     }
   };
+  console.log('rednered in table')
   const dialog = useAppSelector(createPresentationDialog);
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const namingColumns = {

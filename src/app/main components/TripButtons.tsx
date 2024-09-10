@@ -107,6 +107,10 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
       });
     }
   }
+  function handleTest(){
+       alert('Test');
+    updateTripStatus('TEST')
+  }
  function handleSendRequestTest() {
     updateTripStatus('Request');
   }
@@ -136,6 +140,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
 
   return (
     <div className="flex space-x-4 fixed bottom-0 right-14 md:bottom-4 md:right-28">
+
       <Button type="button" onClick={handleSendRequestTest}>
         Back to Request
       </Button>

@@ -67,7 +67,7 @@ const Trip = () => {
   const checkUserAccess = (user: User, trip: TripData): boolean => {
     if (user.role === 'traveller') {
     
-      return trip.userId === '35';  
+      return trip.userId === user.id;  
     }
     
    

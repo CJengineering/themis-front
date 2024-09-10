@@ -76,6 +76,7 @@ export function DataTableTrip<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
   const navigate = useNavigate();
   const table = useReactTable({
     data,
@@ -110,6 +111,7 @@ export function DataTableTrip<TData, TValue>({
         return '';
     }
   };
+  console.log('rednered in table');
   const dialog = useAppSelector(createPresentationDialog);
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const namingColumns = {
