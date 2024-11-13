@@ -15,8 +15,8 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   const userData = localStorage.getItem('user-data');
-  const url2 = useAppSelector(createPresentationUrl2)
-  
+  const url2 = useAppSelector(createPresentationUrl2);
+
   let userRole = '';
   if (userData) {
     const user = JSON.parse(userData);
@@ -53,9 +53,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
           title: 'Trip Updated',
           description: `The trip status has been updated to ${newStatus}.`,
         });
-        await dispatch<any>(
-          fetchSingleTrip(`${url2}/trips/${tripId}`)
-        );
+        await dispatch<any>(fetchSingleTrip(`${url2}/trips/${tripId}`));
       } else {
         toast({
           title: 'Error Updating Trip',
@@ -107,11 +105,11 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
       });
     }
   }
-  function handleTest(){
-       alert('Test');
-    updateTripStatus('TEST')
+  function handleTest() {
+    alert('Test');
+    updateTripStatus('TEST');
   }
- function handleSendRequestTest() {
+  function handleSendRequestTest() {
     updateTripStatus('Request');
   }
   function handleSendRequest() {
@@ -137,9 +135,17 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
   function handleFinalisation() {
     updateTripStatus('Finalisation');
   }
+  function handleStatus(status:string ) {
+    updateTripStatus(status);
+  }
 
   return (
     <div className="flex space-x-4 fixed bottom-0 right-14 md:bottom-4 md:right-28">
+      {(isTraveller || isValidator) && (
+        <Button type="button" onClick={() => handleStatus(status)}>
+          Email reminder {status}
+        </Button>
+      )}
 
       <Button type="button" onClick={handleSendRequestTest}>
         Back to Request
@@ -161,7 +167,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
         Delete Trip
       </Button>
 
-      {isTravelAgent && status === 'Request' && (
+      {(isTravelAgent || isValidator) && status === 'Request' && (
         <Button
           type="button"
           onClick={handleAuthentication}
@@ -170,7 +176,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
           Authenticate
         </Button>
       )}
-      { status === 'Authentication' && (
+      {status === 'Authentication' && (
         <Button
           type="button"
           onClick={handleValidation}
@@ -193,7 +199,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
           Approve
         </Button>
       )}
-      {isTravelAgent && status === 'Approval' && (
+      {(isTravelAgent || isValidator) && status === 'Approval' && (
         <Button
           type="button"
           onClick={handleFinalisation}
