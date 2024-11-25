@@ -141,7 +141,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
 
   return (
     <div className="flex space-x-4 fixed bottom-0 right-14 md:bottom-4 md:right-28">
-      {(isTraveller || isValidator) && (
+      {(isTraveller ) && (
         <Button type="button" onClick={() => handleStatus(status)}>
           Email reminder {status}
         </Button>
@@ -167,7 +167,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
         Delete Trip
       </Button>
 
-      {(isTravelAgent || isValidator) && status === 'Request' && (
+      {(isTravelAgent ) && status === 'Request' && (
         <Button
           type="button"
           onClick={handleAuthentication}
@@ -185,7 +185,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
           Validate
         </Button>
       )}
-      {(isFinance || isValidator) && status === 'Validation' && (
+      {(isFinance ) && status === 'Validation' && (
         <Button
           type="button"
           onClick={handleAuthorisation}
@@ -199,7 +199,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
           Approve
         </Button>
       )}
-      {(isTravelAgent || isValidator) && status === 'Approval' && (
+      {(isTravelAgent ) && status === 'Approval' && (
         <Button
           type="button"
           onClick={handleFinalisation}
