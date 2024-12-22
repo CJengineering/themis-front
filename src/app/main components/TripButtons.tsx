@@ -12,6 +12,7 @@ interface TripButtonsProps {
 
 export function TripButtons({ status, onDelete }: TripButtonsProps) {
   const { toast } = useToast();
+  console.log('status', status);
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   const userData = localStorage.getItem('user-data');
@@ -29,6 +30,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
   const isValidator = userRole === 'validator';
   const isFinance = userRole === 'financial';
   const isTraveller = userRole === 'traveller';
+  console.log('userRole', userRole);
   const dispatch = useAppDispatch();
   async function updateTripStatus(newStatus: string) {
     try {
@@ -185,7 +187,7 @@ export function TripButtons({ status, onDelete }: TripButtonsProps) {
           Validate
         </Button>
       )}
-      {(isFinance ) && status === 'Validation' && (
+      {(isFinance || isValidator) && status === 'Validation' && (
         <Button
           type="button"
           onClick={handleAuthorisation}
