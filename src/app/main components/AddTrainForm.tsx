@@ -38,7 +38,7 @@ import { createPresentationUrl2 } from '../features/Presentations';
 const formSchema = z.object({
   notes: z.string().optional(),
   tripType: z.string(),
-  flightClass: z.string().optional(),
+  trainClass: z.string().optional(),
   departureCityLeg1: z.string().min(1, 'Departure City Leg 1 is required'),
   arrivalCityLeg1: z.string().min(1, 'Arrival City Leg 1 is required'),
   departureDateLeg1: z.date().refine((date) => date >= new Date(), {
@@ -65,7 +65,7 @@ interface TripRequestFormProps {
   onClose: () => void;
 }
 
-export function AddFlightForm() {
+export function AddTrainForm() {
   const { toast } = useToast();
   const { tripId } = useParams();
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
@@ -74,7 +74,7 @@ export function AddFlightForm() {
     resolver: zodResolver(enhancedFormSchema),
     defaultValues: {
       departureCityLeg1: '',
-      flightClass: 'Economy',
+      trainClass: '2nd Class',
       arrivalCityLeg1: '',
       tripType: 'Round Trip',
       departureDateLeg1: new Date(),
@@ -117,12 +117,12 @@ export function AddFlightForm() {
   }
 
   async function onSubmit(values: z.infer<typeof enhancedFormSchema>) {
-    const flight = {
+    const Train = {
       departureDate: values.departureDateLeg1,
       cityDeparture: values.departureCityLeg1,
       cityArrival: values.arrivalCityLeg1,
       roundTrip: values.tripType === 'Round Trip',
-      flightClass: values.flightClass,
+      trainClass: values.trainClass,
       returnDate:
         values.tripType === 'Round Trip'
           ? values.returnDepartureDateLeg2
@@ -131,8 +131,8 @@ export function AddFlightForm() {
 
     const submissionData = {
       action: {
-        type: 'addFlight',
-        data: flight,
+        type: 'addTrain',
+        data: Train,
       },
       fieldData: {},
     };
@@ -161,8 +161,8 @@ export function AddFlightForm() {
 
       if (response.ok) {
         toast({
-          title: 'Flight Added',
-          description: `Your flight was added `,
+          title: 'Train Added',
+          description: `Your Train was added `,
         });
         setTimeout(() => {
           window.location.reload();
@@ -171,8 +171,8 @@ export function AddFlightForm() {
         const errorText = await response.text();
         console.log('Error Response Text:', errorText);
         toast({
-          title: 'Error saving your flight',
-          description: `There was an issue submitting your flight`,
+          title: 'Error saving your Train',
+          description: `There was an issue submitting your Train`,
           variant: 'destructive',
         });
       }
@@ -201,7 +201,7 @@ export function AddFlightForm() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold">Add your flight </h2>
+      <h2 className="text-xl font-bold">Add your Train </h2>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -299,7 +299,7 @@ export function AddFlightForm() {
             />
             <FormField
               control={form.control}
-              name="flightClass"
+              name="trainClass"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Class</FormLabel>
@@ -315,8 +315,8 @@ export function AddFlightForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Economy">Economy</SelectItem>
-                      <SelectItem value="Business">Business</SelectItem>
+                      <SelectItem value="2nd Class">Economy</SelectItem>
+                      <SelectItem value="1st Class">Business</SelectItem>
                     </SelectContent>
                   </Selectcdn>
                   <FormMessage />

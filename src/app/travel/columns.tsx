@@ -39,7 +39,8 @@ export type StatusInput =
   | 'Validation'
   | 'Authorisation'
   | 'Approval'
-  | 'Finalisation';
+  | 'Finalisation'
+  | 'Declined';
 
 const GreenCell = ({ children }: { children: React.ReactNode }) => (
   <div className="bg-green-100">{children}</div>
@@ -48,6 +49,8 @@ export function mapStatusToOutput(status: StatusInput): string {
   switch (status) {
     case 'Saved':
       return 'Saved';
+    case 'Declined':
+      return 'Declined';
     case 'Request':
       return 'Requested';
     case 'Authentication':

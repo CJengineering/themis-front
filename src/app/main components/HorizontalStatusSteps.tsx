@@ -2,9 +2,13 @@ import React from 'react';
 
 interface HorizontalStatusStepsProps {
   statusTravel: string;
+  declineDescription?: string;
 }
 
-const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => {
+const HorizontalStatusSteps = ({
+  statusTravel,
+  declineDescription,
+}: HorizontalStatusStepsProps) => {
   if (!statusTravel) {
     statusTravel = 'new';
   }
@@ -18,13 +22,14 @@ const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => 
     { name: 'Finalisation', icon: 'north_east' },
   ];
 
-
   const getNextStepIndex = (currentStep: string) => {
     if (currentStep === 'new') {
       return 0;
     }
     const stepOrder = [
+      'Declined',
       'Saved',
+
       'Request',
       'Authentication',
       'Validation',
@@ -45,6 +50,7 @@ const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => 
       return false;
     }
     const stepOrder = [
+      'Declined',
       'Saved',
       'Request',
       'Authentication',
@@ -57,7 +63,18 @@ const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => 
     const stepIndex = stepOrder.indexOf(stepName);
     return stepIndex <= currentStepIndex;
   };
-
+  if (statusTravel === 'Declined') {
+    return (
+      <div className="flex flex-col items-start w-full p-4 border rounded-lg bg-red-50 border-red-200 shadow-sm">
+        <h3 className="text-lg font-semibold text-red-600">
+          Reason for Decline
+        </h3>
+        <p className="mt-2 text-sm text-gray-700">
+          {declineDescription || 'No reason provided.'}
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="flex items-center  w-full">
       {navLinks.map((link, index) => (
@@ -90,8 +107,8 @@ const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => 
 
           {index < navLinks.length - 1 && (
             <div className="flex-grow mx-2">
-            <div className="border-t border-dotted border-muted-foreground h-0.5 md:12 lg:w-24"></div>
-          </div>
+              <div className="border-t border-dotted border-muted-foreground h-0.5 md:12 lg:w-24"></div>
+            </div>
           )}
         </div>
       ))}
@@ -100,6 +117,3 @@ const HorizontalStatusSteps = ({ statusTravel }: HorizontalStatusStepsProps) => 
 };
 
 export default HorizontalStatusSteps;
-
-
-

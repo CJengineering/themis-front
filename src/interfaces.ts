@@ -33,6 +33,7 @@ export interface TripFieldData {
   email: string;
   userRole: string;
   priceTotal: number;
+  declineDescription?: string;
   priceTotalUSD?: number;
   priceTotalEUR?: number;
   priceTotalGBP?: number;
@@ -44,12 +45,39 @@ export interface TripFieldData {
   cityEnd: string;
   transitionalCities: string[];
   daysOfStay: { city: string; days: number }[];
+  trainTickets: {
+    id: number;
+    cityDeparture: string;
+    cityArrival: string;
+    departureDate: Date;
+    roundTrip: boolean;
+    returnDate?: Date;
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
+    ticketImageUrl?: string;
+    trainClass?: '1st Class' | '2nd Class'; // Added train class
+  }[];
+  busTickets: {
+    id: number;
+    cityDeparture: string;
+    cityArrival: string;
+    roundTrip: boolean;
+    departureDate: Date;
+    returnDate?: Date;
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
+    ticketImageUrl?: string;
+  }[];
   flights: {
     id: number;
     cityDeparture: string;
     cityArrival: string;
     departureDate?: Date;
-
+     flightClass: 'Economy' | 'Business';
     priceInUSD?: number;
     priceInEUR?: number;
     priceInGBP?: number;
@@ -110,6 +138,7 @@ export interface TripData {
   purpose: string;
   status?: string;
   firstName: string;
+  declineDescription?: string;
   userId: string;
   lastName: string;
   email: string;
@@ -131,13 +160,41 @@ export interface TripData {
     cityDeparture: string;
     cityArrival: string;
     departureDate?: Date;
-
+    flightClass: 'Economy' | 'Business';
     priceInUSD?: number;
     priceInEUR?: number;
     priceInGBP?: number;
     priceSAR?: number;
     roundTrip: boolean;
     returnDate?: Date;
+    ticketImageUrl?: string;
+  }[];
+  trainTickets: {
+    id: number;
+    cityDeparture: string;
+    cityArrival: string;
+    departureDate: Date;
+   
+    roundTrip: boolean;
+    returnDate?: Date;
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
+    ticketImageUrl?: string;
+    trainClass?: '1st Class' | '2nd Class'; // Added train class
+  }[];
+  busTickets: {
+    id: number;
+    cityDeparture: string;
+    cityArrival: string;
+    roundTrip: boolean;
+    departureDate: Date;
+    returnDate?: Date;
+    priceInUSD?: number;
+    priceInEUR?: number;
+    priceInGBP?: number;
+    priceSAR?: number;
     ticketImageUrl?: string;
   }[];
 
@@ -211,7 +268,7 @@ export interface Stop {
   status: string;
   name?: string; // New field to store the abbreviated flight name
   active: boolean;
-  type: 'flight' | 'accommodation';
+  type: 'flight' | 'accommodation'| 'trainTickets' | 'busTickets';
   flightTicket: {
     flightId: number;
     departureDate: string;
@@ -220,20 +277,41 @@ export interface Stop {
     arrivalCity: string;
     title: string;
     description: string;
+    flightClass: 'Economy' | 'Business';
   };
-  accomodationDetails:{
+  trainTicketDetails: {
+    trainTicketId: number;
+    departureDate: string;
+    returnDate?: string;
+    arrivalDate: string;
+    departureCity: string;
+    arrivalCity: string;
+    trainClass?: '1st Class' | '2nd Class'; // Added train class
+    price: number;
+    description: string;
+  };
+  busTicketDetails: {
+    busTicketId: number;
+    departureDate: string;
+    arrivalDate: string;
+    description: string;
+    returnDate?: string;
+    departureCity: string;
+    arrivalCity: string;
+    price: number;
+  };
+  accomodationDetails: {
     accommodationId: number;
     hotelName: string;
     checkInDate: string;
     checkOutDate: string;
     city: string;
     pricePerNight: number;
-  }
+  };
   accommodation?: {
     status: string;
     name?: string;
   };
-
 }
 
 export interface Expense {
@@ -242,7 +320,6 @@ export interface Expense {
   description: string;
   category: string;
   amount: string;
-
 }
 export interface User {
   id: number;

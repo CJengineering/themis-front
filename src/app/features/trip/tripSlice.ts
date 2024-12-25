@@ -20,6 +20,8 @@ export const defaultTrip: Trip = {
     daysOfStay: [],
     flights: [],
     accommodations: [],
+    trainTickets: [],
+    busTickets: [],
     expenses: [],
     documents: [],
     departureDate: new Date(),

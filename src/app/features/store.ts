@@ -28,7 +28,7 @@ export const buildInitStore = (): AppState => ({
   trip: { ids: [], trips: {}, currentTrip: defaultTrip },
 
   url: { isProduction: true },
-  url2: { isProduction: true  },
+  url2: { isProduction: true },
   dialog: { isOpen: true, isSecondOpen: false },
   user: {
     id: -1,

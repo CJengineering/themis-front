@@ -63,10 +63,11 @@ const Trip = () => {
   const trip = useAppSelector(createPresentationSingleTrip);
   const url2 = useAppSelector(createPresentationUrl2);
   const tripStatus = trip.status || 'saved';
+  const tripDeclineDescription = trip.declineDescription || '';
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
   const checkUserAccess = (user: User, trip: TripData): boolean => {
     if (!user || !trip) return false; // Ensure both user and trip data exist
-  
+
     // Check if the user is a traveler and the trip's user ID matches the user's ID
     if (user.role === 'traveller') {
       const userId = Number(user.id);
@@ -74,12 +75,12 @@ const Trip = () => {
       console.log('user', user.id, 'trip', trip.userId);
       return tripUserId === userId;
     }
-  
+
     // Allow access to agents, financial, and validators
     if (['agent', 'validator', 'financial'].includes(user.role)) {
       return true;
     }
-  
+
     // Default to false if no conditions are met
     return false;
   };
@@ -96,7 +97,6 @@ const Trip = () => {
         console.log(`Converted amount in USD: $${usdAmount.toFixed(2)}`);
       }
     });
-   
   }, []);
   useEffect(() => {
     const userData = localStorage.getItem('user-data');
@@ -105,13 +105,13 @@ const Trip = () => {
       setUser(userDataJSON);
     }
   }, []);
-  
+
   // Perform access check when both user and trip are available
   useEffect(() => {
     if (user && trip && trip.userId) {
       const allowed = checkUserAccess(user, trip);
       setIsAllowed(allowed);
-  
+
       if (!allowed) {
         console.log('You are not allowed to access this page.');
       }
@@ -144,17 +144,9 @@ const Trip = () => {
   return (
     <div>
       <Header />
-      {/* <Dialog>
-          <DialogTrigger asChild>
-            <Button className="ml-2" variant="blue">New trip</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <TripRequestForm onClose={handleClose}/>
-          </DialogContent>
-        </Dialog> */}
 
       <div className="mr-4 py-8">
-        <HorizontalStatusSteps statusTravel={tripStatus} />
+        <HorizontalStatusSteps statusTravel={tripStatus} declineDescription={tripDeclineDescription}/>
       </div>
       <div className=" ">
         <Tabs defaultValue="itinerary" className="  w-full">

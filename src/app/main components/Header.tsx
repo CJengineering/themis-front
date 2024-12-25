@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FolderUp, Hotel, Plane, Plus, Receipt } from 'lucide-react';
+import { FolderUp, Hotel, Plane, Plus, Receipt, Bus, Train } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { TripRequestForm } from './TripInitialRequest';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,8 @@ import { ExpensesForm } from './ExpensesFormUI';
 import { AddDocumentForm } from './AddDocumentForm';
 import { StatusInput, mapStatusToOutput } from '../travel/columns';
 import { tr } from 'date-fns/locale';
+import { AddTrainForm } from './AddTrainForm';
+import { AddBussForm } from './AddBussForm';
 
 const Header = () => {
   const dispatch = useAppDispatch();
@@ -89,6 +91,7 @@ const Header = () => {
                   | 'outline'
                   | 'Saved'
                   | 'confirmed'
+                  | 'Declined'
                   | 'inProgress'
                   | 'waitingValidation'
                   | 'Saved'
@@ -117,13 +120,39 @@ const Header = () => {
                 <DialogTrigger asChild>
                   <div className="px-2 flex hover:cursor-pointer hover:text-slate-300 transition duration-300 ease-in-out">
                     <span className="mr-2">
-                      <Plane></Plane>
+                    <Plane/>
                     </span>
                     <span> Add Flight</span>
                   </div>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <AddFlightForm />
+                </DialogContent>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="px-2 flex hover:cursor-pointer hover:text-slate-300 transition duration-300 ease-in-out">
+                    <span className="mr-2">
+                     <Train/>
+                    </span>
+                    <span> Add Train</span>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                <AddTrainForm />
+                </DialogContent>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="px-2 flex hover:cursor-pointer hover:text-slate-300 transition duration-300 ease-in-out">
+                    <span className="mr-2">
+                      <Bus/>
+                    </span>
+                    <span> Add Bus</span>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                <AddBussForm />
                 </DialogContent>
               </Dialog>
               <Dialog>

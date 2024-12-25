@@ -83,6 +83,8 @@ export const createPresentationTrip = (state: RootState): TripData[] => {
       transitionalCities: trip.fieldData.transitionalCities,
       daysOfStay: trip.fieldData.daysOfStay,
       flights: trip.fieldData.flights,
+      trainTickets: trip.fieldData.trainTickets,
+      busTickets: trip.fieldData.busTickets,
       accommodations: trip.fieldData.accommodations,
       documents: trip.fieldData.documents,
       expenses: trip.fieldData.expenses,
@@ -103,6 +105,7 @@ export const createPresentationSingleTrip = (state: RootState): TripData => {
     subject: trip.fieldData.subject,
     purpose: trip.fieldData.purpose,
     status: trip.fieldData.status,
+    declineDescription: trip.fieldData.declineDescription,
     firstName: trip.fieldData.firstName,
     lastName: trip.fieldData.lastName,
     email: trip.fieldData.email,
@@ -123,6 +126,8 @@ export const createPresentationSingleTrip = (state: RootState): TripData => {
     flights: trip.fieldData.flights,
     accommodations: trip.fieldData.accommodations,
     documents: trip.fieldData.documents,
+    trainTickets: trip.fieldData.trainTickets,
+    busTickets: trip.fieldData.busTickets,
     expenses: trip.fieldData.expenses,
   };
 
